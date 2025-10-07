@@ -1,0 +1,32 @@
+{
+  "name": "@packages/db",
+  "version": "1.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "check:type": "tsc --noEmit",
+    "db:migrate:deploy": "pnpm run prisma -- migrate deploy",
+    "db:migrate:dev": "pnpm run prisma -- migrate dev",
+    "db:migrate:reset": "pnpm run prisma -- migrate reset",
+    "db:seed": "pnpm run prisma -- db seed",
+    "db:studio": "pnpm run prisma studio",
+    "db:generate": "prisma generate",
+    "prisma": "pnpm env-file -- prisma",
+    "env-file": "dotenvx run -f .env.db"
+  },
+  "packageManager": "pnpm@10.18.1",
+  "dependencies": {
+    "@packages/logger": "workspace:*",
+    "@prisma/adapter-pg": "6.16.2",
+    "@prisma/client": "6.16.2",
+    "prisma": "^6.16.3"
+  },
+  "devDependencies": {
+    "@dotenvx/dotenvx": "1.51.0",
+    "@types/node": "24.5.2",
+    "typescript": "5.9.2"
+  }
+}

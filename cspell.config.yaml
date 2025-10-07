@@ -1,0 +1,21 @@
+version: "0.2"
+ignorePaths:
+  - .git
+  - .gitignore
+  - pnpm-lock.yaml
+  - "**/generated"
+  - "**/prisma/migrations"
+dictionaryDefinitions: []
+dictionaries: []
+words:
+  - anthropics
+  - chax-at
+  - DBNAME
+  - dotenvx
+  - Entra
+  - Msal
+  - mydb
+  - VITE
+  - Yamatatsu
+ignoreWords: []
+import: []
