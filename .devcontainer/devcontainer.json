@@ -17,7 +17,6 @@
     "ghcr.io/devcontainers/features/node:1": {
       "version": "24"
     },
-    "ghcr.io/devcontainers-extra/features/turborepo-npm:1": {},
     "ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
   },
 

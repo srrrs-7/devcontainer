@@ -1,11 +1,10 @@
 services:
-  frontend:
+  web:
     build:
       context: .
-      dockerfile: 
-  backend:
+      dockerfile: apps/web/.images/Dockerfile
+
+  api:
     build:
       context: .
-      dockerfile: 
-  db:
-    image: postgres:15
+      dockerfile: apps/api/.images/Dockerfile

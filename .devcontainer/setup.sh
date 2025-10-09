@@ -8,8 +8,14 @@ echo "👤 Current user:"
 whoami
 
 
+echo "🔧 Installing Bun..."
+curl -fsSL https://bun.sh/install | bash && sudo ln -s ~/.bun/bin/bun /usr/local/bin/bun
+
 echo "📦 Installing dependencies..."
-pnpm install --frozen-lockfile
+bun install --frozen-lockfile
+
+echo "🔧 Installing Turbo globally..."
+bun install -g turbo
 
 
 # init and execute personal setup script

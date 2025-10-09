@@ -2,7 +2,7 @@ version: "0.2"
 ignorePaths:
   - .git
   - .gitignore
-  - pnpm-lock.yaml
+  - bun.lockb
   - "**/generated"
   - "**/prisma/migrations"
 dictionaryDefinitions: []

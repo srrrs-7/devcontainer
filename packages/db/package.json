@@ -8,16 +8,16 @@
   "types": "./src/index.ts",
   "scripts": {
     "check:type": "tsc --noEmit",
-    "db:migrate:deploy": "pnpm run prisma -- migrate deploy",
-    "db:migrate:dev": "pnpm run prisma -- migrate dev",
-    "db:migrate:reset": "pnpm run prisma -- migrate reset",
-    "db:seed": "pnpm run prisma -- db seed",
-    "db:studio": "pnpm run prisma studio",
+    "db:migrate:deploy": "bun run prisma -- migrate deploy",
+    "db:migrate:dev": "bun run prisma -- migrate dev",
+    "db:migrate:reset": "bun run prisma -- migrate reset",
+    "db:seed": "bun run prisma -- db seed",
+    "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
-    "prisma": "pnpm env-file -- prisma",
+    "prisma": "bun run env-file -- prisma",
     "env-file": "dotenvx run -f .env.db"
   },
-  "packageManager": "pnpm@10.18.1",
+  "packageManager": "bun@1.1.38",
   "dependencies": {
     "@packages/logger": "workspace:*",
     "@prisma/adapter-pg": "6.16.2",
