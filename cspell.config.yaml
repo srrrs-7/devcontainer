@@ -9,8 +9,10 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - anthropics
+  - bunx
   - chax-at
   - DBNAME
+  - Dockerfiles
   - dotenvx
   - Entra
   - Msal

@@ -14,8 +14,8 @@
     "db:seed": "bun run prisma -- db seed",
     "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
-    "prisma": "bun run env-file -- prisma",
-    "env-file": "dotenvx run -f .env.db"
+    "prisma": "bun run env-file prisma",
+    "env-file": "dotenvx run -f .env.db --"
   },
   "packageManager": "bun@1.1.38",
   "dependencies": {
