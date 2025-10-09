@@ -1,33 +1,21 @@
-# TODO: fix node version when use for production
-FROM node:24-slim AS base
+# Use Bun official image
+FROM oven/bun:1.1.38-slim AS base
 WORKDIR /app
 
-# The web Dockerfile is copy-pasted into our main docs at /docs/handbook/deploying-with-docker.
-# Make sure you update this Dockerfile, the Dockerfile in the web workspace and copy that over to Dockerfile in the docs.
-
-####################
-# Builder
-
-FROM base AS builder
-RUN npm install -g turbo
-COPY . .
-RUN turbo prune backend --docker
 
 ####################
 # Installer
-
 FROM base AS installer
+COPY . .
+# Skip husky install in Docker (HUSKY=0 disables git hooks setup)
+RUN HUSKY=0 bun install --production --no-lockfile
 
-COPY --from=builder /app/out/json/ .
-RUN npm ci
-
-COPY --from=builder /app/out/full/ .
 
 ####################
 # Runner
 
 FROM base AS runner
-
+# Copy built application and dependencies
 COPY --from=installer /app .
-
-CMD npm start --workspace=backend
+# Expose the port the app runs on
+CMD ["bun", "run", "/app/apps/api/src/index.ts"]

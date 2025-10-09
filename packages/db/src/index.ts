@@ -1,4 +1,4 @@
-import logger from "@packages/logger";
+import { logger } from "@packages/logger";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/prisma/client";
 
