@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# Cancel in-progress runs for the same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI (Lint, Type Check, Build, Test)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run CI in devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: |
+            bun check:biome
+            bun check:spell
+            bun check:type
+            bunx turbo run build
+            bunx turbo run test:run

@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 This is a monorepo using **Bun workspaces** and **Turborepo** for task orchestration. The project includes:
-- **Backend API** (`apps/backend`): Hono web framework on Node.js
+- **API app** (`apps/api`): Hono web framework on Node.js
 - **Database package** (`packages/db`): Prisma ORM with PostgreSQL adapter
 - **Logger package** (`packages/logger`): Pino-based logging with request ID tracking via AsyncLocalStorage
 
@@ -19,10 +19,10 @@ This is a monorepo using **Bun workspaces** and **Turborepo** for task orchestra
 
 ### Development
 ```bash
-# Start backend dev server (from root)
-bun --filter backend dev
+# Start API dev server (from root)
+bun --filter api dev
 
-# Start backend dev server (from apps/backend)
+# Start API dev server (from apps/api)
 bun dev
 ```
 
@@ -32,7 +32,7 @@ bun dev
 bunx turbo run build
 
 # Build specific package
-bun --filter backend build
+bun --filter api build
 ```
 
 ### Code Quality
@@ -102,7 +102,7 @@ bunx turbo run test:run
 ## Architecture
 
 ### Monorepo Structure
-- **apps/**: Application packages (backend)
+- **apps/**: Application packages (api)
 - **packages/**: Shared packages (db, logger)
 - Root-level tools: Biome (linting/formatting), cspell (spell checking), husky (git hooks), Turborepo (task runner)
 
@@ -120,11 +120,12 @@ bunx turbo run test:run
 - Usage: Call `runWithRequestId(requestId, async () => { ... })` to set context
 - Log level controlled by `LOG_LEVEL` environment variable (default: "info")
 
-### Backend App
+### API App (`apps/api`)
 - **Framework**: Hono (lightweight web framework)
 - **Runtime**: Node.js with `@hono/node-server`
 - **Port**: 3000
 - TypeScript compiled with `tsc`, development uses `tsx watch`
+- Uses `neverthrow` library for Result-based error handling
 
 ## Important Conventions
 
@@ -148,5 +149,5 @@ bunx turbo run test:run
 3. Or run `bun db:generate` (just regenerates client without migration)
 
 ## Docker
-- `compose.yaml` defines services: frontend, backend, db (PostgreSQL 15)
+- `compose.yaml` defines services: web, api
 - Docker configuration is minimal/incomplete (no Dockerfiles specified)
