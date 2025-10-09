@@ -25,6 +25,7 @@ jobs:
       - name: Run CI in devcontainer
         uses: devcontainers/ci@v0.3
         with:
+          push: never
           runCmd: |
             bun check:biome
             bun check:spell
