@@ -7,10 +7,6 @@ echo "🚀 Starting Dev Container setup..."
 echo "👤 Current user:"
 whoami
 
-
-echo "🔧 Installing Bun..."
-curl -fsSL https://bun.sh/install | bash && sudo ln -s ~/.bun/bin/bun /usr/local/bin/bun
-
 echo "📦 Installing dependencies..."
 bun install --frozen-lockfile
 
