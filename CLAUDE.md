@@ -124,7 +124,7 @@ bunx turbo run test:run
 - **Framework**: Hono (lightweight web framework)
 - **Runtime**: Node.js with `@hono/node-server`
 - **Port**: 3000
-- TypeScript compiled with `tsc`, development uses `tsx watch`
+- TypeScript compiled with `tsc`, development uses `bun --watch`
 - Uses `neverthrow` library for Result-based error handling
 
 ## Important Conventions
