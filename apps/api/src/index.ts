@@ -1,12 +1,19 @@
 import { serve } from "@hono/node-server";
 import { logger } from "@packages/logger";
 import { Hono } from "hono";
-import getTask from "./routes/getTask";
+import deleteTask from "./routes/task/delete";
+import getTask from "./routes/task/get";
+import listTask from "./routes/task/list";
+import postTask from "./routes/task/post";
+import putTask from "./routes/task/put";
 
-const app = new Hono();
-
-app.get("/health", (c) => c.text("OK"));
-app.route("/", getTask);
+const app = new Hono()
+  .get("/health", (c) => c.text("OK"))
+  .route("/", getTask)
+  .route("/", listTask)
+  .route("/", postTask)
+  .route("/", putTask)
+  .route("/", deleteTask);
 
 serve({ fetch: app.fetch, port: 3000 }, (info) => {
   logger.info({
