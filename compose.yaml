@@ -3,8 +3,12 @@ services:
   #   build:
   #     context: .
   #     dockerfile: apps/web/.images/Dockerfile
+  #   ports:
+  #     - 3000:3000
 
   api:
     build:
       context: .
       dockerfile: apps/api/.images/Dockerfile
+    ports:
+      - 8080:8080
