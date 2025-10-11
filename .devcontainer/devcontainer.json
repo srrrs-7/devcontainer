@@ -47,6 +47,7 @@
     3000, // frontend dev server
     8080, // backend server
     5432, // PostgreSQL
-    5555 // prisma studio
+    5555, // prisma studio
+    24282 // serena
   ]
 }
