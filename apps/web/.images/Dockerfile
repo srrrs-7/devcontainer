@@ -15,8 +15,11 @@ COPY --from=installer /app .
 RUN bun build:web
 
 # Runner
-FROM node:24-alpine AS runner
-# Copy built application and dependencies
-COPY --from=builder /app/apps/web/dist .
-# Expose the port the app runs on
-CMD ["node", "index.js"]
+FROM nginx:alpine AS runner
+# Copy nginx configuration for SPA routing
+COPY apps/web/.images/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy all built files (HTML, JS, CSS, assets)
+COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
+# Expose nginx default port
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

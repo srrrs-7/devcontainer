@@ -18,5 +18,6 @@ RUN bun build:api
 FROM node:24-alpine AS runner
 # Copy built application and dependencies
 COPY --from=builder /app/apps/api/dist .
+EXPOSE 8080
 # Expose the port the app runs on
 CMD ["node", "index.js"]

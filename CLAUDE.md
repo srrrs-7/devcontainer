@@ -12,10 +12,11 @@ This is a monorepo using **Bun workspaces** with native Bun features for task or
 
 ## Package Manager & Workspaces
 
-- Uses **Bun** (version 1.1.38) - **ALWAYS use `bun` or `bunx` commands, NEVER `npm`, `yarn`, `pnpm`, or `npx`**
+- Uses **Bun** (version 1.3.0) - **ALWAYS use `bun` or `bunx` commands, NEVER `npm`, `yarn`, `pnpm`, or `npx`**
 - Workspace packages are linked using `workspace:*` protocol
 - Root workspace defines common dev tools (Biome, cspell, husky)
 - Uses Bun's built-in `--filter` and `--workspaces` flags for monorepo management
+- Bun automatically loads `.env` files - no need for dotenv package
 
 ### Bun Workspace Features
 
@@ -161,19 +162,22 @@ bun run test:ws
 - **Server**: Bun.serve() with native HMR (Hot Module Replacement)
 - **Port**: 3000 (default)
 - **Bundler**: Bun native bundler (no Vite/Webpack needed)
+- **Entry Point**: `apps/web/src/index.tsx` serves `index.html` which imports frontend React code
 - **Features**:
-  - HTML imports for .tsx/.jsx/.css files
-  - Built-in API routing via Bun.serve routes
-  - Development mode with browser console logging
+  - HTML imports for .tsx/.jsx/.css files (import directly in `<script>` tags)
+  - Built-in API routing via Bun.serve routes object (see `index.tsx` for examples)
+  - Development mode with browser console logging (`console: true`)
   - TypeScript support without compilation step
+  - Hot reloading with `--hot` flag in dev mode
 
 ### Database Package (`@packages/db`)
-- Prisma schema: `packages/db/prisma/schema.prisma`
-- Generated client: `packages/db/src/generated/prisma/` (ignored by Biome)
-- Main export: `getPrisma()` function returns configured PrismaClient instance
-- Uses `@prisma/adapter-pg` for PostgreSQL connection pooling
-- Prisma events are logged via `@packages/logger` (query, info, warn, error)
-- Database URL constructed from environment variables (not from `.env` file directly)
+- **Prisma schema**: `packages/db/prisma/schema.prisma`
+- **Generated client**: `packages/db/src/generated/prisma/` (ignored by Biome)
+- **Main export**: `getPrisma()` function returns configured PrismaClient instance
+- **Adapter**: Uses `@prisma/adapter-pg` for PostgreSQL connection pooling
+- **Logging**: Prisma events (query, info, warn, error) are logged via `@packages/logger`
+- **Connection**: Database URL constructed from environment variables (not from `.env` file directly)
+- **Data Model**: Currently defines `Tasks` model with composite primary key on `userId` and `taskId`
 
 ### Logger Package (`@packages/logger`)
 - Built on Pino logger
@@ -185,8 +189,13 @@ bun run test:ws
 - **Framework**: Hono (lightweight web framework)
 - **Runtime**: Node.js with `@hono/node-server`
 - **Port**: 8080
-- **Route Organization**: Routes are modularized in `apps/api/src/routes/` directory
-- TypeScript compiled with `tsc`, development uses `bun --watch`
+- **Entry Point**: `apps/api/src/index.ts`
+- **Route Organization**: Routes are modularized by feature in `apps/api/src/routes/` directory
+  - Each route file exports a Hono instance with specific route handlers
+  - Routes are composed in `index.ts` using `.route()` method
+  - Example structure: `routes/task/` contains CRUD operations (get.ts, post.ts, put.ts, delete.ts, list.ts)
+- **Development**: Uses `bun --watch` for auto-reload on file changes
+- **Production Build**: TypeScript compiled with `tsc` to `dist/` directory, run with `node dist/index.js`
 - Uses `neverthrow` library for Result-based error handling
 
 ## Important Conventions
@@ -196,6 +205,7 @@ bun run test:ws
 - Biome ignores `**/src/generated` and `**/prisma/migrations`
 - Import organization enabled (Biome auto-organizes imports)
 - Floating promises must be handled (Biome nursery rule enforced)
+- **Spell checking**: Custom words defined in `cspell.config.yaml` (includes project-specific terms like "bunx", "dotenvx", "neverthrow")
 
 ### Environment Files
 - Database package uses `.env.db` file (loaded via dotenvx)
@@ -210,6 +220,7 @@ bun run test:ws
 3. Or run `bun db:generate` (just regenerates client without migration)
 
 ## Docker
-- `compose.yaml` defines API service (web service is commented out)
-- API service references `apps/api/.images/Dockerfile`
-- Docker configuration may be incomplete
+- `compose.yaml` defines both web and api services
+- Web service: `apps/web/.images/Dockerfile`, exposed on port 3000
+- API service: `apps/api/.images/Dockerfile`, exposed on port 8080
+- Run with: `docker compose up` or `docker compose up -d` for detached mode
