@@ -2,6 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## CRITICAL: Code Analysis and Editing Tools
+
+**MANDATORY**: When Claude Code performs ANY code analysis, exploration, or editing tasks in this repository, it **MUST use Serena MCP tools**. This is non-negotiable.
+
+### Why Serena MCP is Required
+
+- **Token efficiency**: Serena tools allow reading and editing code at the symbol level (classes, methods, functions) instead of reading entire files
+- **Precise operations**: Symbol-based editing is more accurate and less error-prone than line-based edits
+- **Better understanding**: Overview and symbol search tools provide structured information about code architecture
+- **Never read entire files first**: Always start with `mcp__serena__get_symbols_overview` or `mcp__serena__find_symbol` before reading full files
+
+### Serena MCP Workflow
+
+1. **Exploring code**: Use `mcp__serena__get_symbols_overview` to understand file structure, then `mcp__serena__find_symbol` to read specific symbols
+2. **Finding code**: Use `mcp__serena__find_symbol` with name paths (e.g., "ClassName/methodName") and substring matching
+3. **Understanding relationships**: Use `mcp__serena__find_referencing_symbols` to see where code is used
+4. **Pattern search**: Use `mcp__serena__search_for_pattern` for regex-based searches across the codebase
+5. **Editing code**: Use `mcp__serena__replace_symbol_body`, `mcp__serena__insert_after_symbol`, or `mcp__serena__insert_before_symbol` for precise modifications
+
+### Thinking Mode
+
+**Use `ultrathink` mode** when analyzing complex architectural questions, planning multi-step changes, or reasoning about code relationships. This enables deeper analysis before taking action.
+
 ## Project Overview
 
 This is a monorepo using **Bun workspaces** with native Bun features for task orchestration. The project includes:
