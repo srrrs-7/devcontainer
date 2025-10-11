@@ -42,5 +42,5 @@ jobs:
             bun check:biome
             bun check:spell
             bun check:type:ws
-            bun run build
-            bun run test:ws
+            bun build
+            bun test:ws
