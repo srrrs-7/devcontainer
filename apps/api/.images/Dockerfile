@@ -13,7 +13,6 @@ RUN HUSKY=0 bun install --production --no-lockfile
 
 ####################
 # Runner
-
 FROM base AS runner
 # Copy built application and dependencies
 COPY --from=installer /app .
