@@ -8,7 +8,9 @@ import postTask from "./routes/task/post";
 import putTask from "./routes/task/put";
 
 const app = new Hono()
+  // Health check endpoint
   .get("/health", (c) => c.text("OK"))
+  // Task endpoints
   .route("/", getTask)
   .route("/", listTask)
   .route("/", postTask)
