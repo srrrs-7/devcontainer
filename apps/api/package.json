@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "tsc",
+    "build": "bun build src/index.ts --outdir dist --target node",
     "start": "node dist/index.js",
     "clean": "rm -rf dist",
     "check:type": "tsc --noEmit"
