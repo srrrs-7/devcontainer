@@ -1,6 +1,6 @@
 import { logger } from "@packages/logger";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "./generated/prisma/client";
+import { type Prisma, PrismaClient } from "./generated/prisma/client";
 
 const { DB_USERNAME, DB_PASSWORD, DB_HOST, DB_DBNAME } = process.env;
 const connectionString = `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_DBNAME}?schema=public`;
@@ -17,16 +17,16 @@ const prisma = new PrismaClient({
   ],
 });
 
-prisma.$on("query", (event) => {
+prisma.$on("query", (event: Prisma.QueryEvent) => {
   logger.debug({ event }, "Prisma Query");
 });
-prisma.$on("info", (event) => {
+prisma.$on("info", (event: Prisma.LogEvent) => {
   logger.info({ event }, "Prisma Info");
 });
-prisma.$on("warn", (event) => {
+prisma.$on("warn", (event: Prisma.LogEvent) => {
   logger.warn({ event }, "Prisma Warn");
 });
-prisma.$on("error", (event) => {
+prisma.$on("error", (event: Prisma.LogEvent) => {
   logger.error({ event }, "Prisma Error");
 });
 
