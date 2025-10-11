@@ -7,7 +7,7 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "check:type": "tsc --noEmit",
+    "check:type": "bun tsc --noEmit",
     "db:migrate:deploy": "bun run prisma -- migrate deploy",
     "db:migrate:dev": "bun run prisma -- migrate dev",
     "db:migrate:reset": "bun run prisma -- migrate reset",

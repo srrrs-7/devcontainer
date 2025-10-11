@@ -39,8 +39,6 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
           push: always
           runCmd: |
-            bun check:biome
-            bun check:spell
-            bun check:type:ws
-            bun build
-            bun test:ws
+            bun check
+            bun build:ws
+            bun test
