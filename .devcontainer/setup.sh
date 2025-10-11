@@ -8,10 +8,7 @@ echo "👤 Current user:"
 whoami
 
 echo "📦 Installing dependencies..."
-bun install --frozen-lockfile
-
-echo "🔧 Installing Turbo globally..."
-bun install -g turbo
+bun install
 
 
 # init and execute personal setup script

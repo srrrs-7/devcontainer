@@ -15,7 +15,7 @@ const app = new Hono()
   .route("/", putTask)
   .route("/", deleteTask);
 
-serve({ fetch: app.fetch, port: 3000 }, (info) => {
+serve({ fetch: app.fetch, port: 8080 }, (info) => {
   logger.info({
     message: `Server is running on http://localhost:${info.port}`,
   });

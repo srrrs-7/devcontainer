@@ -15,7 +15,9 @@
     "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
     "prisma": "bun run env-file prisma",
-    "env-file": "dotenvx run -f .env.db --"
+    "env-file": "dotenvx run -f .env.db --",
+    "clean": "rm -rf src/generated",
+    "build": "echo 'No build step needed (TypeScript source directly used)'"
   },
   "packageManager": "bun@1.1.38",
   "dependencies": {

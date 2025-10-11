@@ -41,6 +41,6 @@ jobs:
           runCmd: |
             bun check:biome
             bun check:spell
-            bun check:type
-            bunx turbo run build
-            bunx turbo run test:run
+            bun check:type:ws
+            bun run build
+            bun run test:ws

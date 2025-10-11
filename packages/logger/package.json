@@ -7,7 +7,10 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "check:type": "tsc --noEmit"
+    "check:type": "tsc --noEmit",
+    "test": "bun test --watch",
+    "clean": "echo 'No build artifacts to clean'",
+    "build": "echo 'No build step needed (TypeScript source directly used)'"
   },
   "dependencies": {
     "pino": "9.13.1"
