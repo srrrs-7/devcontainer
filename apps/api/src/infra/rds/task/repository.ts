@@ -12,7 +12,7 @@ import type {
 
 export const createTask = (
   input: CreateTaskInput,
-): ResultAsync<Task, Error> => {
+): ResultAsync<Task, DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
@@ -39,7 +39,7 @@ export const createTask = (
 
 export const updateTask = (
   input: UpdateTaskInput,
-): ResultAsync<Task, Error> => {
+): ResultAsync<Task, NotFoundError | DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
@@ -84,7 +84,7 @@ export const updateTask = (
 
 export const deleteTask = (
   input: DeleteTaskInput,
-): ResultAsync<Task, Error> => {
+): ResultAsync<Task, NotFoundError | DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
@@ -124,7 +124,7 @@ export const deleteTask = (
 
 export const getTask = (
   input: GetTaskInput,
-): ResultAsync<Task | null, Error> => {
+): ResultAsync<Task | null, DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
@@ -152,7 +152,7 @@ export const getTask = (
 
 export const listTasks = (
   input: ListTasksInput,
-): ResultAsync<Task[], Error> => {
+): ResultAsync<Task[], DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
