@@ -10,9 +10,12 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.19.5",
+    "@hono/zod-validator": "^0.7.4",
+    "@packages/db": "workspace:*",
+    "@packages/logger": "workspace:*",
     "hono": "^4.9.10",
     "neverthrow": "^8.0.1",
-    "@packages/logger": "workspace:*"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
