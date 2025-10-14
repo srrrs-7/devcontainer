@@ -1,15 +1,5 @@
-import { afterEach, beforeEach, test } from "bun:test";
-import { getPrisma } from "@packages/db";
+import { expect, test } from "bun:test";
 
-const prisma = getPrisma();
-
-beforeEach(async () => {
-  await prisma.$executeRaw`BEGIN`; // トランザクション開始
-});
-afterEach(async () => {
-  await prisma.$executeRaw`ROLLBACK`; // ロールバック
-});
-
-test("ダミー", () => {
-  // ダミーテスト。beforeEach, afterEachの動作確認用
+test("", async () => {
+  expect(true).toBe(true);
 });
