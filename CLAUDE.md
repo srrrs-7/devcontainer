@@ -90,6 +90,11 @@ bun run clean:web       # Clean web app only
 bun run clean:api       # Clean api app only
 ```
 
+**Build Process Notes**:
+- The root `build` script runs: `clean` → `db:generate` → `build:ws` (builds all workspace packages)
+- **Always regenerate Prisma client** before building if schema changed (happens automatically with root `build` script)
+- Logger and DB packages have no build step (TypeScript source used directly)
+
 ### Production Start
 ```bash
 # Start Web in production mode
@@ -162,15 +167,29 @@ bun prisma [command]
 
 ### Testing
 ```bash
-# Run tests in watch mode (using Bun's test runner)
+# Run API tests once (using Vitest)
+bun run test:run
+# or from apps/api:
 bun test
 
-# Run tests once
-bun run test:run
+# Run API tests in watch mode
+bun run test:watch
+# or from apps/api:
+bun test:watch
 
-# Run tests across all workspaces
-bun run test:ws
+# Run specific test file
+cd apps/api && bun test src/routes/task/get.test.ts
+
+# Run tests matching a pattern
+cd apps/api && bun test -t "pattern"
 ```
+
+**API Testing Setup**:
+- Uses **Vitest** (not Bun's native test runner) for API tests
+- **Database test isolation**: Uses `@chax-at/transactional-prisma-testing` to wrap each test in a transaction that rolls back
+- **Setup file**: `apps/api/__test__/setup.ts` configures test environment and mocks `@packages/db` to use transactional Prisma client
+- **Test pattern**: Route test files are co-located with route files (e.g., `get.ts` and `get.test.ts` in same directory)
+- Tests run with `LOG_LEVEL=silent` to reduce noise (configured in `vitest.config.ts`)
 
 ## Architecture
 
@@ -219,7 +238,8 @@ bun run test:ws
   - Example structure: `routes/task/` contains CRUD operations (get.ts, post.ts, put.ts, delete.ts, list.ts)
 - **Development**: Uses `bun --watch` for auto-reload on file changes
 - **Production Build**: TypeScript compiled with `tsc` to `dist/` directory, run with `node dist/index.js`
-- Uses `neverthrow` library for Result-based error handling
+- **Error Handling**: Uses `neverthrow` library for Result-based error handling (avoids throwing exceptions)
+- **Validation**: Uses `@hono/zod-validator` with Zod schemas for request validation
 
 ## Important Conventions
 

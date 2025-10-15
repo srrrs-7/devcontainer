@@ -1,6 +1,6 @@
 import { getPrisma } from "@packages/db";
 import { ResultAsync } from "neverthrow";
-import { DatabaseError, NotFoundError } from "../../../domain/error";
+import { DatabaseError } from "../../../domain/error";
 import type {
   CreateTaskInput,
   DeleteTaskInput,
@@ -39,16 +39,14 @@ export const createTask = (
 
 export const updateTask = (
   input: UpdateTaskInput,
-): ResultAsync<Task, NotFoundError | DatabaseError> => {
+): ResultAsync<{ count: number }, DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.update({
+    prisma.tasks.updateMany({
       where: {
-        userId_taskId: {
-          userId: input.userId,
-          taskId: input.taskId,
-        },
+        userId: input.userId,
+        taskId: input.taskId,
       },
       data: {
         content: input.content,
@@ -56,70 +54,24 @@ export const updateTask = (
         updatedAt: new Date(),
       },
     }),
-    (error) => {
-      // Prisma throws P2025 error code when record is not found
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        error.code === "P2025"
-      ) {
-        return new NotFoundError(
-          `Task not found: userId=${input.userId}, taskId=${input.taskId}`,
-        );
-      }
-      return new DatabaseError(error);
-    },
-  ).map(
-    (task): Task => ({
-      userId: task.userId,
-      taskId: task.taskId,
-      content: task.content,
-      completedAt: task.completedAt,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    }),
-  );
+    (error) => new DatabaseError(error),
+  ).map((result) => ({ count: result.count }));
 };
 
 export const deleteTask = (
   input: DeleteTaskInput,
-): ResultAsync<Task, NotFoundError | DatabaseError> => {
+): ResultAsync<{ count: number }, DatabaseError> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.delete({
+    prisma.tasks.deleteMany({
       where: {
-        userId_taskId: {
-          userId: input.userId,
-          taskId: input.taskId,
-        },
+        userId: input.userId,
+        taskId: input.taskId,
       },
     }),
-    (error) => {
-      // Prisma throws P2025 error code when record is not found
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        error.code === "P2025"
-      ) {
-        return new NotFoundError(
-          `Task not found: userId=${input.userId}, taskId=${input.taskId}`,
-        );
-      }
-      return new DatabaseError(error);
-    },
-  ).map(
-    (task): Task => ({
-      userId: task.userId,
-      taskId: task.taskId,
-      content: task.content,
-      completedAt: task.completedAt,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    }),
-  );
+    (error) => new DatabaseError(error),
+  ).map((result) => ({ count: result.count }));
 };
 
 export const getTask = (
