@@ -32,6 +32,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
       - name: Run CI in devcontainer
         uses: devcontainers/ci@v0.3
         with:
@@ -39,6 +49,7 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
           push: always
           runCmd: |
+            bun ci
             bun check
             bun build:ws
             bun test
