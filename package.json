@@ -14,7 +14,7 @@
     "dev:all": "bun --workspaces dev",
     "start:api": "bun run --filter api start",
     "start:web": "bun run --filter web start",
-    "test": "cd apps/api && npm run test",
+    "test:run": "cd apps/api && npm run test",
     "test:watch": "cd apps/api && npm run test:watch",
     "db:migrate:dev": "bun run --filter @packages/db db:migrate:dev",
     "db:migrate:reset": "bun run --filter @packages/db db:migrate:reset",

@@ -10,7 +10,7 @@ echo "📁 install serena mcp server:"
 claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
 
 echo "📦 Installing dependencies..."
-bun install
+bun ci
 
 # init and execute personal setup script
 if [ ! -f ".devcontainer/setup.personal.sh" ]; then
