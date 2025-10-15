@@ -6,7 +6,7 @@ WORKDIR /app
 FROM base AS installer
 COPY . .
 # Skip husky install in Docker (HUSKY=0 disables git hooks setup)
-RUN HUSKY=0 bun install --production --no-lockfile
+RUN HUSKY=0 bun ci --production --no-lockfile
 
 # Builder
 FROM installer AS builder
