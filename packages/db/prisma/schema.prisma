@@ -9,10 +9,17 @@ generator client {
   output     = "../src/generated/prisma"
 }
 
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
 model Tasks {
-  userId      String    @map("user_id")
-  taskId      String    @default(uuid()) @map("task_id")
+  userId      String    @map("user_id") @db.Uuid
+  taskId      String    @default(uuid()) @map("task_id") @db.Uuid
   content     String    @map("content") @db.VarChar(1000)
+  status      TaskStatus @default(PENDING) @map("status")
   completedAt DateTime? @map("completed_at")
   createdAt   DateTime  @map("created_at")
   updatedAt   DateTime  @map("updated_at")

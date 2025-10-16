@@ -2,6 +2,9 @@
   "name": "@packages/db",
   "version": "1.0.0",
   "private": true,
+  "prisma": {
+    "seed": "bun run prisma/seeds/seed.ts"
+  },
   "exports": {
     ".": "./src/index.ts"
   },
@@ -10,7 +13,7 @@
     "check:type": "bun tsc --noEmit",
     "db:migrate:deploy": "bun run prisma -- migrate deploy",
     "db:migrate:dev": "bun run prisma -- migrate dev",
-    "db:migrate:reset": "bun run prisma -- migrate reset",
+    "db:migrate:reset": "bun run prisma -- migrate reset --force",
     "db:seed": "bun run prisma -- db seed",
     "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
