@@ -42,6 +42,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-bun-
 
+      - name: Setup devcontainer compose override
+        run: cp .devcontainer/compose.override.yaml.sample .devcontainer/compose.override.yaml
+
       - name: Run CI in devcontainer
         uses: devcontainers/ci@v0.3
         with:
