@@ -9,9 +9,9 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - anthropics
+  - auggie
   - Auggie
   - AUGGIE
-  - auggie
   - Avenir
   - Bluch
   - bunx
@@ -24,18 +24,19 @@ words:
   - evenodd
   - Groot
   - initialised
-  - msie
   - Msal
+  - msie
   - mydb
   - neverthrow
   - pycache
+  - qwen
   - Qwen
   - QWEN
-  - qwen
   - tfstate
   - TXXX
   - uvx
   - venv
   - VITE
+  - worktree
 ignoreWords: []
 import: []
