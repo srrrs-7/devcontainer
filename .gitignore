@@ -6,6 +6,7 @@ lerna-debug.log*
 
 # Dev Container
 .devcontainer/setup.personal.sh
+compose.override.yaml
 core
 
 # dotenv

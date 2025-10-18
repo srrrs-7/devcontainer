@@ -7,12 +7,6 @@ services:
     env_file:
       - path: .env
         required: false
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_DBNAME: mydb
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
     volumes:
       - ..:/workspace/main:cached
     command: sleep infinity
@@ -21,14 +15,8 @@ services:
         condition: service_healthy
   db:
     image: postgres:15
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d mydb"]

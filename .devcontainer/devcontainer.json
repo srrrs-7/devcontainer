@@ -6,7 +6,7 @@
 // - Use setup.personal.sh for personal setup such as dotfiles
 {
   "name": "play-devcontainer",
-  "dockerComposeFile": "compose.yaml",
+  "dockerComposeFile": ["compose.yaml", "compose.override.yaml"],
   "service": "dev",
   "workspaceFolder": "/workspace/main",
   "remoteUser": "vscode",
