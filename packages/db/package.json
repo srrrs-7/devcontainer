@@ -2,9 +2,6 @@
   "name": "@packages/db",
   "version": "1.0.0",
   "private": true,
-  "prisma": {
-    "seed": "bun run prisma/seeds/seed.ts"
-  },
   "exports": {
     ".": "./src/index.ts"
   },
