@@ -74,8 +74,8 @@ cd apps/api && bun dev    # API dev server
 
 ### Building
 ```bash
-# Build all packages (clean, generate Prisma client, then build all workspaces)
-bun run build
+# Build all workspaces
+bun build:ws
 
 # Build specific package
 bun run build:web    # Web app
@@ -91,8 +91,9 @@ bun run clean:api       # Clean api app only
 ```
 
 **Build Process Notes**:
-- The root `build` script runs: `clean` → `db:generate` → `build:ws` (builds all workspace packages)
-- **Always regenerate Prisma client** before building if schema changed (happens automatically with root `build` script)
+- Web app build outputs to `apps/web/dist/` directory
+- API build compiles TypeScript to `apps/api/dist/` directory
+- **Always regenerate Prisma client** before building if schema changed: `bun db:generate`
 - Logger and DB packages have no build step (TypeScript source used directly)
 
 ### Production Start
@@ -110,16 +111,13 @@ bun start:api
 bun check
 
 # Type check all workspaces
-bun run check:type:ws
+bun check:type
 
 # Format code with Biome
 bun format
 
-# Check code style with Biome
+# Check and fix code style with Biome
 bun check:biome
-
-# Fix code style issues
-bun fix:biome
 
 # Spell check
 bun check:spell
@@ -267,3 +265,10 @@ cd apps/api && bun test -t "pattern"
 - Web service: `apps/web/.images/Dockerfile`, exposed on port 3000
 - API service: `apps/api/.images/Dockerfile`, exposed on port 8080
 - Run with: `docker compose up` or `docker compose up -d` for detached mode
+
+## CI/CD
+- GitHub Actions workflow in `.github/workflows/ci.yml`
+- Runs on push to main and pull requests
+- Uses devcontainer for consistent build environment
+- CI pipeline runs: checks (lint, spell, type check), build all workspaces, and tests
+- Builds and caches devcontainer image to GitHub Container Registry
