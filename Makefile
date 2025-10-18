@@ -6,4 +6,6 @@ worktree:
 	bun ci
 	bun run db:migrate:deploy
 	bun run db:generate
-	bun run 
+	bun run check
+	bun run test:run
+	
