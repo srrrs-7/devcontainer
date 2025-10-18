@@ -230,14 +230,59 @@ cd apps/api && bun test -t "pattern"
 - **Runtime**: Node.js with `@hono/node-server`
 - **Port**: 8080
 - **Entry Point**: `apps/api/src/index.ts`
-- **Route Organization**: Routes are modularized by feature in `apps/api/src/routes/` directory
-  - Each route file exports a Hono instance with specific route handlers
-  - Routes are composed in `index.ts` using `.route()` method
-  - Example structure: `routes/task/` contains CRUD operations (get.ts, post.ts, put.ts, delete.ts, list.ts)
 - **Development**: Uses `bun --watch` for auto-reload on file changes
 - **Production Build**: TypeScript compiled with `tsc` to `dist/` directory, run with `node dist/index.js`
 - **Error Handling**: Uses `neverthrow` library for Result-based error handling (avoids throwing exceptions)
 - **Validation**: Uses `@hono/zod-validator` with Zod schemas for request validation
+
+#### Layered Architecture
+
+The API follows a clean layered architecture with clear separation of concerns:
+
+```
+apps/api/src/
+├── routes/         → HTTP handlers (request/response)
+├── service/        → Business logic layer
+├── infra/rds/      → Data access layer (repositories)
+└── domain/         → Domain models and errors
+```
+
+**Layer Responsibilities**:
+
+1. **Routes Layer** (`routes/task/`)
+   - HTTP request/response handling
+   - Request validation using Zod schemas
+   - Maps HTTP concepts to service calls
+   - Co-located with test files (e.g., `get.ts` and `get.test.ts`)
+   - Each route exports a Hono instance for composition
+
+2. **Service Layer** (`service/task/`)
+   - Business logic and orchestration
+   - Returns `Result<T, AppError>` using neverthrow
+   - No direct HTTP knowledge
+   - Files: `get.ts`, `post.ts`, `put.ts`, `delete.ts`, `list.ts`
+
+3. **Repository Layer** (`infra/rds/task/`)
+   - Database access via Prisma
+   - Handles database errors and transforms them to domain errors
+   - Isolates Prisma client from business logic
+   - Example: `repository.ts` with CRUD operations
+
+4. **Domain Layer** (`domain/`)
+   - Domain models: `model/task.ts` defines Task type
+   - Domain errors: `error.ts` defines error hierarchy
+     - `AppError` (base class)
+     - `NotFoundError`
+     - `DatabaseError`
+     - `ApiError`
+
+**Data Flow Example**:
+```
+HTTP Request → Route Handler → Service → Repository → Prisma → Database
+                    ↓              ↓          ↓
+              Validation    Business      Data
+                           Logic        Access
+```
 
 ## Important Conventions
 
@@ -247,6 +292,17 @@ cd apps/api && bun test -t "pattern"
 - Import organization enabled (Biome auto-organizes imports)
 - Floating promises must be handled (Biome nursery rule enforced)
 - **Spell checking**: Custom words defined in `cspell.config.yaml` (includes project-specific terms like "bunx", "dotenvx", "neverthrow")
+
+### TypeScript Configuration
+- **Strict mode**: All packages use `strict: true`
+- **Module resolution**: `bundler` mode for modern bundler semantics
+- **JSX Configuration**:
+  - API app: Uses `hono/jsx` runtime
+  - Web app: Uses React's JSX with `react-jsx` transform
+- **Target**: `ESNext` for all packages
+- **Additional strict checks** (web app):
+  - `noUncheckedIndexedAccess: true` - Prevents unchecked array/object access
+  - `noImplicitOverride: true` - Requires explicit `override` keyword
 
 ### Environment Files
 - Database package uses `.env.db` file (loaded via dotenvx)
@@ -260,7 +316,23 @@ cd apps/api && bun test -t "pattern"
 2. Run `bun db:migrate:dev` (creates migration + regenerates client)
 3. Or run `bun db:generate` (just regenerates client without migration)
 
-## Docker
+## Development Environment
+
+### DevContainer Setup
+- **Configuration**: `.devcontainer/devcontainer.json`
+- **Docker Compose**: Uses `compose.yaml` and `compose.override.yaml`
+- **Important**: Copy `.devcontainer/compose.override.yaml.sample` to `.devcontainer/compose.override.yaml` before starting devcontainer
+  - This file contains database credentials and configuration
+  - Not committed to git (in .gitignore)
+- **Services**:
+  - `dev`: Development container with Bun, Node.js, Git, GitHub CLI
+  - `db`: PostgreSQL 15 with health checks
+- **Features**:
+  - VSCode extensions: Biome, Prisma, Spell Checker, Vitest Explorer
+  - Automatic port forwarding: 3000 (web), 8080 (api), 5432 (PostgreSQL), 5555 (Prisma Studio), 24282 (Serena)
+  - Post-create command runs `.devcontainer/setup.sh`
+
+### Docker
 - `compose.yaml` defines both web and api services
 - Web service: `apps/web/.images/Dockerfile`, exposed on port 3000
 - API service: `apps/api/.images/Dockerfile`, exposed on port 8080
@@ -270,5 +342,6 @@ cd apps/api && bun test -t "pattern"
 - GitHub Actions workflow in `.github/workflows/ci.yml`
 - Runs on push to main and pull requests
 - Uses devcontainer for consistent build environment
+- **Setup step**: Copies `compose.override.yaml.sample` to `compose.override.yaml` before building devcontainer
 - CI pipeline runs: checks (lint, spell, type check), build all workspaces, and tests
 - Builds and caches devcontainer image to GitHub Container Registry
