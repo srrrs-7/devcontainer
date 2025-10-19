@@ -23,7 +23,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### Thinking Mode
 
-**Use `ultrathink` mode** when analyzing complex architectural questions, planning multi-step changes, or reasoning about code relationships. This enables deeper analysis before taking action.
+**Use `ultrathink` mode** when:
+- Analyzing complex architectural questions or design decisions
+- Planning multi-step changes that affect multiple layers (routes → service → repository → domain)
+- Reasoning about code relationships and data flow
+- Debugging intricate issues that span multiple files or packages
+- Designing new features that require careful consideration of trade-offs
+
+This enables deeper analysis before taking action and helps avoid mistakes in complex scenarios.
 
 ## Project Overview
 
@@ -345,3 +352,177 @@ HTTP Request → Route Handler → Service → Repository → Prisma → Databas
 - **Setup step**: Copies `compose.override.yaml.sample` to `compose.override.yaml` before building devcontainer
 - CI pipeline runs: checks (lint, spell, type check), build all workspaces, and tests
 - Builds and caches devcontainer image to GitHub Container Registry
+
+## Git Worktree Workflow
+
+This project uses Makefile for git worktree management to enable parallel development:
+
+```bash
+# Create new worktree at ../wt_1 from origin/main
+make wt
+
+# Delete worktree
+make wt-d
+
+# List all worktrees and branches
+make wt-l
+
+# Copy devcontainer compose override sample (for initial setup)
+make cp
+```
+
+**Worktree Creation Process (`make wt`):**
+1. Creates git worktree at `../wt_1` from `origin/main`
+2. Changes ownership to `vscode:vscode` for devcontainer compatibility
+3. Installs dependencies (`bun ci`)
+4. Generates Prisma client (`bun run db:generate`)
+5. Applies database migrations (`bun run db:migrate:deploy`)
+6. Runs all checks (`bun run check`)
+7. Runs tests (`bun run test:run`)
+8. Configures Serena MCP server if not already configured
+9. Lists all worktrees and branches
+
+**Use Cases:**
+- Working on multiple features simultaneously in separate directories
+- Testing changes in isolation without affecting main working directory
+- Code review with actual code execution in separate environment
+
+## Claude Code Extensions
+
+This repository includes custom Claude Code extensions in `.claude/` directory:
+
+### Skills (`.claude/skills/`)
+
+Skills are reusable prompt templates for common tasks. Invoke with the Skill tool.
+
+**Available Skills:**
+
+#### `database` - Database Schema Specialist
+Expert assistant for Prisma schema design and database management.
+
+**Capabilities:**
+- Create new models with proper conventions (camelCase fields → snake_case columns)
+- Modify existing models and relationships
+- Design indexes and optimization strategies
+- Manage migrations and Prisma client generation
+- Follows project naming conventions (UUIDs, timestamps, enums)
+- Guides through complete workflow: design → migration → code integration
+
+**Key Features:**
+- Interactive requirement gathering with clarifying questions
+- Follows PostgreSQL and Prisma best practices
+- Automatic validation checklist for schema changes
+- Integration guidance for all code layers (routes, service, repository, domain)
+
+**Common Tasks:**
+- Create new model with relationships
+- Add fields to existing models
+- Design one-to-many, many-to-many, or one-to-one relationships
+- Add indexes for query optimization
+- Modify enums safely
+
+**Usage:**
+```
+Invoke Skill tool with command: "database"
+```
+
+#### `notice` - Notification System Specialist
+Notification assistant for sending terminal notifications during Claude Code sessions.
+
+**Capabilities:**
+- Send visual terminal notifications with colored output and emoji icons
+- Provide audio feedback via terminal bell
+- Persistent logging with automatic rotation
+- Support multiple event types (COMPLETE, STOP, APPROVAL, START, INFO)
+
+**Notification Types:**
+- **COMPLETE** (✅ Green): Task completion, successful operations
+- **STOP** (🏁 Blue): Process completion, workflow end
+- **APPROVAL** (⏸️ Yellow): User input required, approval needed
+- **START** (🔔 Cyan): Process start, initialization
+- **INFO** (🔔 Cyan): General information, status updates
+
+**Common Use Cases:**
+- Build and test completion notifications
+- Long-running task status updates
+- User confirmation prompts
+- Git operation feedback
+- Workflow milestone notifications
+
+**Script Location:** `/workspace/wt_1/.claude/skills/notice/script.sh`
+
+**Usage:**
+```bash
+# Via Bash tool
+/workspace/wt_1/.claude/skills/notice/script.sh [TYPE] "[MESSAGE]" "[DETAILS]"
+
+# Examples
+/workspace/wt_1/.claude/skills/notice/script.sh COMPLETE "ビルド完了" "全パッケージが正常にビルドされました"
+/workspace/wt_1/.claude/skills/notice/script.sh START "マイグレーション開始" "データベーススキーマを更新中..."
+/workspace/wt_1/.claude/skills/notice/script.sh APPROVAL "確認が必要" "本番環境へデプロイしますか？"
+```
+
+Or invoke the skill for guidance:
+```
+Invoke Skill tool with command: "notice"
+```
+
+### Slash Commands (`.claude/commands/`)
+
+Slash commands are workflow automations. Use SlashCommand tool or type `/command-name`.
+
+**Available Commands:**
+- `/speckit.specify` - Create or update feature specifications
+- `/speckit.plan` - Execute implementation planning workflow
+- `/speckit.tasks` - Generate actionable, dependency-ordered tasks
+- `/speckit.clarify` - Identify underspecified areas and ask clarification questions
+- `/speckit.implement` - Execute implementation plan from tasks.md
+- `/speckit.checklist` - Generate custom checklist for current feature
+- `/speckit.analyze` - Cross-artifact consistency analysis
+- `/speckit.constitution` - Create or update project constitution
+
+### Agents (`.claude/agents/`)
+
+Specialized agents for specific domains. Launched via Task tool with `subagent_type` parameter.
+
+**Available Agents:**
+- **`bun-runtime-specialist`**: Bun-specific configurations, features, troubleshooting
+- **`pjt-security-code-reviewer`**: Code quality, security vulnerabilities, best practices
+- **`github-spec-kit-architect`**: Design and review GitHub specification kits for agents
+
+### Hooks and Permissions (`.claude/settings.local.json`)
+
+The repository uses a custom hooks and permissions system to control Claude Code's behavior:
+
+**Permission System:**
+- **Allowed**: Read operations, git status/diff/log, bun commands, docker ps/logs, notification script
+- **Denied**: npm/yarn/pnpm/npx (enforcing Bun-only policy), destructive operations, force push to main/master
+- **Require Approval**: git operations (add, commit, push, merge, rebase), bun add/remove, docker compose up/down, worktree operations
+
+**Active Hook Events:**
+
+These hooks automatically trigger the notification script (`/workspace/wt_1/.claude/skills/notice/script.sh`):
+
+1. **PostToolUse** - Fires after Edit/Write/Bash/Task execution
+   - Visual: `✅ [Claude Code] タスク完了` (green)
+   - Shows executed tool name
+   - Audio: Single terminal bell
+
+2. **Stop** - Fires when Claude completes a response
+   - Visual: `🏁 [Claude Code] 応答完了` (blue)
+   - Indicates waiting for next request
+   - Audio: Single terminal bell
+
+3. **Notification** - Fires when Claude requests user approval
+   - Visual: `⏸️ [Claude Code] 承認待ち` (yellow)
+   - Alerts user that input is required
+   - Audio: Three terminal beeps (for attention)
+
+**Log Format**: `~/.claude/notifications.log`
+```
+[2025-10-19 09:36:05] [COMPLETE] タスク完了 - ツール: Edit
+[2025-10-19 09:36:11] [STOP] 応答完了 - 次のリクエストを待機中
+[2025-10-19 09:37:22] [APPROVAL] 承認待ち - データベース移行を実行しますか？
+```
+
+**Customization**: Modify `.claude/settings.local.json` to adjust hook behavior, permissions, or add matcher patterns for specific tools

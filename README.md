@@ -1,6 +1,17 @@
-# devcontainer
+# Bun Monorepo Starter
 
-A Bun-powered monorepo featuring a React 19 web app and Hono API server with PostgreSQL database.
+A modern, production-ready monorepo powered by Bun, featuring a React 19 web app and Hono API server with PostgreSQL database. Built with developer experience in mind, including devcontainer support, Claude Code extensions, and comprehensive tooling.
+
+## ✨ Features
+
+- **⚡ Lightning Fast**: Bun for package management, testing, and web server with Hot Module Replacement
+- **🎯 Type-Safe**: Full TypeScript support with strict mode across all packages
+- **🏗️ Clean Architecture**: Layered architecture with clear separation of concerns (Routes → Service → Repository → Domain)
+- **🔐 Secure by Default**: Result-based error handling with neverthrow, Zod validation, transactional tests
+- **🎨 Modern Stack**: React 19, Hono, Prisma, PostgreSQL, Biome, Vitest
+- **🐳 Container Ready**: DevContainer and Docker Compose configurations included
+- **🤖 AI-Powered**: Custom Claude Code extensions (Skills, Slash Commands, Agents, Hooks)
+- **📊 Observable**: Pino logging with AsyncLocalStorage for request ID tracking
 
 ## Quick Start
 
@@ -231,6 +242,170 @@ docker compose up -d    # Start in detached mode
 docker compose down     # Stop services
 ```
 
+## Architecture
+
+### Layered Architecture (API)
+
+The API follows clean architecture principles with clear separation of concerns:
+
+```
+apps/api/src/
+├── routes/         → HTTP handlers (request/response)
+│   └── task/       → Task-related endpoints with co-located tests
+├── service/        → Business logic layer
+│   └── task/       → Task business operations (get, post, put, delete, list)
+├── infra/rds/      → Data access layer (repositories)
+│   └── task/       → Prisma-based task repository
+└── domain/         → Domain models and errors
+    ├── model/      → Domain entities (Task)
+    └── error.ts    → Error hierarchy (AppError, NotFoundError, DatabaseError)
+```
+
+**Data Flow:**
+```
+HTTP Request → Route Handler → Service → Repository → Prisma → Database
+                   ↓              ↓          ↓
+             Validation    Business      Data
+                          Logic        Access
+```
+
+**Key Principles:**
+- **Routes**: Handle HTTP concerns only (validation, request/response mapping)
+- **Service**: Pure business logic, returns `Result<T, AppError>` (no exceptions)
+- **Repository**: Database operations, error transformation
+- **Domain**: Business entities and error types
+
+### Web App Architecture
+
+- **Framework**: React 19 with Bun.serve()
+- **Bundler**: Bun native bundler (no Vite/Webpack)
+- **Features**: HTML imports, HMR, built-in API routing
+- **Port**: 3000 (development)
+
+### Database Package
+
+- **ORM**: Prisma with PostgreSQL adapter
+- **Connection**: @prisma/adapter-pg for connection pooling
+- **Schema**: `packages/db/prisma/schema.prisma`
+- **Client**: Auto-generated to `packages/db/src/generated/prisma/`
+- **Logging**: All Prisma events logged via @packages/logger
+
+### Logger Package
+
+- **Framework**: Pino (high-performance JSON logger)
+- **Request Tracking**: AsyncLocalStorage for automatic `requestId` attachment
+- **Usage**: `runWithRequestId(requestId, async () => { ... })`
+- **Configuration**: `LOG_LEVEL` environment variable
+
+## DevContainer Development
+
+This project includes a complete DevContainer setup for VS Code and GitHub Codespaces:
+
+### Features
+
+- **Pre-configured environment**: Bun, Node.js, Git, GitHub CLI
+- **Database included**: PostgreSQL 15 with health checks
+- **Auto port forwarding**: Web (3000), API (8080), PostgreSQL (5432), Prisma Studio (5555)
+- **VS Code extensions**: Biome, Prisma, Spell Checker, Vitest Explorer
+- **Serena MCP**: Code analysis and editing at symbol level
+
+### Setup
+
+1. Copy the sample environment file:
+   ```bash
+   cp .devcontainer/compose.override.yaml.sample .devcontainer/compose.override.yaml
+   ```
+
+2. Open in VS Code:
+   - Install "Dev Containers" extension
+   - Command: "Dev Containers: Reopen in Container"
+
+3. The container automatically runs:
+   - `bun install`
+   - `bun db:generate`
+   - `bun db:migrate:deploy`
+
+### Configuration
+
+- **devcontainer.json**: Container configuration and VS Code settings
+- **compose.yaml**: Database and development container services
+- **compose.override.yaml**: Database credentials (gitignored)
+
+## Git Worktree Workflow
+
+This project supports parallel development using git worktrees via Makefile commands:
+
+### Commands
+
+```bash
+make wt      # Create new worktree at ../wt_1 from origin/main
+make wt-d    # Delete worktree
+make wt-l    # List all worktrees and branches
+make cp      # Copy devcontainer compose override sample
+```
+
+### Worktree Creation Process
+
+When you run `make wt`, it automatically:
+
+1. Creates git worktree at `../wt_1` from `origin/main`
+2. Changes ownership to `vscode:vscode` for devcontainer compatibility
+3. Installs dependencies (`bun ci`)
+4. Generates Prisma client (`bun run db:generate`)
+5. Applies database migrations (`bun run db:migrate:deploy`)
+6. Runs all checks (`bun run check`)
+7. Runs tests (`bun run test:run`)
+8. Configures Serena MCP server if not already configured
+9. Lists all worktrees and branches
+
+### Use Cases
+
+- Work on multiple features simultaneously in separate directories
+- Test changes in isolation without affecting main working directory
+- Code review with actual code execution in separate environment
+
+## Claude Code Extensions
+
+This repository includes custom extensions for [Claude Code](https://claude.ai/code):
+
+### Skills (`.claude/skills/`)
+
+Reusable prompt templates for common tasks. Invoke with the Skill tool.
+
+**Available:**
+- **`database`**: Database schema design and Prisma migrations expert
+- **`notice`**: Terminal notification system for task feedback
+
+### Slash Commands (`.claude/commands/`)
+
+Workflow automations. Use SlashCommand tool or type `/command-name`.
+
+**Available:**
+- `/speckit.specify` - Create/update feature specifications
+- `/speckit.plan` - Execute implementation planning workflow
+- `/speckit.tasks` - Generate actionable, dependency-ordered tasks
+- `/speckit.clarify` - Identify underspecified areas
+- `/speckit.implement` - Execute implementation plan
+- `/speckit.checklist` - Generate custom checklist
+- `/speckit.analyze` - Cross-artifact consistency analysis
+- `/speckit.constitution` - Create/update project constitution
+
+### Agents (`.claude/agents/`)
+
+Specialized agents for specific domains. Launched via Task tool.
+
+**Available:**
+- **`bun-runtime-specialist`**: Bun configurations and troubleshooting
+- **`pjt-security-code-reviewer`**: Code quality and security review
+- **`github-spec-kit-architect`**: Agent specification design
+
+**Events:**
+- **PostToolUse**: After Edit/Write/Bash/Task execution
+- **Stop**: When Claude completes a response
+- **Notification**: When user approval needed
+
+**Logs:** `~/.claude/notifications.log`
+
 ## CI/CD
 
 GitHub Actions workflow runs on push to main and pull requests:
@@ -240,6 +415,87 @@ GitHub Actions workflow runs on push to main and pull requests:
 - Builds all workspaces
 - Runs tests
 - Caches devcontainer image to GitHub Container Registry
+
+## Troubleshooting
+
+### Database Connection Issues
+
+If you see database connection errors:
+
+1. Verify PostgreSQL is running:
+   ```bash
+   docker compose ps
+   ```
+
+2. Check database credentials in `compose.override.yaml`
+
+3. Ensure environment variables are loaded:
+   ```bash
+   # In packages/db directory
+   cat .env.db
+   ```
+
+### Prisma Client Issues
+
+If you see "Cannot find module '@prisma/client'" errors:
+
+```bash
+bun run db:generate
+```
+
+### Build Failures
+
+If builds fail with type errors:
+
+1. Clean and rebuild:
+   ```bash
+   bun run clean
+   bun build:ws
+   ```
+
+2. Check TypeScript version consistency across packages
+
+### Test Failures
+
+If tests fail with database errors:
+
+1. Ensure migrations are applied:
+   ```bash
+   bun run db:migrate:deploy
+   ```
+
+2. Check test database isolation (should use transactional rollback)
+
+### Bun Issues
+
+If Bun commands fail:
+
+1. Verify Bun version:
+   ```bash
+   bun --version  # Should be 1.3.0 or later
+   ```
+
+2. Clear Bun cache:
+   ```bash
+   rm -rf node_modules
+   bun install
+   ```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch from `main`
+3. Make your changes
+4. Run checks: `bun check`
+5. Run tests: `bun run test:run`
+6. Commit with descriptive messages
+7. Push and create a pull request
+
+## Documentation
+
+- **CLAUDE.md**: Comprehensive guide for Claude Code integration and development workflow
+- **API Documentation**: See `apps/api/README.md` (if available)
+- **Database Schema**: See `packages/db/prisma/schema.prisma`
 
 ## License
 
