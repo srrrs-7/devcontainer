@@ -38,5 +38,13 @@ words:
   - venv
   - VITE
   - worktree
+  - worktrees
+  - automations
+  - netcat
+  - ncat
+  - fdisk
+  - gdisk
+  - pkill
+  - nftables
 ignoreWords: []
 import: []
