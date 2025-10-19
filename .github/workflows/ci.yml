@@ -53,6 +53,8 @@ jobs:
           push: always
           runCmd: |
             bun ci
+            bun run db:generate
+            bun run db:migrate:deploy
             bun check
             bun build:ws
             bun test
