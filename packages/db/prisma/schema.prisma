@@ -15,15 +15,198 @@ enum TaskStatus {
   COMPLETED
 }
 
+enum ApplicationType {
+  LEAVE_REQUEST
+  EXPENSE_CLAIM
+  SYSTEM_ACCESS
+  OTHER
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELED
+}
+
 model Tasks {
-  userId      String    @map("user_id") @db.Uuid
-  taskId      String    @default(uuid()) @map("task_id") @db.Uuid
-  content     String    @map("content") @db.VarChar(1000)
+  userId      String     @map("user_id") @db.Uuid
+  taskId      String     @default(uuid()) @map("task_id") @db.Uuid
+  content     String     @map("content") @db.VarChar(1000)
   status      TaskStatus @default(PENDING) @map("status")
-  completedAt DateTime? @map("completed_at")
-  createdAt   DateTime  @map("created_at")
-  updatedAt   DateTime  @map("updated_at")
+  completedAt DateTime?  @map("completed_at")
+  createdAt   DateTime   @map("created_at")
+  updatedAt   DateTime   @map("updated_at")
 
   @@id([userId, taskId])
   @@map("tasks")
+}
+
+// ========================================
+// Organization Management
+// ========================================
+
+model Organization {
+  organizationId String   @id @default(uuid()) @map("organization_id") @db.Uuid
+  name           String   @map("name") @db.VarChar(255)
+  description    String?  @map("description") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  clients Client[]
+
+  @@map("organizations")
+}
+
+model Client {
+  clientId       String   @id @default(uuid()) @map("client_id") @db.Uuid
+  organizationId String   @map("organization_id") @db.Uuid
+  parentClientId String?  @map("parent_client_id") @db.Uuid
+  name           String   @map("name") @db.VarChar(255)
+  contactPerson  String?  @map("contact_person") @db.VarChar(255)
+  email          String?  @map("email") @db.VarChar(255)
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [organizationId], onDelete: Cascade)
+  parent       Client?      @relation("ClientHierarchy", fields: [parentClientId], references: [clientId], onDelete: Restrict)
+  children     Client[]     @relation("ClientHierarchy")
+
+  users            User[]
+  userClientRoles  UserClientRole[]
+
+  @@index([organizationId])
+  @@index([parentClientId])
+  @@index([email])
+  @@map("clients")
+}
+
+// ========================================
+// User Management
+// ========================================
+
+model User {
+  userId       String   @id @default(uuid()) @map("user_id") @db.Uuid
+  clientId     String   @map("client_id") @db.Uuid
+  username     String   @unique @map("username") @db.VarChar(100)
+  email        String   @unique @map("email") @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+
+  applications             Application[]
+  applicationHistories     ApplicationHistory[] @relation("HistoryChangedBy")
+  userClientRoles          UserClientRole[]     @relation("UserRoles")
+  assignedUserClientRoles  UserClientRole[]     @relation("RoleAssignedBy")
+
+  @@index([clientId])
+  @@index([email])
+  @@index([username])
+  @@map("users")
+}
+
+// ========================================
+// Application Management
+// ========================================
+
+model Application {
+  applicationId   String            @id @default(uuid()) @map("application_id") @db.Uuid
+  userId          String            @map("user_id") @db.Uuid
+  type            ApplicationType   @map("type")
+  description     String            @map("description") @db.Text
+  applicationDate DateTime          @default(now()) @map("application_date")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  histories ApplicationHistory[]
+
+  @@index([userId])
+  @@index([type])
+  @@index([applicationDate])
+  @@map("applications")
+}
+
+model ApplicationHistory {
+  historyId       String            @id @default(uuid()) @map("history_id") @db.Uuid
+  applicationId   String            @map("application_id") @db.Uuid
+  changedByUserId String?           @map("changed_by_user_id") @db.Uuid
+  status          ApplicationStatus @map("status")
+  comment         String?           @map("comment") @db.Text
+  changeDate      DateTime          @default(now()) @map("change_date")
+
+  application   Application @relation(fields: [applicationId], references: [applicationId], onDelete: Cascade)
+  changedByUser User?       @relation("HistoryChangedBy", fields: [changedByUserId], references: [userId], onDelete: SetNull)
+
+  @@index([applicationId])
+  @@index([changedByUserId])
+  @@index([status])
+  @@index([changeDate])
+  @@map("application_histories")
+}
+
+// ========================================
+// Role-Based Access Control (RBAC)
+// ========================================
+
+model Role {
+  roleId      String   @id @default(uuid()) @map("role_id") @db.Uuid
+  name        String   @unique @map("name") @db.VarChar(100)
+  description String?  @map("description") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[]
+  userClientRoles UserClientRole[]
+
+  @@index([name])
+  @@map("roles")
+}
+
+model Permission {
+  permissionId String   @id @default(uuid()) @map("permission_id") @db.Uuid
+  name         String   @unique @map("name") @db.VarChar(100)
+  description  String?  @map("description") @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[]
+
+  @@index([name])
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+
+  role       Role       @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [permissionId], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserClientRole {
+  userClientRoleId String   @id @default(uuid()) @map("user_client_role_id") @db.Uuid
+  userId           String   @map("user_id") @db.Uuid
+  clientId         String   @map("client_id") @db.Uuid
+  roleId           String   @map("role_id") @db.Uuid
+  assignedByUserId String?  @map("assigned_by_user_id") @db.Uuid
+  assignedAt       DateTime @default(now()) @map("assigned_at")
+
+  user           User    @relation("UserRoles", fields: [userId], references: [userId], onDelete: Cascade)
+  client         Client  @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  role           Role    @relation(fields: [roleId], references: [roleId], onDelete: Cascade)
+  assignedByUser User?   @relation("RoleAssignedBy", fields: [assignedByUserId], references: [userId], onDelete: SetNull)
+
+  @@unique([userId, clientId, roleId])
+  @@index([userId])
+  @@index([clientId])
+  @@index([roleId])
+  @@index([assignedByUserId])
+  @@map("user_client_roles")
 }
