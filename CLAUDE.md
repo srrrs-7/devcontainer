@@ -164,6 +164,12 @@ bun run db:seed
 bun prisma [command]
 ```
 
+**Database Seeding**:
+- Seed script: `packages/db/prisma/seed.ts`
+- Automatically creates sample data for Organizations, Clients, Users, Applications, Roles, and Permissions
+- Useful for development and testing with realistic data structure
+- Run after migrations to populate fresh database
+
 **Important**: Database commands in `packages/db` use `dotenvx` to load `.env.db` file for database credentials. Required environment variables:
 - `DB_USERNAME`
 - `DB_PASSWORD`
@@ -224,7 +230,12 @@ cd apps/api && bun test -t "pattern"
 - **Adapter**: Uses `@prisma/adapter-pg` for PostgreSQL connection pooling
 - **Logging**: Prisma events (query, info, warn, error) are logged via `@packages/logger`
 - **Connection**: Database URL constructed from environment variables (not from `.env` file directly)
-- **Data Model**: Currently defines `Tasks` model with composite primary key on `userId` and `taskId`
+- **Data Model**:
+  - **Tasks**: Simple task management with composite PK (userId, taskId), status tracking
+  - **Organization Management**: Organizations and hierarchical Client structure
+  - **User Management**: Users linked to clients with authentication (password hash)
+  - **Application Management**: Application workflow with type, status, and history tracking
+  - **RBAC System**: Role-Based Access Control with Roles, Permissions, and client-specific user role assignments
 
 ### Logger Package (`@packages/logger`)
 - Built on Pino logger
@@ -449,17 +460,17 @@ Notification assistant for sending terminal notifications during Claude Code ses
 - Git operation feedback
 - Workflow milestone notifications
 
-**Script Location:** `/workspace/wt_1/.claude/skills/notice/script.sh`
+**Script Location:** `.claude/skills/notice/script.sh` (in project root)
 
 **Usage:**
 ```bash
-# Via Bash tool
-/workspace/wt_1/.claude/skills/notice/script.sh [TYPE] "[MESSAGE]" "[DETAILS]"
+# Via Bash tool (use absolute path to project root)
+./.claude/skills/notice/script.sh [TYPE] "[MESSAGE]" "[DETAILS]"
 
 # Examples
-/workspace/wt_1/.claude/skills/notice/script.sh COMPLETE "ビルド完了" "全パッケージが正常にビルドされました"
-/workspace/wt_1/.claude/skills/notice/script.sh START "マイグレーション開始" "データベーススキーマを更新中..."
-/workspace/wt_1/.claude/skills/notice/script.sh APPROVAL "確認が必要" "本番環境へデプロイしますか？"
+./.claude/skills/notice/script.sh COMPLETE "Build complete" "All packages built successfully"
+./.claude/skills/notice/script.sh START "Starting migration" "Updating database schema..."
+./.claude/skills/notice/script.sh APPROVAL "Confirmation required" "Deploy to production?"
 ```
 
 Or invoke the skill for guidance:
@@ -501,7 +512,7 @@ The repository uses a custom hooks and permissions system to control Claude Code
 
 **Active Hook Events:**
 
-These hooks automatically trigger the notification script (`/workspace/wt_1/.claude/skills/notice/script.sh`):
+These hooks automatically trigger the notification script (`.claude/skills/notice/script.sh`):
 
 1. **PostToolUse** - Fires after Edit/Write/Bash/Task execution
    - Visual: `✅ [Claude Code] タスク完了` (green)
