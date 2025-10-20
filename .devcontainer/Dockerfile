@@ -12,7 +12,7 @@ ENV BUN_INSTALL="/home/vscode/.bun"
 ENV PATH="${BUN_INSTALL}/bin:${PATH}"
 
 # Install Bun version 1.3.0
-RUN curl -fsSL https://bun.sh/install | bash
+RUN curl -fsSL https://bun.sh/install | bash -s "bun-v1.3.0"
 
 # Install claude code 
 RUN curl -fsSL https://claude.ai/install.sh | bash

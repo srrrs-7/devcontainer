@@ -19,7 +19,7 @@
     "clean": "rm -rf src/generated",
     "build": "echo 'No build step needed (TypeScript source directly used)'"
   },
-  "packageManager": "bun@1.1.38",
+  "packageManager": "bun@1.3.0",
   "dependencies": {
     "@packages/logger": "workspace:*",
     "@prisma/adapter-pg": "6.16.2",
