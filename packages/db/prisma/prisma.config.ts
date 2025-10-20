@@ -2,6 +2,6 @@ import { defineConfig } from "prisma/config";
 
 export default defineConfig({
   migrations: {
-    seed: "bun run prisma/seeds/seed.ts",
+    seed: "bun run prisma/seeds/index.ts",
   },
 });

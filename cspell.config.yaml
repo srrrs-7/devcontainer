@@ -46,5 +46,19 @@ words:
   - gdisk
   - pkill
   - nftables
+  - sato
+  - Sato
+  - tanaka
+  - Tanaka
+  - kato
+  - Kato
+  - ichiro
+  - Ichiro
+  - jiro
+  - Jiro
+  - kenta
+  - Kenta
+  - yosuke
+  - Yosuke
 ignoreWords: []
 import: []
