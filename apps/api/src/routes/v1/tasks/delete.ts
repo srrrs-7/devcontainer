@@ -1,23 +1,30 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { err, ok } from "neverthrow";
-import { z } from "zod";
-import { NotFoundError } from "../../domain/error";
-import { deleteTaskInput } from "../../domain/model/task";
-import { deleteTask } from "../../infra/rds/task/repository";
-
-const paramSchema = z.object({
-  id: z.string().min(1, "Task ID is required"),
-});
-
-const headerSchema = z.object({
-  "x-user-id": z.string().min(1, "User ID is required"),
-});
+import { NotFoundError } from "../../../domain/error";
+import { deleteTaskInput } from "../../../domain/model/task";
+import { deleteTask } from "../../../infra/rds/task/repository";
+import { userHeaderSchema } from "../../validation/schemas";
+import { taskIdParamSchema } from "../../validation/tasks";
 
 export default new Hono().delete(
   "/task/:id",
-  zValidator("param", paramSchema),
-  zValidator("header", headerSchema),
+  zValidator("param", taskIdParamSchema, (result, c) => {
+    if (!result.success) {
+      return c.json(
+        { error: "Invalid parameters", issues: result.error.issues },
+        400,
+      );
+    }
+  }),
+  zValidator("header", userHeaderSchema, (result, c) => {
+    if (!result.success) {
+      return c.json(
+        { error: "Invalid headers", issues: result.error.issues },
+        400,
+      );
+    }
+  }),
   async (c) => {
     const { id } = c.req.valid("param");
     const { "x-user-id": userId } = c.req.valid("header");
