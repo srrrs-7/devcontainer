@@ -7,16 +7,30 @@ export default new Hono().post(
   "/task",
   zValidator("json", createTaskBodySchema, (result, c) => {
     if (!result.success) {
+      const firstIssue = result.error.issues[0];
       return c.json(
-        { error: "Invalid request body", issues: result.error.issues },
+        {
+          message: "Validation failed",
+          error: {
+            code: firstIssue?.code || "invalid_body",
+            field: firstIssue?.path.join(".") || "body",
+          },
+        },
         400,
       );
     }
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
+      const firstIssue = result.error.issues[0];
       return c.json(
-        { error: "Invalid headers", issues: result.error.issues },
+        {
+          message: "Validation failed",
+          error: {
+            code: firstIssue?.code || "invalid_header",
+            field: firstIssue?.path.join(".") || "header",
+          },
+        },
         400,
       );
     }

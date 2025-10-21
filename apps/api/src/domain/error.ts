@@ -8,10 +8,21 @@ abstract class AppError extends Error {
 
 export class NotFoundError extends AppError {
   public readonly name = "NotFoundError" as const;
-  public readonly error: string;
-  constructor(error: unknown) {
+  public readonly resourceName: string;
+  constructor(resourceName: string) {
     super("Resource not found");
-    this.error = String(error);
+    this.resourceName = resourceName;
+  }
+}
+
+export class ValidationError extends AppError {
+  public readonly name = "ValidationError" as const;
+  public readonly code: string;
+  public readonly field?: string;
+  constructor(code: string, field?: string) {
+    super("Validation failed");
+    this.code = code;
+    this.field = field;
   }
 }
 

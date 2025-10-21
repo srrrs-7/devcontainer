@@ -11,16 +11,30 @@ export default new Hono().delete(
   "/task/:id",
   zValidator("param", taskIdParamSchema, (result, c) => {
     if (!result.success) {
+      const firstIssue = result.error.issues[0];
       return c.json(
-        { error: "Invalid parameters", issues: result.error.issues },
+        {
+          message: "Validation failed",
+          error: {
+            code: firstIssue?.code || "invalid_parameter",
+            field: firstIssue?.path.join(".") || "param",
+          },
+        },
         400,
       );
     }
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
+      const firstIssue = result.error.issues[0];
       return c.json(
-        { error: "Invalid headers", issues: result.error.issues },
+        {
+          message: "Validation failed",
+          error: {
+            code: firstIssue?.code || "invalid_header",
+            field: firstIssue?.path.join(".") || "header",
+          },
+        },
         400,
       );
     }
@@ -31,9 +45,7 @@ export default new Hono().delete(
 
     return await deleteTask(deleteTaskInput(userId, id))
       .andThen((result) => {
-        return result.count > 0
-          ? ok(result)
-          : err(new NotFoundError("Resource not found"));
+        return result.count > 0 ? ok(result) : err(new NotFoundError("task"));
       })
       .match(
         () => c.body(null, 204),
@@ -41,7 +53,13 @@ export default new Hono().delete(
           const errorName = error.name;
           switch (errorName) {
             case "NotFoundError":
-              return c.json({ error: error.message }, 404);
+              return c.json(
+                {
+                  message: error.message,
+                  error: { resourceName: error.resourceName },
+                },
+                404,
+              );
             case "DatabaseError":
               return c.json({ error: "Database error occurred" }, 500);
             default:
