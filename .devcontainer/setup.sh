@@ -6,12 +6,6 @@ echo "🚀 Starting Dev Container setup..."
 echo "👤 Current user:"
 whoami
 
-echo "📁 install serena mcp server:"
-claude mcp add serena -- uvx --from git+https://github.com/oraios/serena serena start-mcp-server --context ide-assistant --project $(pwd)
-
-echo "📁 install chrome-devtools mcp server:"
-claude mcp add chrome-devtools bunx chrome-devtools-mcp@latest
-
 echo "📦 Installing dependencies..."
 bun ci
 
