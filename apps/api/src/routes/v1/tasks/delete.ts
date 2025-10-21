@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { err, ok } from "neverthrow";
 import { NotFoundError } from "../../../domain/error";
 import { deleteTaskInput } from "../../../domain/model/task";
-import { deleteTask } from "../../../infra/rds/task/repository";
+import { deleteTask } from "../../../infra/rds/tasks/repository";
 import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
 
