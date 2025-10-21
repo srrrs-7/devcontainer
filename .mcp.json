@@ -16,9 +16,7 @@
     },
     "chrome-devtools": {
       "command": "bunx",
-      "args": [
-        "chrome-devtools-mcp@latest"
-      ]
+      "args": ["chrome-devtools-mcp@latest"]
     }
   }
 }
