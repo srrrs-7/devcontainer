@@ -1,4 +1,8 @@
 {
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": ["serena", "chrome-devtools"],
-  "enableAllProjectMcpServers": true
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  }
 }

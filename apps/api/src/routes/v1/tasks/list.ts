@@ -6,14 +6,10 @@ export default new Hono().get(
   "/tasks",
   zValidator("query", paginationSchema, (result, c) => {
     if (!result.success) {
-      const firstIssue = result.error.issues[0];
       return c.json(
         {
           message: "Validation failed",
-          error: {
-            code: firstIssue?.code || "invalid_query",
-            field: firstIssue?.path.join(".") || "query",
-          },
+          error: result.error.issues,
         },
         400,
       );
@@ -21,14 +17,10 @@ export default new Hono().get(
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
-      const firstIssue = result.error.issues[0];
       return c.json(
         {
           message: "Validation failed",
-          error: {
-            code: firstIssue?.code || "invalid_header",
-            field: firstIssue?.path.join(".") || "header",
-          },
+          error: result.error.issues,
         },
         400,
       );

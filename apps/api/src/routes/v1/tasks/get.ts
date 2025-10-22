@@ -7,14 +7,10 @@ export default new Hono().get(
   "/task/:id",
   zValidator("param", taskIdParamSchema, (result, c) => {
     if (!result.success) {
-      const firstIssue = result.error.issues[0];
       return c.json(
         {
           message: "Validation failed",
-          error: {
-            code: firstIssue?.code || "invalid_parameter",
-            field: firstIssue?.path.join(".") || "param",
-          },
+          error: result.error.issues,
         },
         400,
       );
@@ -22,14 +18,10 @@ export default new Hono().get(
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
-      const firstIssue = result.error.issues[0];
       return c.json(
         {
           message: "Validation failed",
-          error: {
-            code: firstIssue?.code || "invalid_header",
-            field: firstIssue?.path.join(".") || "header",
-          },
+          error: result.error.issues,
         },
         400,
       );
