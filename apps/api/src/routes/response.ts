@@ -1,3 +1,4 @@
+import { logger } from "@packages/logger";
 import type { Context } from "hono";
 import type { z } from "zod";
 import type { DatabaseError, NotFoundError } from "../domain/error";
@@ -6,6 +7,7 @@ export const validationErrorResponse = (
   c: Context,
   issues: z.ZodError["issues"],
 ) => {
+  logger.warn({ issues }, "Validation failed");
   return c.json(
     {
       message: "Validation failed",
@@ -16,6 +18,7 @@ export const validationErrorResponse = (
 };
 
 export const notFoundResponse = (c: Context, error: NotFoundError) => {
+  logger.error({ error }, "Not found");
   return c.json(
     {
       message: error.message,
@@ -26,6 +29,7 @@ export const notFoundResponse = (c: Context, error: NotFoundError) => {
 };
 
 export const databaseErrorResponse = (c: Context, error: DatabaseError) => {
+  logger.error({ error }, "Database error");
   return c.json(
     {
       message: error.message,
@@ -36,6 +40,7 @@ export const databaseErrorResponse = (c: Context, error: DatabaseError) => {
 };
 
 export const unExpectedErrorResponse = (c: Context, error: unknown) => {
+  logger.error({ error }, "Unexpected server error");
   return c.json(
     {
       message: "Unexpected server error",
