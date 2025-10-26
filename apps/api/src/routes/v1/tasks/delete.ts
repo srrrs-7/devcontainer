@@ -41,10 +41,10 @@ export default new Hono().delete(
             case "NotFoundError":
               return notFoundResponse(c, error);
             case "DatabaseError":
-              return databaseErrorResponse(c);
+              return databaseErrorResponse(c, error);
             default:
               errorName satisfies never;
-              return unExpectedErrorResponse(c);
+              return unExpectedErrorResponse(c, error);
           }
         },
       );
