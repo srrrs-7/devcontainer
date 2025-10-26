@@ -4,6 +4,12 @@ import { err, ok } from "neverthrow";
 import { NotFoundError } from "../../../domain/error";
 import { deleteTaskInput } from "../../../domain/model/task";
 import { deleteTask } from "../../../infra/rds/tasks/repository";
+import {
+  databaseErrorResponse,
+  notFoundResponse,
+  unExpectedErrorResponse,
+  validationErrorResponse,
+} from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
 
@@ -11,24 +17,12 @@ export default new Hono().delete(
   "/task/:id",
   zValidator("param", taskIdParamSchema, (result, c) => {
     if (!result.success) {
-      return c.json(
-        {
-          message: "Validation failed",
-          error: result.error.issues,
-        },
-        400,
-      );
+      return validationErrorResponse(c, result.error.issues);
     }
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
-      return c.json(
-        {
-          message: "Validation failed",
-          error: result.error.issues,
-        },
-        400,
-      );
+      return validationErrorResponse(c, result.error.issues);
     }
   }),
   async (c) => {
@@ -45,18 +39,12 @@ export default new Hono().delete(
           const errorName = error.name;
           switch (errorName) {
             case "NotFoundError":
-              return c.json(
-                {
-                  message: error.message,
-                  error: { resourceName: error.resourceName },
-                },
-                404,
-              );
+              return notFoundResponse(c, error);
             case "DatabaseError":
-              return c.json({ error: "Database error occurred" }, 500);
+              return databaseErrorResponse(c);
             default:
               errorName satisfies never;
-              return c.json({ error: "Internal server error" }, 500);
+              return unExpectedErrorResponse(c);
           }
         },
       );

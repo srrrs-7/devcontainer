@@ -1,5 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+import { validationErrorResponse } from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
 
@@ -7,24 +8,12 @@ export default new Hono().get(
   "/task/:id",
   zValidator("param", taskIdParamSchema, (result, c) => {
     if (!result.success) {
-      return c.json(
-        {
-          message: "Validation failed",
-          error: result.error.issues,
-        },
-        400,
-      );
+      return validationErrorResponse(c, result.error.issues);
     }
   }),
   zValidator("header", userHeaderSchema, (result, c) => {
     if (!result.success) {
-      return c.json(
-        {
-          message: "Validation failed",
-          error: result.error.issues,
-        },
-        400,
-      );
+      return validationErrorResponse(c, result.error.issues);
     }
   }),
   (c) => {
