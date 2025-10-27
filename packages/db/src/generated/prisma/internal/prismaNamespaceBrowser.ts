@@ -49,6 +49,7 @@ export const AnyNull = runtime.objectEnumValues.instances.AnyNull
 
 export const ModelName = {
   Tasks: 'Tasks',
+  UserTask: 'UserTask',
   Organization: 'Organization',
   Client: 'Client',
   User: 'User',
@@ -87,6 +88,18 @@ export const TasksScalarFieldEnum = {
 } as const
 
 export type TasksScalarFieldEnum = (typeof TasksScalarFieldEnum)[keyof typeof TasksScalarFieldEnum]
+
+
+export const UserTaskScalarFieldEnum = {
+  userTaskId: 'userTaskId',
+  userId: 'userId',
+  taskUserId: 'taskUserId',
+  taskId: 'taskId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserTaskScalarFieldEnum = (typeof UserTaskScalarFieldEnum)[keyof typeof UserTaskScalarFieldEnum]
 
 
 export const OrganizationScalarFieldEnum = {

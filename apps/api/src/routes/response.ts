@@ -3,6 +3,18 @@ import type { Context } from "hono";
 import type { z } from "zod";
 import type { DatabaseError, NotFoundError } from "../domain/error";
 
+export const okResponse = <T>(c: Context, data: T) => {
+  return c.json(data, 200);
+};
+
+export const createdResponse = <T>(c: Context, data: T) => {
+  return c.json(data, 201);
+};
+
+export const noContentResponse = (c: Context) => {
+  return c.body(null, { status: 204 });
+};
+
 export const validationErrorResponse = (
   c: Context,
   issues: z.ZodError["issues"],

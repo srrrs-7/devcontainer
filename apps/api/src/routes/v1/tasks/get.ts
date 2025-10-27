@@ -1,8 +1,15 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { validationErrorResponse } from "../../response";
+import { okResponse, validationErrorResponse } from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
+
+type Response = {
+  taskId: string;
+  userId: string;
+  content: string;
+  completedAt: Date | null;
+};
 
 export default new Hono().get(
   "/task/:id",
@@ -19,6 +26,12 @@ export default new Hono().get(
   (c) => {
     const { id } = c.req.valid("param");
     const { "x-user-id": userId } = c.req.valid("header");
-    return c.json({ taskId: id, userId, status: "in-progress" });
+    const response: Response = {
+      taskId: id,
+      userId,
+      content: "Sample task content",
+      completedAt: null,
+    };
+    return okResponse(c, response);
   },
 );

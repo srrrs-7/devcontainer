@@ -1,7 +1,20 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { validationErrorResponse } from "../../response";
+import { okResponse, validationErrorResponse } from "../../response";
 import { paginationSchema, userHeaderSchema } from "../../validation/schemas";
+
+type TaskItem = {
+  taskId: string;
+  userId: string;
+  content: string;
+  completedAt: Date | null;
+};
+
+type Response = {
+  tasks: TaskItem[];
+  page: number;
+  limit: number;
+};
 
 export default new Hono().get(
   "/tasks",
@@ -18,14 +31,24 @@ export default new Hono().get(
   (c) => {
     const { page, limit } = c.req.valid("query");
     const { "x-user-id": userId } = c.req.valid("header");
-    return c.json({
-      userId,
+    const response: Response = {
+      tasks: [
+        {
+          taskId: "task-1",
+          userId,
+          content: "Sample task 1",
+          completedAt: null,
+        },
+        {
+          taskId: "task-2",
+          userId,
+          content: "Sample task 2",
+          completedAt: new Date(),
+        },
+      ],
       page,
       limit,
-      tasks: [
-        { taskId: "task-1", content: "Sample task 1", status: "in-progress" },
-        { taskId: "task-2", content: "Sample task 2", status: "completed" },
-      ],
-    });
+    };
+    return okResponse(c, response);
   },
 );

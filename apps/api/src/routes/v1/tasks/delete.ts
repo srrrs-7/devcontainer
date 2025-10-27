@@ -5,6 +5,7 @@ import { NotFoundError } from "../../../domain/error";
 import { deleteTask } from "../../../infra/rds/tasks/repository";
 import {
   databaseErrorResponse,
+  noContentResponse,
   notFoundResponse,
   unExpectedErrorResponse,
   validationErrorResponse,
@@ -33,7 +34,7 @@ export default new Hono().delete(
         return result.count > 0 ? ok(result) : err(new NotFoundError("task"));
       })
       .match(
-        () => c.body(null, 204),
+        () => noContentResponse(c),
         (error) => {
           const errorName = error.name;
           switch (errorName) {
