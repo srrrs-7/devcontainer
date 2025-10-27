@@ -2,7 +2,6 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { err, ok } from "neverthrow";
 import { NotFoundError } from "../../../domain/error";
-import { deleteTaskInput } from "../../../domain/model/task";
 import { deleteTask } from "../../../infra/rds/tasks/repository";
 import {
   databaseErrorResponse,
@@ -29,7 +28,7 @@ export default new Hono().delete(
     const { id } = c.req.valid("param");
     const { "x-user-id": userId } = c.req.valid("header");
 
-    return await deleteTask(deleteTaskInput(userId, id))
+    return await deleteTask({ userId, taskId: id })
       .andThen((result) => {
         return result.count > 0 ? ok(result) : err(new NotFoundError("task"));
       })
