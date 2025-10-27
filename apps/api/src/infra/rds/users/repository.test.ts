@@ -21,7 +21,7 @@ beforeEach(async () => {
   // Create test organization
   await prisma.organization.create({
     data: {
-      organizationId: TEST_ORG_ID,
+      id: TEST_ORG_ID,
       name: "Test Organization",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -31,7 +31,7 @@ beforeEach(async () => {
   // Create test client
   await prisma.client.create({
     data: {
-      clientId: TEST_CLIENT_ID,
+      id: TEST_CLIENT_ID,
       organizationId: TEST_ORG_ID,
       name: "Test Client",
       createdAt: new Date(),

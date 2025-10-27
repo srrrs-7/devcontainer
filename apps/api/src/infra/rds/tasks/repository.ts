@@ -16,19 +16,31 @@ export const createTask = (
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.create({
-      data: {
-        userId: input.userId,
-        content: input.content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
+    prisma.$transaction(async (tx) => {
+      // Tasksを作成
+      const task = await tx.tasks.create({
+        data: {
+          content: input.content,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+      });
+
+      // UserTaskを作成してTaskと関連付け
+      await tx.userTask.create({
+        data: {
+          userId: input.userId,
+          taskId: task.id,
+        },
+      });
+
+      return task;
     }),
     (error) => new DatabaseError(error),
   ).map(
     (task): Task => ({
-      userId: task.userId,
-      taskId: task.taskId,
+      userId: input.userId,
+      taskId: task.id,
       content: task.content,
       completedAt: task.completedAt,
       createdAt: task.createdAt,
@@ -43,19 +55,48 @@ export const updateTask = (
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.updateMany({
-      where: {
-        userId: input.userId,
-        taskId: input.taskId,
-      },
-      data: {
-        content: input.content,
-        completedAt: input.completedAt,
+    prisma.$transaction(async (tx) => {
+      // UserTaskが存在するか確認
+      const userTask = await tx.userTask.findUnique({
+        where: {
+          userId_taskId: {
+            userId: input.userId,
+            taskId: input.taskId,
+          },
+        },
+      });
+
+      if (!userTask) {
+        return { count: 0 };
+      }
+
+      // Tasksを更新
+      const updateData: {
+        content?: string;
+        completedAt?: Date | null;
+        updatedAt: Date;
+      } = {
         updatedAt: new Date(),
-      },
+      };
+
+      if (input.content !== undefined) {
+        updateData.content = input.content;
+      }
+      if (input.completedAt !== undefined) {
+        updateData.completedAt = input.completedAt;
+      }
+
+      await tx.tasks.update({
+        where: {
+          id: input.taskId,
+        },
+        data: updateData,
+      });
+
+      return { count: 1 };
     }),
     (error) => new DatabaseError(error),
-  ).map((result) => ({ count: result.count }));
+  );
 };
 
 export const deleteTask = (
@@ -64,14 +105,38 @@ export const deleteTask = (
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.deleteMany({
-      where: {
-        userId: input.userId,
-        taskId: input.taskId,
-      },
+    prisma.$transaction(async (tx) => {
+      // UserTaskを削除
+      const result = await tx.userTask.deleteMany({
+        where: {
+          userId: input.userId,
+          taskId: input.taskId,
+        },
+      });
+
+      // UserTaskが削除された場合、Tasksも削除
+      if (result.count > 0) {
+        // 他のUserTaskが存在しないか確認
+        const otherUserTasks = await tx.userTask.count({
+          where: {
+            taskId: input.taskId,
+          },
+        });
+
+        // 他のユーザーがこのタスクを持っていなければTasksも削除
+        if (otherUserTasks === 0) {
+          await tx.tasks.delete({
+            where: {
+              id: input.taskId,
+            },
+          });
+        }
+      }
+
+      return { count: result.count };
     }),
     (error) => new DatabaseError(error),
-  ).map((result) => ({ count: result.count }));
+  );
 };
 
 export const getTask = (
@@ -80,24 +145,27 @@ export const getTask = (
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.findUnique({
+    prisma.userTask.findUnique({
       where: {
         userId_taskId: {
           userId: input.userId,
           taskId: input.taskId,
         },
       },
+      include: {
+        task: true,
+      },
     }),
     (error) => new DatabaseError(error),
-  ).map((task): Task | null => {
-    if (!task) return null;
+  ).map((userTask): Task | null => {
+    if (!userTask) return null;
     return {
-      userId: task.userId,
-      taskId: task.taskId,
-      content: task.content,
-      completedAt: task.completedAt,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
+      userId: userTask.userId,
+      taskId: userTask.task.id,
+      content: userTask.task.content,
+      completedAt: userTask.task.completedAt,
+      createdAt: userTask.task.createdAt,
+      updatedAt: userTask.task.updatedAt,
     };
   });
 };
@@ -108,23 +176,28 @@ export const listTasks = (
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
-    prisma.tasks.findMany({
+    prisma.userTask.findMany({
       where: {
         userId: input.userId,
       },
+      include: {
+        task: true,
+      },
       orderBy: {
-        createdAt: "desc",
+        task: {
+          createdAt: "desc",
+        },
       },
     }),
     (error) => new DatabaseError(error),
-  ).map((tasks): Task[] =>
-    tasks.map((task) => ({
-      userId: task.userId,
-      taskId: task.taskId,
-      content: task.content,
-      completedAt: task.completedAt,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
+  ).map((userTasks): Task[] =>
+    userTasks.map((userTask) => ({
+      userId: userTask.userId,
+      taskId: userTask.task.id,
+      content: userTask.task.content,
+      completedAt: userTask.task.completedAt,
+      createdAt: userTask.task.createdAt,
+      updatedAt: userTask.task.updatedAt,
     })),
   );
 };

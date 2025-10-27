@@ -34,7 +34,7 @@ export const createUser = (
     (error) => new DatabaseError(error),
   ).map(
     (user): User => ({
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,
@@ -77,14 +77,14 @@ export const updateUser = (
   return ResultAsync.fromPromise(
     prisma.user.update({
       where: {
-        userId: input.userId,
+        id: input.userId,
       },
       data: updateData,
     }),
     (error) => new DatabaseError(error),
   ).map(
     (user): User => ({
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,
@@ -106,7 +106,7 @@ export const deleteUser = (
   return ResultAsync.fromPromise(
     prisma.user.delete({
       where: {
-        userId: input.userId,
+        id: input.userId,
       },
     }),
     (error) => new DatabaseError(error),
@@ -124,14 +124,14 @@ export const getUser = (
   return ResultAsync.fromPromise(
     prisma.user.findUnique({
       where: {
-        userId: input.userId,
+        id: input.userId,
       },
     }),
     (error) => new DatabaseError(error),
   ).map((user): User | null => {
     if (!user) return null;
     return {
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,
@@ -160,7 +160,7 @@ export const getUserByEmail = (
   ).map((user): User | null => {
     if (!user) return null;
     return {
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,
@@ -189,7 +189,7 @@ export const getUserByUsername = (
   ).map((user): User | null => {
     if (!user) return null;
     return {
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,
@@ -226,7 +226,7 @@ export const listUsers = (
     (error) => new DatabaseError(error),
   ).map((users): User[] =>
     users.map((user) => ({
-      userId: user.userId,
+      userId: user.id,
       clientId: user.clientId,
       username: user.username,
       email: user.email,

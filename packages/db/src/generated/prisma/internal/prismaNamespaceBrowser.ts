@@ -78,8 +78,7 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 
 
 export const TasksScalarFieldEnum = {
-  userId: 'userId',
-  taskId: 'taskId',
+  id: 'id',
   content: 'content',
   status: 'status',
   completedAt: 'completedAt',
@@ -93,7 +92,6 @@ export type TasksScalarFieldEnum = (typeof TasksScalarFieldEnum)[keyof typeof Ta
 export const UserTaskScalarFieldEnum = {
   userTaskId: 'userTaskId',
   userId: 'userId',
-  taskUserId: 'taskUserId',
   taskId: 'taskId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -103,7 +101,7 @@ export type UserTaskScalarFieldEnum = (typeof UserTaskScalarFieldEnum)[keyof typ
 
 
 export const OrganizationScalarFieldEnum = {
-  organizationId: 'organizationId',
+  id: 'id',
   name: 'name',
   description: 'description',
   createdAt: 'createdAt',
@@ -114,7 +112,7 @@ export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[k
 
 
 export const ClientScalarFieldEnum = {
-  clientId: 'clientId',
+  id: 'id',
   organizationId: 'organizationId',
   parentClientId: 'parentClientId',
   name: 'name',
@@ -128,7 +126,7 @@ export type ClientScalarFieldEnum = (typeof ClientScalarFieldEnum)[keyof typeof 
 
 
 export const UserScalarFieldEnum = {
-  userId: 'userId',
+  id: 'id',
   clientId: 'clientId',
   username: 'username',
   email: 'email',
@@ -141,7 +139,7 @@ export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof User
 
 
 export const ApplicationScalarFieldEnum = {
-  applicationId: 'applicationId',
+  id: 'id',
   userId: 'userId',
   type: 'type',
   description: 'description',
@@ -153,7 +151,7 @@ export type ApplicationScalarFieldEnum = (typeof ApplicationScalarFieldEnum)[key
 
 
 export const ApplicationHistoryScalarFieldEnum = {
-  historyId: 'historyId',
+  id: 'id',
   applicationId: 'applicationId',
   changedByUserId: 'changedByUserId',
   status: 'status',
@@ -165,7 +163,7 @@ export type ApplicationHistoryScalarFieldEnum = (typeof ApplicationHistoryScalar
 
 
 export const RoleScalarFieldEnum = {
-  roleId: 'roleId',
+  id: 'id',
   name: 'name',
   description: 'description',
   createdAt: 'createdAt',
@@ -176,7 +174,7 @@ export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof Role
 
 
 export const PermissionScalarFieldEnum = {
-  permissionId: 'permissionId',
+  id: 'id',
   name: 'name',
   description: 'description',
   createdAt: 'createdAt',
@@ -187,6 +185,7 @@ export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof
 
 
 export const RolePermissionScalarFieldEnum = {
+  id: 'id',
   roleId: 'roleId',
   permissionId: 'permissionId'
 } as const
@@ -195,7 +194,7 @@ export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnu
 
 
 export const UserClientRoleScalarFieldEnum = {
-  userClientRoleId: 'userClientRoleId',
+  id: 'id',
   userId: 'userId',
   clientId: 'clientId',
   roleId: 'roleId',

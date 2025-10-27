@@ -24,7 +24,7 @@ export type AggregateUserClientRole = {
 }
 
 export type UserClientRoleMinAggregateOutputType = {
-  userClientRoleId: string | null
+  id: string | null
   userId: string | null
   clientId: string | null
   roleId: string | null
@@ -33,7 +33,7 @@ export type UserClientRoleMinAggregateOutputType = {
 }
 
 export type UserClientRoleMaxAggregateOutputType = {
-  userClientRoleId: string | null
+  id: string | null
   userId: string | null
   clientId: string | null
   roleId: string | null
@@ -42,7 +42,7 @@ export type UserClientRoleMaxAggregateOutputType = {
 }
 
 export type UserClientRoleCountAggregateOutputType = {
-  userClientRoleId: number
+  id: number
   userId: number
   clientId: number
   roleId: number
@@ -53,7 +53,7 @@ export type UserClientRoleCountAggregateOutputType = {
 
 
 export type UserClientRoleMinAggregateInputType = {
-  userClientRoleId?: true
+  id?: true
   userId?: true
   clientId?: true
   roleId?: true
@@ -62,7 +62,7 @@ export type UserClientRoleMinAggregateInputType = {
 }
 
 export type UserClientRoleMaxAggregateInputType = {
-  userClientRoleId?: true
+  id?: true
   userId?: true
   clientId?: true
   roleId?: true
@@ -71,7 +71,7 @@ export type UserClientRoleMaxAggregateInputType = {
 }
 
 export type UserClientRoleCountAggregateInputType = {
-  userClientRoleId?: true
+  id?: true
   userId?: true
   clientId?: true
   roleId?: true
@@ -153,7 +153,7 @@ export type UserClientRoleGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
 }
 
 export type UserClientRoleGroupByOutputType = {
-  userClientRoleId: string
+  id: string
   userId: string
   clientId: string
   roleId: string
@@ -183,7 +183,7 @@ export type UserClientRoleWhereInput = {
   AND?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
   OR?: Prisma.UserClientRoleWhereInput[]
   NOT?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
-  userClientRoleId?: Prisma.UuidFilter<"UserClientRole"> | string
+  id?: Prisma.UuidFilter<"UserClientRole"> | string
   userId?: Prisma.UuidFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidFilter<"UserClientRole"> | string
@@ -196,7 +196,7 @@ export type UserClientRoleWhereInput = {
 }
 
 export type UserClientRoleOrderByWithRelationInput = {
-  userClientRoleId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
@@ -209,7 +209,7 @@ export type UserClientRoleOrderByWithRelationInput = {
 }
 
 export type UserClientRoleWhereUniqueInput = Prisma.AtLeast<{
-  userClientRoleId?: string
+  id?: string
   userId_clientId_roleId?: Prisma.UserClientRoleUserIdClientIdRoleIdCompoundUniqueInput
   AND?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
   OR?: Prisma.UserClientRoleWhereInput[]
@@ -223,10 +223,10 @@ export type UserClientRoleWhereUniqueInput = Prisma.AtLeast<{
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   role?: Prisma.XOR<Prisma.RoleScalarRelationFilter, Prisma.RoleWhereInput>
   assignedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "userClientRoleId" | "userId_clientId_roleId">
+}, "id" | "userId_clientId_roleId">
 
 export type UserClientRoleOrderByWithAggregationInput = {
-  userClientRoleId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
@@ -241,7 +241,7 @@ export type UserClientRoleScalarWhereWithAggregatesInput = {
   AND?: Prisma.UserClientRoleScalarWhereWithAggregatesInput | Prisma.UserClientRoleScalarWhereWithAggregatesInput[]
   OR?: Prisma.UserClientRoleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserClientRoleScalarWhereWithAggregatesInput | Prisma.UserClientRoleScalarWhereWithAggregatesInput[]
-  userClientRoleId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
   userId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
@@ -250,7 +250,7 @@ export type UserClientRoleScalarWhereWithAggregatesInput = {
 }
 
 export type UserClientRoleCreateInput = {
-  userClientRoleId?: string
+  id?: string
   assignedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserClientRolesInput
   client: Prisma.ClientCreateNestedOneWithoutUserClientRolesInput
@@ -259,7 +259,7 @@ export type UserClientRoleCreateInput = {
 }
 
 export type UserClientRoleUncheckedCreateInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   roleId: string
@@ -268,7 +268,7 @@ export type UserClientRoleUncheckedCreateInput = {
 }
 
 export type UserClientRoleUpdateInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserClientRolesNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutUserClientRolesNestedInput
@@ -277,7 +277,7 @@ export type UserClientRoleUpdateInput = {
 }
 
 export type UserClientRoleUncheckedUpdateInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -286,7 +286,7 @@ export type UserClientRoleUncheckedUpdateInput = {
 }
 
 export type UserClientRoleCreateManyInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   roleId: string
@@ -295,12 +295,12 @@ export type UserClientRoleCreateManyInput = {
 }
 
 export type UserClientRoleUpdateManyMutationInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserClientRoleUncheckedUpdateManyInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -325,7 +325,7 @@ export type UserClientRoleUserIdClientIdRoleIdCompoundUniqueInput = {
 }
 
 export type UserClientRoleCountOrderByAggregateInput = {
-  userClientRoleId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
@@ -334,7 +334,7 @@ export type UserClientRoleCountOrderByAggregateInput = {
 }
 
 export type UserClientRoleMaxOrderByAggregateInput = {
-  userClientRoleId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
@@ -343,7 +343,7 @@ export type UserClientRoleMaxOrderByAggregateInput = {
 }
 
 export type UserClientRoleMinOrderByAggregateInput = {
-  userClientRoleId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   roleId?: Prisma.SortOrder
@@ -520,7 +520,7 @@ export type UserClientRoleUncheckedUpdateManyWithoutRoleNestedInput = {
 }
 
 export type UserClientRoleCreateWithoutClientInput = {
-  userClientRoleId?: string
+  id?: string
   assignedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserClientRolesInput
   role: Prisma.RoleCreateNestedOneWithoutUserClientRolesInput
@@ -528,7 +528,7 @@ export type UserClientRoleCreateWithoutClientInput = {
 }
 
 export type UserClientRoleUncheckedCreateWithoutClientInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   roleId: string
   assignedByUserId?: string | null
@@ -565,7 +565,7 @@ export type UserClientRoleScalarWhereInput = {
   AND?: Prisma.UserClientRoleScalarWhereInput | Prisma.UserClientRoleScalarWhereInput[]
   OR?: Prisma.UserClientRoleScalarWhereInput[]
   NOT?: Prisma.UserClientRoleScalarWhereInput | Prisma.UserClientRoleScalarWhereInput[]
-  userClientRoleId?: Prisma.UuidFilter<"UserClientRole"> | string
+  id?: Prisma.UuidFilter<"UserClientRole"> | string
   userId?: Prisma.UuidFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidFilter<"UserClientRole"> | string
@@ -574,7 +574,7 @@ export type UserClientRoleScalarWhereInput = {
 }
 
 export type UserClientRoleCreateWithoutUserInput = {
-  userClientRoleId?: string
+  id?: string
   assignedAt?: Date | string
   client: Prisma.ClientCreateNestedOneWithoutUserClientRolesInput
   role: Prisma.RoleCreateNestedOneWithoutUserClientRolesInput
@@ -582,7 +582,7 @@ export type UserClientRoleCreateWithoutUserInput = {
 }
 
 export type UserClientRoleUncheckedCreateWithoutUserInput = {
-  userClientRoleId?: string
+  id?: string
   clientId: string
   roleId: string
   assignedByUserId?: string | null
@@ -600,7 +600,7 @@ export type UserClientRoleCreateManyUserInputEnvelope = {
 }
 
 export type UserClientRoleCreateWithoutAssignedByUserInput = {
-  userClientRoleId?: string
+  id?: string
   assignedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserClientRolesInput
   client: Prisma.ClientCreateNestedOneWithoutUserClientRolesInput
@@ -608,7 +608,7 @@ export type UserClientRoleCreateWithoutAssignedByUserInput = {
 }
 
 export type UserClientRoleUncheckedCreateWithoutAssignedByUserInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   roleId: string
@@ -658,7 +658,7 @@ export type UserClientRoleUpdateManyWithWhereWithoutAssignedByUserInput = {
 }
 
 export type UserClientRoleCreateWithoutRoleInput = {
-  userClientRoleId?: string
+  id?: string
   assignedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutUserClientRolesInput
   client: Prisma.ClientCreateNestedOneWithoutUserClientRolesInput
@@ -666,7 +666,7 @@ export type UserClientRoleCreateWithoutRoleInput = {
 }
 
 export type UserClientRoleUncheckedCreateWithoutRoleInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   assignedByUserId?: string | null
@@ -700,7 +700,7 @@ export type UserClientRoleUpdateManyWithWhereWithoutRoleInput = {
 }
 
 export type UserClientRoleCreateManyClientInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   roleId: string
   assignedByUserId?: string | null
@@ -708,7 +708,7 @@ export type UserClientRoleCreateManyClientInput = {
 }
 
 export type UserClientRoleUpdateWithoutClientInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserClientRolesNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserClientRolesNestedInput
@@ -716,7 +716,7 @@ export type UserClientRoleUpdateWithoutClientInput = {
 }
 
 export type UserClientRoleUncheckedUpdateWithoutClientInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -724,7 +724,7 @@ export type UserClientRoleUncheckedUpdateWithoutClientInput = {
 }
 
 export type UserClientRoleUncheckedUpdateManyWithoutClientInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -732,7 +732,7 @@ export type UserClientRoleUncheckedUpdateManyWithoutClientInput = {
 }
 
 export type UserClientRoleCreateManyUserInput = {
-  userClientRoleId?: string
+  id?: string
   clientId: string
   roleId: string
   assignedByUserId?: string | null
@@ -740,7 +740,7 @@ export type UserClientRoleCreateManyUserInput = {
 }
 
 export type UserClientRoleCreateManyAssignedByUserInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   roleId: string
@@ -748,7 +748,7 @@ export type UserClientRoleCreateManyAssignedByUserInput = {
 }
 
 export type UserClientRoleUpdateWithoutUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   client?: Prisma.ClientUpdateOneRequiredWithoutUserClientRolesNestedInput
   role?: Prisma.RoleUpdateOneRequiredWithoutUserClientRolesNestedInput
@@ -756,7 +756,7 @@ export type UserClientRoleUpdateWithoutUserInput = {
 }
 
 export type UserClientRoleUncheckedUpdateWithoutUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -764,7 +764,7 @@ export type UserClientRoleUncheckedUpdateWithoutUserInput = {
 }
 
 export type UserClientRoleUncheckedUpdateManyWithoutUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -772,7 +772,7 @@ export type UserClientRoleUncheckedUpdateManyWithoutUserInput = {
 }
 
 export type UserClientRoleUpdateWithoutAssignedByUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserClientRolesNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutUserClientRolesNestedInput
@@ -780,7 +780,7 @@ export type UserClientRoleUpdateWithoutAssignedByUserInput = {
 }
 
 export type UserClientRoleUncheckedUpdateWithoutAssignedByUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -788,7 +788,7 @@ export type UserClientRoleUncheckedUpdateWithoutAssignedByUserInput = {
 }
 
 export type UserClientRoleUncheckedUpdateManyWithoutAssignedByUserInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   roleId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -796,7 +796,7 @@ export type UserClientRoleUncheckedUpdateManyWithoutAssignedByUserInput = {
 }
 
 export type UserClientRoleCreateManyRoleInput = {
-  userClientRoleId?: string
+  id?: string
   userId: string
   clientId: string
   assignedByUserId?: string | null
@@ -804,7 +804,7 @@ export type UserClientRoleCreateManyRoleInput = {
 }
 
 export type UserClientRoleUpdateWithoutRoleInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   assignedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutUserClientRolesNestedInput
   client?: Prisma.ClientUpdateOneRequiredWithoutUserClientRolesNestedInput
@@ -812,7 +812,7 @@ export type UserClientRoleUpdateWithoutRoleInput = {
 }
 
 export type UserClientRoleUncheckedUpdateWithoutRoleInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -820,7 +820,7 @@ export type UserClientRoleUncheckedUpdateWithoutRoleInput = {
 }
 
 export type UserClientRoleUncheckedUpdateManyWithoutRoleInput = {
-  userClientRoleId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   clientId?: Prisma.StringFieldUpdateOperationsInput | string
   assignedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -830,7 +830,7 @@ export type UserClientRoleUncheckedUpdateManyWithoutRoleInput = {
 
 
 export type UserClientRoleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userClientRoleId?: boolean
+  id?: boolean
   userId?: boolean
   clientId?: boolean
   roleId?: boolean
@@ -843,7 +843,7 @@ export type UserClientRoleSelect<ExtArgs extends runtime.Types.Extensions.Intern
 }, ExtArgs["result"]["userClientRole"]>
 
 export type UserClientRoleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userClientRoleId?: boolean
+  id?: boolean
   userId?: boolean
   clientId?: boolean
   roleId?: boolean
@@ -856,7 +856,7 @@ export type UserClientRoleSelectCreateManyAndReturn<ExtArgs extends runtime.Type
 }, ExtArgs["result"]["userClientRole"]>
 
 export type UserClientRoleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  userClientRoleId?: boolean
+  id?: boolean
   userId?: boolean
   clientId?: boolean
   roleId?: boolean
@@ -869,7 +869,7 @@ export type UserClientRoleSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
 }, ExtArgs["result"]["userClientRole"]>
 
 export type UserClientRoleSelectScalar = {
-  userClientRoleId?: boolean
+  id?: boolean
   userId?: boolean
   clientId?: boolean
   roleId?: boolean
@@ -877,7 +877,7 @@ export type UserClientRoleSelectScalar = {
   assignedAt?: boolean
 }
 
-export type UserClientRoleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"userClientRoleId" | "userId" | "clientId" | "roleId" | "assignedByUserId" | "assignedAt", ExtArgs["result"]["userClientRole"]>
+export type UserClientRoleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "clientId" | "roleId" | "assignedByUserId" | "assignedAt", ExtArgs["result"]["userClientRole"]>
 export type UserClientRoleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
@@ -906,7 +906,7 @@ export type $UserClientRolePayload<ExtArgs extends runtime.Types.Extensions.Inte
     assignedByUser: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    userClientRoleId: string
+    id: string
     userId: string
     clientId: string
     roleId: string
@@ -995,8 +995,8 @@ export interface UserClientRoleDelegate<ExtArgs extends runtime.Types.Extensions
    * // Get first 10 UserClientRoles
    * const userClientRoles = await prisma.userClientRole.findMany({ take: 10 })
    * 
-   * // Only select the `userClientRoleId`
-   * const userClientRoleWithUserClientRoleIdOnly = await prisma.userClientRole.findMany({ select: { userClientRoleId: true } })
+   * // Only select the `id`
+   * const userClientRoleWithIdOnly = await prisma.userClientRole.findMany({ select: { id: true } })
    * 
    */
   findMany<T extends UserClientRoleFindManyArgs>(args?: Prisma.SelectSubset<T, UserClientRoleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserClientRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -1040,9 +1040,9 @@ export interface UserClientRoleDelegate<ExtArgs extends runtime.Types.Extensions
    *   ]
    * })
    * 
-   * // Create many UserClientRoles and only return the `userClientRoleId`
-   * const userClientRoleWithUserClientRoleIdOnly = await prisma.userClientRole.createManyAndReturn({
-   *   select: { userClientRoleId: true },
+   * // Create many UserClientRoles and only return the `id`
+   * const userClientRoleWithIdOnly = await prisma.userClientRole.createManyAndReturn({
+   *   select: { id: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -1131,9 +1131,9 @@ export interface UserClientRoleDelegate<ExtArgs extends runtime.Types.Extensions
    *   ]
    * })
    * 
-   * // Update zero or more UserClientRoles and only return the `userClientRoleId`
-   * const userClientRoleWithUserClientRoleIdOnly = await prisma.userClientRole.updateManyAndReturn({
-   *   select: { userClientRoleId: true },
+   * // Update zero or more UserClientRoles and only return the `id`
+   * const userClientRoleWithIdOnly = await prisma.userClientRole.updateManyAndReturn({
+   *   select: { id: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1339,7 +1339,7 @@ export interface Prisma__UserClientRoleClient<T, Null = never, ExtArgs extends r
  * Fields of the UserClientRole model
  */
 export interface UserClientRoleFieldRefs {
-  readonly userClientRoleId: Prisma.FieldRef<"UserClientRole", 'String'>
+  readonly id: Prisma.FieldRef<"UserClientRole", 'String'>
   readonly userId: Prisma.FieldRef<"UserClientRole", 'String'>
   readonly clientId: Prisma.FieldRef<"UserClientRole", 'String'>
   readonly roleId: Prisma.FieldRef<"UserClientRole", 'String'>

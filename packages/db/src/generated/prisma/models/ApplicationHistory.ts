@@ -24,7 +24,7 @@ export type AggregateApplicationHistory = {
 }
 
 export type ApplicationHistoryMinAggregateOutputType = {
-  historyId: string | null
+  id: string | null
   applicationId: string | null
   changedByUserId: string | null
   status: $Enums.ApplicationStatus | null
@@ -33,7 +33,7 @@ export type ApplicationHistoryMinAggregateOutputType = {
 }
 
 export type ApplicationHistoryMaxAggregateOutputType = {
-  historyId: string | null
+  id: string | null
   applicationId: string | null
   changedByUserId: string | null
   status: $Enums.ApplicationStatus | null
@@ -42,7 +42,7 @@ export type ApplicationHistoryMaxAggregateOutputType = {
 }
 
 export type ApplicationHistoryCountAggregateOutputType = {
-  historyId: number
+  id: number
   applicationId: number
   changedByUserId: number
   status: number
@@ -53,7 +53,7 @@ export type ApplicationHistoryCountAggregateOutputType = {
 
 
 export type ApplicationHistoryMinAggregateInputType = {
-  historyId?: true
+  id?: true
   applicationId?: true
   changedByUserId?: true
   status?: true
@@ -62,7 +62,7 @@ export type ApplicationHistoryMinAggregateInputType = {
 }
 
 export type ApplicationHistoryMaxAggregateInputType = {
-  historyId?: true
+  id?: true
   applicationId?: true
   changedByUserId?: true
   status?: true
@@ -71,7 +71,7 @@ export type ApplicationHistoryMaxAggregateInputType = {
 }
 
 export type ApplicationHistoryCountAggregateInputType = {
-  historyId?: true
+  id?: true
   applicationId?: true
   changedByUserId?: true
   status?: true
@@ -153,7 +153,7 @@ export type ApplicationHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensio
 }
 
 export type ApplicationHistoryGroupByOutputType = {
-  historyId: string
+  id: string
   applicationId: string
   changedByUserId: string | null
   status: $Enums.ApplicationStatus
@@ -183,7 +183,7 @@ export type ApplicationHistoryWhereInput = {
   AND?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
   OR?: Prisma.ApplicationHistoryWhereInput[]
   NOT?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
-  historyId?: Prisma.UuidFilter<"ApplicationHistory"> | string
+  id?: Prisma.UuidFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidFilter<"ApplicationHistory"> | string
   changedByUserId?: Prisma.UuidNullableFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
@@ -194,7 +194,7 @@ export type ApplicationHistoryWhereInput = {
 }
 
 export type ApplicationHistoryOrderByWithRelationInput = {
-  historyId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   applicationId?: Prisma.SortOrder
   changedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -205,7 +205,7 @@ export type ApplicationHistoryOrderByWithRelationInput = {
 }
 
 export type ApplicationHistoryWhereUniqueInput = Prisma.AtLeast<{
-  historyId?: string
+  id?: string
   AND?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
   OR?: Prisma.ApplicationHistoryWhereInput[]
   NOT?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
@@ -216,10 +216,10 @@ export type ApplicationHistoryWhereUniqueInput = Prisma.AtLeast<{
   changeDate?: Prisma.DateTimeFilter<"ApplicationHistory"> | Date | string
   application?: Prisma.XOR<Prisma.ApplicationScalarRelationFilter, Prisma.ApplicationWhereInput>
   changedByUser?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
-}, "historyId">
+}, "id">
 
 export type ApplicationHistoryOrderByWithAggregationInput = {
-  historyId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   applicationId?: Prisma.SortOrder
   changedByUserId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -234,7 +234,7 @@ export type ApplicationHistoryScalarWhereWithAggregatesInput = {
   AND?: Prisma.ApplicationHistoryScalarWhereWithAggregatesInput | Prisma.ApplicationHistoryScalarWhereWithAggregatesInput[]
   OR?: Prisma.ApplicationHistoryScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ApplicationHistoryScalarWhereWithAggregatesInput | Prisma.ApplicationHistoryScalarWhereWithAggregatesInput[]
-  historyId?: Prisma.UuidWithAggregatesFilter<"ApplicationHistory"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidWithAggregatesFilter<"ApplicationHistory"> | string
   changedByUserId?: Prisma.UuidNullableWithAggregatesFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusWithAggregatesFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
@@ -243,7 +243,7 @@ export type ApplicationHistoryScalarWhereWithAggregatesInput = {
 }
 
 export type ApplicationHistoryCreateInput = {
-  historyId?: string
+  id?: string
   status: $Enums.ApplicationStatus
   comment?: string | null
   changeDate?: Date | string
@@ -252,7 +252,7 @@ export type ApplicationHistoryCreateInput = {
 }
 
 export type ApplicationHistoryUncheckedCreateInput = {
-  historyId?: string
+  id?: string
   applicationId: string
   changedByUserId?: string | null
   status: $Enums.ApplicationStatus
@@ -261,7 +261,7 @@ export type ApplicationHistoryUncheckedCreateInput = {
 }
 
 export type ApplicationHistoryUpdateInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -270,7 +270,7 @@ export type ApplicationHistoryUpdateInput = {
 }
 
 export type ApplicationHistoryUncheckedUpdateInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   applicationId?: Prisma.StringFieldUpdateOperationsInput | string
   changedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
@@ -279,7 +279,7 @@ export type ApplicationHistoryUncheckedUpdateInput = {
 }
 
 export type ApplicationHistoryCreateManyInput = {
-  historyId?: string
+  id?: string
   applicationId: string
   changedByUserId?: string | null
   status: $Enums.ApplicationStatus
@@ -288,14 +288,14 @@ export type ApplicationHistoryCreateManyInput = {
 }
 
 export type ApplicationHistoryUpdateManyMutationInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ApplicationHistoryUncheckedUpdateManyInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   applicationId?: Prisma.StringFieldUpdateOperationsInput | string
   changedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
@@ -314,7 +314,7 @@ export type ApplicationHistoryOrderByRelationAggregateInput = {
 }
 
 export type ApplicationHistoryCountOrderByAggregateInput = {
-  historyId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   applicationId?: Prisma.SortOrder
   changedByUserId?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -323,7 +323,7 @@ export type ApplicationHistoryCountOrderByAggregateInput = {
 }
 
 export type ApplicationHistoryMaxOrderByAggregateInput = {
-  historyId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   applicationId?: Prisma.SortOrder
   changedByUserId?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -332,7 +332,7 @@ export type ApplicationHistoryMaxOrderByAggregateInput = {
 }
 
 export type ApplicationHistoryMinOrderByAggregateInput = {
-  historyId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   applicationId?: Prisma.SortOrder
   changedByUserId?: Prisma.SortOrder
   status?: Prisma.SortOrder
@@ -429,7 +429,7 @@ export type EnumApplicationStatusFieldUpdateOperationsInput = {
 }
 
 export type ApplicationHistoryCreateWithoutChangedByUserInput = {
-  historyId?: string
+  id?: string
   status: $Enums.ApplicationStatus
   comment?: string | null
   changeDate?: Date | string
@@ -437,7 +437,7 @@ export type ApplicationHistoryCreateWithoutChangedByUserInput = {
 }
 
 export type ApplicationHistoryUncheckedCreateWithoutChangedByUserInput = {
-  historyId?: string
+  id?: string
   applicationId: string
   status: $Enums.ApplicationStatus
   comment?: string | null
@@ -474,7 +474,7 @@ export type ApplicationHistoryScalarWhereInput = {
   AND?: Prisma.ApplicationHistoryScalarWhereInput | Prisma.ApplicationHistoryScalarWhereInput[]
   OR?: Prisma.ApplicationHistoryScalarWhereInput[]
   NOT?: Prisma.ApplicationHistoryScalarWhereInput | Prisma.ApplicationHistoryScalarWhereInput[]
-  historyId?: Prisma.UuidFilter<"ApplicationHistory"> | string
+  id?: Prisma.UuidFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidFilter<"ApplicationHistory"> | string
   changedByUserId?: Prisma.UuidNullableFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
@@ -483,7 +483,7 @@ export type ApplicationHistoryScalarWhereInput = {
 }
 
 export type ApplicationHistoryCreateWithoutApplicationInput = {
-  historyId?: string
+  id?: string
   status: $Enums.ApplicationStatus
   comment?: string | null
   changeDate?: Date | string
@@ -491,7 +491,7 @@ export type ApplicationHistoryCreateWithoutApplicationInput = {
 }
 
 export type ApplicationHistoryUncheckedCreateWithoutApplicationInput = {
-  historyId?: string
+  id?: string
   changedByUserId?: string | null
   status: $Enums.ApplicationStatus
   comment?: string | null
@@ -525,7 +525,7 @@ export type ApplicationHistoryUpdateManyWithWhereWithoutApplicationInput = {
 }
 
 export type ApplicationHistoryCreateManyChangedByUserInput = {
-  historyId?: string
+  id?: string
   applicationId: string
   status: $Enums.ApplicationStatus
   comment?: string | null
@@ -533,7 +533,7 @@ export type ApplicationHistoryCreateManyChangedByUserInput = {
 }
 
 export type ApplicationHistoryUpdateWithoutChangedByUserInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -541,7 +541,7 @@ export type ApplicationHistoryUpdateWithoutChangedByUserInput = {
 }
 
 export type ApplicationHistoryUncheckedUpdateWithoutChangedByUserInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   applicationId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -549,7 +549,7 @@ export type ApplicationHistoryUncheckedUpdateWithoutChangedByUserInput = {
 }
 
 export type ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   applicationId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -557,7 +557,7 @@ export type ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserInput = {
 }
 
 export type ApplicationHistoryCreateManyApplicationInput = {
-  historyId?: string
+  id?: string
   changedByUserId?: string | null
   status: $Enums.ApplicationStatus
   comment?: string | null
@@ -565,7 +565,7 @@ export type ApplicationHistoryCreateManyApplicationInput = {
 }
 
 export type ApplicationHistoryUpdateWithoutApplicationInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   changeDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -573,7 +573,7 @@ export type ApplicationHistoryUpdateWithoutApplicationInput = {
 }
 
 export type ApplicationHistoryUncheckedUpdateWithoutApplicationInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   changedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -581,7 +581,7 @@ export type ApplicationHistoryUncheckedUpdateWithoutApplicationInput = {
 }
 
 export type ApplicationHistoryUncheckedUpdateManyWithoutApplicationInput = {
-  historyId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   changedByUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   comment?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -591,7 +591,7 @@ export type ApplicationHistoryUncheckedUpdateManyWithoutApplicationInput = {
 
 
 export type ApplicationHistorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  historyId?: boolean
+  id?: boolean
   applicationId?: boolean
   changedByUserId?: boolean
   status?: boolean
@@ -602,7 +602,7 @@ export type ApplicationHistorySelect<ExtArgs extends runtime.Types.Extensions.In
 }, ExtArgs["result"]["applicationHistory"]>
 
 export type ApplicationHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  historyId?: boolean
+  id?: boolean
   applicationId?: boolean
   changedByUserId?: boolean
   status?: boolean
@@ -613,7 +613,7 @@ export type ApplicationHistorySelectCreateManyAndReturn<ExtArgs extends runtime.
 }, ExtArgs["result"]["applicationHistory"]>
 
 export type ApplicationHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  historyId?: boolean
+  id?: boolean
   applicationId?: boolean
   changedByUserId?: boolean
   status?: boolean
@@ -624,7 +624,7 @@ export type ApplicationHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.
 }, ExtArgs["result"]["applicationHistory"]>
 
 export type ApplicationHistorySelectScalar = {
-  historyId?: boolean
+  id?: boolean
   applicationId?: boolean
   changedByUserId?: boolean
   status?: boolean
@@ -632,7 +632,7 @@ export type ApplicationHistorySelectScalar = {
   changeDate?: boolean
 }
 
-export type ApplicationHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"historyId" | "applicationId" | "changedByUserId" | "status" | "comment" | "changeDate", ExtArgs["result"]["applicationHistory"]>
+export type ApplicationHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "applicationId" | "changedByUserId" | "status" | "comment" | "changeDate", ExtArgs["result"]["applicationHistory"]>
 export type ApplicationHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   application?: boolean | Prisma.ApplicationDefaultArgs<ExtArgs>
   changedByUser?: boolean | Prisma.ApplicationHistory$changedByUserArgs<ExtArgs>
@@ -653,7 +653,7 @@ export type $ApplicationHistoryPayload<ExtArgs extends runtime.Types.Extensions.
     changedByUser: Prisma.$UserPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    historyId: string
+    id: string
     applicationId: string
     changedByUserId: string | null
     status: $Enums.ApplicationStatus
@@ -742,8 +742,8 @@ export interface ApplicationHistoryDelegate<ExtArgs extends runtime.Types.Extens
    * // Get first 10 ApplicationHistories
    * const applicationHistories = await prisma.applicationHistory.findMany({ take: 10 })
    * 
-   * // Only select the `historyId`
-   * const applicationHistoryWithHistoryIdOnly = await prisma.applicationHistory.findMany({ select: { historyId: true } })
+   * // Only select the `id`
+   * const applicationHistoryWithIdOnly = await prisma.applicationHistory.findMany({ select: { id: true } })
    * 
    */
   findMany<T extends ApplicationHistoryFindManyArgs>(args?: Prisma.SelectSubset<T, ApplicationHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApplicationHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -787,9 +787,9 @@ export interface ApplicationHistoryDelegate<ExtArgs extends runtime.Types.Extens
    *   ]
    * })
    * 
-   * // Create many ApplicationHistories and only return the `historyId`
-   * const applicationHistoryWithHistoryIdOnly = await prisma.applicationHistory.createManyAndReturn({
-   *   select: { historyId: true },
+   * // Create many ApplicationHistories and only return the `id`
+   * const applicationHistoryWithIdOnly = await prisma.applicationHistory.createManyAndReturn({
+   *   select: { id: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -878,9 +878,9 @@ export interface ApplicationHistoryDelegate<ExtArgs extends runtime.Types.Extens
    *   ]
    * })
    * 
-   * // Update zero or more ApplicationHistories and only return the `historyId`
-   * const applicationHistoryWithHistoryIdOnly = await prisma.applicationHistory.updateManyAndReturn({
-   *   select: { historyId: true },
+   * // Update zero or more ApplicationHistories and only return the `id`
+   * const applicationHistoryWithIdOnly = await prisma.applicationHistory.updateManyAndReturn({
+   *   select: { id: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1084,7 +1084,7 @@ export interface Prisma__ApplicationHistoryClient<T, Null = never, ExtArgs exten
  * Fields of the ApplicationHistory model
  */
 export interface ApplicationHistoryFieldRefs {
-  readonly historyId: Prisma.FieldRef<"ApplicationHistory", 'String'>
+  readonly id: Prisma.FieldRef<"ApplicationHistory", 'String'>
   readonly applicationId: Prisma.FieldRef<"ApplicationHistory", 'String'>
   readonly changedByUserId: Prisma.FieldRef<"ApplicationHistory", 'String'>
   readonly status: Prisma.FieldRef<"ApplicationHistory", 'ApplicationStatus'>

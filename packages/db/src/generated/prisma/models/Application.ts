@@ -24,7 +24,7 @@ export type AggregateApplication = {
 }
 
 export type ApplicationMinAggregateOutputType = {
-  applicationId: string | null
+  id: string | null
   userId: string | null
   type: $Enums.ApplicationType | null
   description: string | null
@@ -33,7 +33,7 @@ export type ApplicationMinAggregateOutputType = {
 }
 
 export type ApplicationMaxAggregateOutputType = {
-  applicationId: string | null
+  id: string | null
   userId: string | null
   type: $Enums.ApplicationType | null
   description: string | null
@@ -42,7 +42,7 @@ export type ApplicationMaxAggregateOutputType = {
 }
 
 export type ApplicationCountAggregateOutputType = {
-  applicationId: number
+  id: number
   userId: number
   type: number
   description: number
@@ -53,7 +53,7 @@ export type ApplicationCountAggregateOutputType = {
 
 
 export type ApplicationMinAggregateInputType = {
-  applicationId?: true
+  id?: true
   userId?: true
   type?: true
   description?: true
@@ -62,7 +62,7 @@ export type ApplicationMinAggregateInputType = {
 }
 
 export type ApplicationMaxAggregateInputType = {
-  applicationId?: true
+  id?: true
   userId?: true
   type?: true
   description?: true
@@ -71,7 +71,7 @@ export type ApplicationMaxAggregateInputType = {
 }
 
 export type ApplicationCountAggregateInputType = {
-  applicationId?: true
+  id?: true
   userId?: true
   type?: true
   description?: true
@@ -153,7 +153,7 @@ export type ApplicationGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inte
 }
 
 export type ApplicationGroupByOutputType = {
-  applicationId: string
+  id: string
   userId: string
   type: $Enums.ApplicationType
   description: string
@@ -183,7 +183,7 @@ export type ApplicationWhereInput = {
   AND?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
   OR?: Prisma.ApplicationWhereInput[]
   NOT?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
-  applicationId?: Prisma.UuidFilter<"Application"> | string
+  id?: Prisma.UuidFilter<"Application"> | string
   userId?: Prisma.UuidFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringFilter<"Application"> | string
@@ -194,7 +194,7 @@ export type ApplicationWhereInput = {
 }
 
 export type ApplicationOrderByWithRelationInput = {
-  applicationId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -205,7 +205,7 @@ export type ApplicationOrderByWithRelationInput = {
 }
 
 export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
-  applicationId?: string
+  id?: string
   AND?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
   OR?: Prisma.ApplicationWhereInput[]
   NOT?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
@@ -216,10 +216,10 @@ export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Application"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   histories?: Prisma.ApplicationHistoryListRelationFilter
-}, "applicationId">
+}, "id">
 
 export type ApplicationOrderByWithAggregationInput = {
-  applicationId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -234,7 +234,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
   AND?: Prisma.ApplicationScalarWhereWithAggregatesInput | Prisma.ApplicationScalarWhereWithAggregatesInput[]
   OR?: Prisma.ApplicationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ApplicationScalarWhereWithAggregatesInput | Prisma.ApplicationScalarWhereWithAggregatesInput[]
-  applicationId?: Prisma.UuidWithAggregatesFilter<"Application"> | string
+  id?: Prisma.UuidWithAggregatesFilter<"Application"> | string
   userId?: Prisma.UuidWithAggregatesFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeWithAggregatesFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringWithAggregatesFilter<"Application"> | string
@@ -243,7 +243,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
 }
 
 export type ApplicationCreateInput = {
-  applicationId?: string
+  id?: string
   type: $Enums.ApplicationType
   description: string
   applicationDate?: Date | string
@@ -253,7 +253,7 @@ export type ApplicationCreateInput = {
 }
 
 export type ApplicationUncheckedCreateInput = {
-  applicationId?: string
+  id?: string
   userId: string
   type: $Enums.ApplicationType
   description: string
@@ -263,7 +263,7 @@ export type ApplicationUncheckedCreateInput = {
 }
 
 export type ApplicationUpdateInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -273,7 +273,7 @@ export type ApplicationUpdateInput = {
 }
 
 export type ApplicationUncheckedUpdateInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -283,7 +283,7 @@ export type ApplicationUncheckedUpdateInput = {
 }
 
 export type ApplicationCreateManyInput = {
-  applicationId?: string
+  id?: string
   userId: string
   type: $Enums.ApplicationType
   description: string
@@ -292,7 +292,7 @@ export type ApplicationCreateManyInput = {
 }
 
 export type ApplicationUpdateManyMutationInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -300,7 +300,7 @@ export type ApplicationUpdateManyMutationInput = {
 }
 
 export type ApplicationUncheckedUpdateManyInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -319,7 +319,7 @@ export type ApplicationOrderByRelationAggregateInput = {
 }
 
 export type ApplicationCountOrderByAggregateInput = {
-  applicationId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -328,7 +328,7 @@ export type ApplicationCountOrderByAggregateInput = {
 }
 
 export type ApplicationMaxOrderByAggregateInput = {
-  applicationId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -337,7 +337,7 @@ export type ApplicationMaxOrderByAggregateInput = {
 }
 
 export type ApplicationMinOrderByAggregateInput = {
-  applicationId?: Prisma.SortOrder
+  id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   description?: Prisma.SortOrder
@@ -411,7 +411,7 @@ export type ApplicationUpdateOneRequiredWithoutHistoriesNestedInput = {
 }
 
 export type ApplicationCreateWithoutUserInput = {
-  applicationId?: string
+  id?: string
   type: $Enums.ApplicationType
   description: string
   applicationDate?: Date | string
@@ -420,7 +420,7 @@ export type ApplicationCreateWithoutUserInput = {
 }
 
 export type ApplicationUncheckedCreateWithoutUserInput = {
-  applicationId?: string
+  id?: string
   type: $Enums.ApplicationType
   description: string
   applicationDate?: Date | string
@@ -458,7 +458,7 @@ export type ApplicationScalarWhereInput = {
   AND?: Prisma.ApplicationScalarWhereInput | Prisma.ApplicationScalarWhereInput[]
   OR?: Prisma.ApplicationScalarWhereInput[]
   NOT?: Prisma.ApplicationScalarWhereInput | Prisma.ApplicationScalarWhereInput[]
-  applicationId?: Prisma.UuidFilter<"Application"> | string
+  id?: Prisma.UuidFilter<"Application"> | string
   userId?: Prisma.UuidFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringFilter<"Application"> | string
@@ -467,7 +467,7 @@ export type ApplicationScalarWhereInput = {
 }
 
 export type ApplicationCreateWithoutHistoriesInput = {
-  applicationId?: string
+  id?: string
   type: $Enums.ApplicationType
   description: string
   applicationDate?: Date | string
@@ -476,7 +476,7 @@ export type ApplicationCreateWithoutHistoriesInput = {
 }
 
 export type ApplicationUncheckedCreateWithoutHistoriesInput = {
-  applicationId?: string
+  id?: string
   userId: string
   type: $Enums.ApplicationType
   description: string
@@ -501,7 +501,7 @@ export type ApplicationUpdateToOneWithWhereWithoutHistoriesInput = {
 }
 
 export type ApplicationUpdateWithoutHistoriesInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -510,7 +510,7 @@ export type ApplicationUpdateWithoutHistoriesInput = {
 }
 
 export type ApplicationUncheckedUpdateWithoutHistoriesInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
@@ -519,7 +519,7 @@ export type ApplicationUncheckedUpdateWithoutHistoriesInput = {
 }
 
 export type ApplicationCreateManyUserInput = {
-  applicationId?: string
+  id?: string
   type: $Enums.ApplicationType
   description: string
   applicationDate?: Date | string
@@ -527,7 +527,7 @@ export type ApplicationCreateManyUserInput = {
 }
 
 export type ApplicationUpdateWithoutUserInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -536,7 +536,7 @@ export type ApplicationUpdateWithoutUserInput = {
 }
 
 export type ApplicationUncheckedUpdateWithoutUserInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -545,7 +545,7 @@ export type ApplicationUncheckedUpdateWithoutUserInput = {
 }
 
 export type ApplicationUncheckedUpdateManyWithoutUserInput = {
-  applicationId?: Prisma.StringFieldUpdateOperationsInput | string
+  id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumApplicationTypeFieldUpdateOperationsInput | $Enums.ApplicationType
   description?: Prisma.StringFieldUpdateOperationsInput | string
   applicationDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -584,7 +584,7 @@ export type ApplicationCountOutputTypeCountHistoriesArgs<ExtArgs extends runtime
 
 
 export type ApplicationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  applicationId?: boolean
+  id?: boolean
   userId?: boolean
   type?: boolean
   description?: boolean
@@ -596,7 +596,7 @@ export type ApplicationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
 }, ExtArgs["result"]["application"]>
 
 export type ApplicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  applicationId?: boolean
+  id?: boolean
   userId?: boolean
   type?: boolean
   description?: boolean
@@ -606,7 +606,7 @@ export type ApplicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
 }, ExtArgs["result"]["application"]>
 
 export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
-  applicationId?: boolean
+  id?: boolean
   userId?: boolean
   type?: boolean
   description?: boolean
@@ -616,7 +616,7 @@ export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
 }, ExtArgs["result"]["application"]>
 
 export type ApplicationSelectScalar = {
-  applicationId?: boolean
+  id?: boolean
   userId?: boolean
   type?: boolean
   description?: boolean
@@ -624,7 +624,7 @@ export type ApplicationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"applicationId" | "userId" | "type" | "description" | "applicationDate" | "updatedAt", ExtArgs["result"]["application"]>
+export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "type" | "description" | "applicationDate" | "updatedAt", ExtArgs["result"]["application"]>
 export type ApplicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   histories?: boolean | Prisma.Application$historiesArgs<ExtArgs>
@@ -644,7 +644,7 @@ export type $ApplicationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     histories: Prisma.$ApplicationHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
-    applicationId: string
+    id: string
     userId: string
     type: $Enums.ApplicationType
     description: string
@@ -733,8 +733,8 @@ export interface ApplicationDelegate<ExtArgs extends runtime.Types.Extensions.In
    * // Get first 10 Applications
    * const applications = await prisma.application.findMany({ take: 10 })
    * 
-   * // Only select the `applicationId`
-   * const applicationWithApplicationIdOnly = await prisma.application.findMany({ select: { applicationId: true } })
+   * // Only select the `id`
+   * const applicationWithIdOnly = await prisma.application.findMany({ select: { id: true } })
    * 
    */
   findMany<T extends ApplicationFindManyArgs>(args?: Prisma.SelectSubset<T, ApplicationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApplicationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
@@ -778,9 +778,9 @@ export interface ApplicationDelegate<ExtArgs extends runtime.Types.Extensions.In
    *   ]
    * })
    * 
-   * // Create many Applications and only return the `applicationId`
-   * const applicationWithApplicationIdOnly = await prisma.application.createManyAndReturn({
-   *   select: { applicationId: true },
+   * // Create many Applications and only return the `id`
+   * const applicationWithIdOnly = await prisma.application.createManyAndReturn({
+   *   select: { id: true },
    *   data: [
    *     // ... provide data here
    *   ]
@@ -869,9 +869,9 @@ export interface ApplicationDelegate<ExtArgs extends runtime.Types.Extensions.In
    *   ]
    * })
    * 
-   * // Update zero or more Applications and only return the `applicationId`
-   * const applicationWithApplicationIdOnly = await prisma.application.updateManyAndReturn({
-   *   select: { applicationId: true },
+   * // Update zero or more Applications and only return the `id`
+   * const applicationWithIdOnly = await prisma.application.updateManyAndReturn({
+   *   select: { id: true },
    *   where: {
    *     // ... provide filter here
    *   },
@@ -1075,7 +1075,7 @@ export interface Prisma__ApplicationClient<T, Null = never, ExtArgs extends runt
  * Fields of the Application model
  */
 export interface ApplicationFieldRefs {
-  readonly applicationId: Prisma.FieldRef<"Application", 'String'>
+  readonly id: Prisma.FieldRef<"Application", 'String'>
   readonly userId: Prisma.FieldRef<"Application", 'String'>
   readonly type: Prisma.FieldRef<"Application", 'ApplicationType'>
   readonly description: Prisma.FieldRef<"Application", 'String'>

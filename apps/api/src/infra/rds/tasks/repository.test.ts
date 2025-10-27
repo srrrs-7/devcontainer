@@ -1,8 +1,50 @@
-import { expect, test } from "vitest";
+import { getPrisma } from "@packages/db";
+import { beforeEach, expect, test } from "vitest";
 import { createTask, deleteTask, getTask } from "./repository";
 
 // テスト用の有効なUUID
-const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
+const TEST_ORG_ID = "00000000-0000-0000-0000-000000000001";
+const TEST_CLIENT_ID = "00000000-0000-0000-0000-000000000002";
+const TEST_USER_ID = "00000000-0000-0000-0000-000000000003";
+
+// Setup test data before each test
+beforeEach(async () => {
+  const prisma = getPrisma();
+
+  // Create test organization
+  await prisma.organization.create({
+    data: {
+      id: TEST_ORG_ID,
+      name: "Test Organization",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  // Create test client
+  await prisma.client.create({
+    data: {
+      id: TEST_CLIENT_ID,
+      organizationId: TEST_ORG_ID,
+      name: "Test Client",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+
+  // Create test user
+  await prisma.user.create({
+    data: {
+      id: TEST_USER_ID,
+      clientId: TEST_CLIENT_ID,
+      username: "testuser",
+      email: "test@example.com",
+      passwordHash: "hashed_password",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    },
+  });
+});
 
 test("createTask: タスクを作成できる", async () => {
   const result = await createTask({
