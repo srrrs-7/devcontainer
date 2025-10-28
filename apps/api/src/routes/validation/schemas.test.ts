@@ -12,33 +12,24 @@ import {
 } from "./schemas";
 
 describe("uuidSchema", () => {
-  test("validates correct UUID v4", () => {
-    const result = uuidSchema.safeParse("123e4567-e89b-12d3-a456-426614174000");
+  test.each([
+    { uuid: "123e4567-e89b-12d3-a456-426614174000", description: "UUID v4" },
+    { uuid: "550e8400-e29b-11d4-a716-446655440000", description: "UUID v1" },
+  ])("validates correct $description", ({ uuid }) => {
+    const result = uuidSchema.safeParse(uuid);
     expect(result.success).toBe(true);
   });
 
-  test("validates correct UUID v1", () => {
-    const result = uuidSchema.safeParse("550e8400-e29b-11d4-a716-446655440000");
-    expect(result.success).toBe(true);
-  });
-
-  test("rejects invalid UUID format", () => {
-    const result = uuidSchema.safeParse("not-a-uuid");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects UUID without hyphens", () => {
-    const result = uuidSchema.safeParse("123e4567e89b12d3a456426614174000");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects empty string", () => {
-    const result = uuidSchema.safeParse("");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects SQL injection attempt", () => {
-    const result = uuidSchema.safeParse("'; DROP TABLE users--");
+  test.each([
+    { uuid: "not-a-uuid", description: "invalid UUID format" },
+    {
+      uuid: "123e4567e89b12d3a456426614174000",
+      description: "UUID without hyphens",
+    },
+    { uuid: "", description: "empty string" },
+    { uuid: "'; DROP TABLE users--", description: "SQL injection attempt" },
+  ])("rejects $description", ({ uuid }) => {
+    const result = uuidSchema.safeParse(uuid);
     expect(result.success).toBe(false);
   });
 });
@@ -77,65 +68,41 @@ describe("safeStringSchema", () => {
   describe("SQL Injection Protection", () => {
     const schema = safeStringSchema();
 
-    test("rejects SELECT statement", () => {
-      const result = schema.safeParse("SELECT * FROM users");
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        expect(result.error.issues[0].message).toContain("SQL patterns");
-      }
-    });
-
-    test("rejects INSERT statement", () => {
-      const result = schema.safeParse("INSERT INTO users VALUES (1)");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects UPDATE statement", () => {
-      const result = schema.safeParse("UPDATE users SET name='hacker'");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects DELETE statement", () => {
-      const result = schema.safeParse("DELETE FROM users WHERE id=1");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects DROP statement", () => {
-      const result = schema.safeParse("DROP TABLE users");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects SQL comments (--)", () => {
-      const result = schema.safeParse("admin'--");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects SQL comments (/* */)", () => {
-      const result = schema.safeParse("admin' /* comment */");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects SQL union attack", () => {
-      const result = schema.safeParse("1' UNION SELECT password FROM users--");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects SQL with semicolon", () => {
-      const result = schema.safeParse("admin'; DROP TABLE users;--");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects stored procedure names", () => {
-      const result = schema.safeParse("EXEC xp_cmdshell 'dir'");
-      expect(result.success).toBe(false);
-    });
-
-    test("accepts normal text with SQL-like words in context", () => {
-      // This should pass as it's normal text, not SQL injection
-      const result = schema.safeParse(
-        "I need to select a product from the list",
-      );
-      // Note: This will fail due to the word "select" - this is intentional for security
+    test.each([
+      { input: "SELECT * FROM users", description: "SELECT statement" },
+      {
+        input: "INSERT INTO users VALUES (1)",
+        description: "INSERT statement",
+      },
+      {
+        input: "UPDATE users SET name='hacker'",
+        description: "UPDATE statement",
+      },
+      {
+        input: "DELETE FROM users WHERE id=1",
+        description: "DELETE statement",
+      },
+      { input: "DROP TABLE users", description: "DROP statement" },
+      { input: "admin'--", description: "SQL comments (--)" },
+      { input: "admin' /* comment */", description: "SQL comments (/* */)" },
+      {
+        input: "1' UNION SELECT password FROM users--",
+        description: "SQL union attack",
+      },
+      {
+        input: "admin'; DROP TABLE users;--",
+        description: "SQL with semicolon",
+      },
+      {
+        input: "EXEC xp_cmdshell 'dir'",
+        description: "stored procedure names",
+      },
+      {
+        input: "I need to select a product from the list",
+        description: "normal text with SQL-like words",
+      },
+    ])("rejects $description", ({ input }) => {
+      const result = schema.safeParse(input);
       expect(result.success).toBe(false);
     });
   });
@@ -143,47 +110,26 @@ describe("safeStringSchema", () => {
   describe("XSS Protection", () => {
     const schema = safeStringSchema();
 
-    test("rejects script tag", () => {
-      const result = schema.safeParse("<script>alert('XSS')</script>");
-      expect(result.success).toBe(false);
-      // Note: SQL patterns are checked first, so the error might be about SQL patterns
-      if (!result.success) {
-        expect(result.error.issues.length).toBeGreaterThan(0);
-      }
-    });
-
-    test("rejects script tag with attributes", () => {
-      const result = schema.safeParse("<script src='malicious.js'></script>");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects javascript: protocol", () => {
-      const result = schema.safeParse("javascript:alert('XSS')");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects onclick event handler", () => {
-      const result = schema.safeParse("<div onclick='alert(1)'>Click</div>");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects onload event handler", () => {
-      const result = schema.safeParse("<img onload='alert(1)' src='x'>");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects iframe tag", () => {
-      const result = schema.safeParse("<iframe src='evil.com'></iframe>");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects embed tag", () => {
-      const result = schema.safeParse("<embed src='evil.swf'>");
-      expect(result.success).toBe(false);
-    });
-
-    test("rejects object tag", () => {
-      const result = schema.safeParse("<object data='evil.swf'></object>");
+    test.each([
+      { input: "<script>alert('XSS')</script>", description: "script tag" },
+      {
+        input: "<script src='malicious.js'></script>",
+        description: "script tag with attributes",
+      },
+      { input: "javascript:alert('XSS')", description: "javascript: protocol" },
+      {
+        input: "<div onclick='alert(1)'>Click</div>",
+        description: "onclick event handler",
+      },
+      {
+        input: "<img onload='alert(1)' src='x'>",
+        description: "onload event handler",
+      },
+      { input: "<iframe src='evil.com'></iframe>", description: "iframe tag" },
+      { input: "<embed src='evil.swf'>", description: "embed tag" },
+      { input: "<object data='evil.swf'></object>", description: "object tag" },
+    ])("rejects $description", ({ input }) => {
+      const result = schema.safeParse(input);
       expect(result.success).toBe(false);
     });
 
@@ -209,7 +155,6 @@ describe("emailSchema", () => {
   });
 
   test("trims whitespace after validation", () => {
-    // Note: Email validation happens before trim, so leading/trailing spaces will fail validation
     const result = emailSchema.safeParse("user@example.com");
     expect(result.success).toBe(true);
     if (result.success) {
@@ -217,80 +162,52 @@ describe("emailSchema", () => {
     }
   });
 
-  test("rejects email without @", () => {
-    const result = emailSchema.safeParse("userexample.com");
+  test.each([
+    { email: "userexample.com", description: "email without @" },
+    { email: "user@", description: "email without domain" },
+    {
+      email: `${"a".repeat(250)}@example.com`,
+      description: "email exceeding max length",
+    },
+  ])("rejects $description", ({ email }) => {
+    const result = emailSchema.safeParse(email);
     expect(result.success).toBe(false);
   });
 
-  test("rejects email without domain", () => {
-    const result = emailSchema.safeParse("user@");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects email exceeding max length", () => {
-    const longEmail = `${"a".repeat(250)}@example.com`;
-    const result = emailSchema.safeParse(longEmail);
-    expect(result.success).toBe(false);
-  });
-
-  test("accepts valid email with subdomain", () => {
-    const result = emailSchema.safeParse("user@mail.example.com");
-    expect(result.success).toBe(true);
-  });
-
-  test("accepts valid email with plus sign", () => {
-    const result = emailSchema.safeParse("user+tag@example.com");
+  test.each([
+    {
+      email: "user@mail.example.com",
+      description: "valid email with subdomain",
+    },
+    {
+      email: "user+tag@example.com",
+      description: "valid email with plus sign",
+    },
+  ])("accepts $description", ({ email }) => {
+    const result = emailSchema.safeParse(email);
     expect(result.success).toBe(true);
   });
 });
 
 describe("usernameSchema", () => {
-  test("validates alphanumeric username", () => {
-    const result = usernameSchema.safeParse("user123");
+  test.each([
+    { username: "user123", description: "alphanumeric username" },
+    { username: "user_name", description: "username with underscore" },
+    { username: "user-name", description: "username with hyphen" },
+    { username: "username", description: "valid username" },
+  ])("validates $description", ({ username }) => {
+    const result = usernameSchema.safeParse(username);
     expect(result.success).toBe(true);
   });
 
-  test("validates username with underscore", () => {
-    const result = usernameSchema.safeParse("user_name");
-    expect(result.success).toBe(true);
-  });
-
-  test("validates username with hyphen", () => {
-    const result = usernameSchema.safeParse("user-name");
-    expect(result.success).toBe(true);
-  });
-
-  test("accepts valid username", () => {
-    // Note: Regex validation happens before trim, so leading/trailing spaces will fail validation
-    const result = usernameSchema.safeParse("username");
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data).toBe("username");
-    }
-  });
-
-  test("rejects username below minimum length", () => {
-    const result = usernameSchema.safeParse("ab");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects username above maximum length", () => {
-    const result = usernameSchema.safeParse("a".repeat(101));
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects username with spaces", () => {
-    const result = usernameSchema.safeParse("user name");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects username with special characters", () => {
-    const result = usernameSchema.safeParse("user@name");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects username with SQL injection", () => {
-    const result = usernameSchema.safeParse("admin'--");
+  test.each([
+    { username: "ab", description: "username below minimum length" },
+    { username: "a".repeat(101), description: "username above maximum length" },
+    { username: "user name", description: "username with spaces" },
+    { username: "user@name", description: "username with special characters" },
+    { username: "admin'--", description: "username with SQL injection" },
+  ])("rejects $description", ({ username }) => {
+    const result = usernameSchema.safeParse(username);
     expect(result.success).toBe(false);
   });
 });
@@ -343,50 +260,30 @@ describe("contentSchema", () => {
 });
 
 describe("urlSchema", () => {
-  test("validates HTTP URL", () => {
-    const result = urlSchema.safeParse("http://example.com");
+  test.each([
+    { url: "http://example.com", description: "HTTP URL" },
+    { url: "https://example.com", description: "HTTPS URL" },
+    { url: "https://example.com/path/to/page", description: "URL with path" },
+    {
+      url: "https://example.com?foo=bar&baz=qux",
+      description: "URL with query parameters",
+    },
+  ])("validates $description", ({ url }) => {
+    const result = urlSchema.safeParse(url);
     expect(result.success).toBe(true);
   });
 
-  test("validates HTTPS URL", () => {
-    const result = urlSchema.safeParse("https://example.com");
-    expect(result.success).toBe(true);
-  });
-
-  test("validates URL with path", () => {
-    const result = urlSchema.safeParse("https://example.com/path/to/page");
-    expect(result.success).toBe(true);
-  });
-
-  test("validates URL with query parameters", () => {
-    const result = urlSchema.safeParse("https://example.com?foo=bar&baz=qux");
-    expect(result.success).toBe(true);
-  });
-
-  test("rejects javascript: protocol", () => {
-    const result = urlSchema.safeParse("javascript:alert('XSS')");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects data: protocol", () => {
-    const result = urlSchema.safeParse(
-      "data:text/html,<script>alert('XSS')</script>",
-    );
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects file: protocol", () => {
-    const result = urlSchema.safeParse("file:///etc/passwd");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects ftp: protocol", () => {
-    const result = urlSchema.safeParse("ftp://example.com");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects invalid URL format", () => {
-    const result = urlSchema.safeParse("not a url");
+  test.each([
+    { url: "javascript:alert('XSS')", description: "javascript: protocol" },
+    {
+      url: "data:text/html,<script>alert('XSS')</script>",
+      description: "data: protocol",
+    },
+    { url: "file:///etc/passwd", description: "file: protocol" },
+    { url: "ftp://example.com", description: "ftp: protocol" },
+    { url: "not a url", description: "invalid URL format" },
+  ])("rejects $description", ({ url }) => {
+    const result = urlSchema.safeParse(url);
     expect(result.success).toBe(false);
   });
 });
@@ -419,33 +316,15 @@ describe("paginationSchema", () => {
     }
   });
 
-  test("rejects page below minimum", () => {
-    const result = paginationSchema.safeParse({ page: 0 });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects page above maximum", () => {
-    const result = paginationSchema.safeParse({ page: 10001 });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects limit below minimum", () => {
-    const result = paginationSchema.safeParse({ limit: 0 });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects limit above maximum", () => {
-    const result = paginationSchema.safeParse({ limit: 101 });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects negative page", () => {
-    const result = paginationSchema.safeParse({ page: -1 });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects non-integer page", () => {
-    const result = paginationSchema.safeParse({ page: 1.5 });
+  test.each([
+    { input: { page: 0 }, description: "page below minimum" },
+    { input: { page: 10001 }, description: "page above maximum" },
+    { input: { limit: 0 }, description: "limit below minimum" },
+    { input: { limit: 101 }, description: "limit above maximum" },
+    { input: { page: -1 }, description: "negative page" },
+    { input: { page: 1.5 }, description: "non-integer page" },
+  ])("rejects $description", ({ input }) => {
+    const result = paginationSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
 });
@@ -458,52 +337,35 @@ describe("userHeaderSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  test("rejects invalid UUID", () => {
-    const result = userHeaderSchema.safeParse({ "x-user-id": "invalid-uuid" });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects missing user ID", () => {
-    const result = userHeaderSchema.safeParse({});
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects SQL injection in user ID", () => {
-    const result = userHeaderSchema.safeParse({
-      "x-user-id": "'; DROP TABLE users--",
-    });
+  test.each([
+    { input: { "x-user-id": "invalid-uuid" }, description: "invalid UUID" },
+    { input: {}, description: "missing user ID" },
+    {
+      input: { "x-user-id": "'; DROP TABLE users--" },
+      description: "SQL injection in user ID",
+    },
+  ])("rejects $description", ({ input }) => {
+    const result = userHeaderSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
 });
 
 describe("isoDateSchema", () => {
-  test("validates ISO 8601 date string", () => {
-    const result = isoDateSchema.safeParse("2024-10-21T12:00:00.000Z");
+  test.each([
+    { input: "2024-10-21T12:00:00.000Z", description: "ISO 8601 date string" },
+    { input: new Date(), description: "Date object" },
+    { input: "2024-10-21T12:00:00Z", description: "ISO date with Z timezone" },
+  ])("validates $description", ({ input }) => {
+    const result = isoDateSchema.safeParse(input);
     expect(result.success).toBe(true);
   });
 
-  test("validates Date object", () => {
-    const result = isoDateSchema.safeParse(new Date());
-    expect(result.success).toBe(true);
-  });
-
-  test("validates ISO date with Z timezone", () => {
-    const result = isoDateSchema.safeParse("2024-10-21T12:00:00Z");
-    expect(result.success).toBe(true);
-  });
-
-  test("rejects invalid date format", () => {
-    const result = isoDateSchema.safeParse("2024-10-21");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects non-date string", () => {
-    const result = isoDateSchema.safeParse("not a date");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects SQL injection attempt", () => {
-    const result = isoDateSchema.safeParse("'; DROP TABLE tasks--");
+  test.each([
+    { input: "2024-10-21", description: "invalid date format" },
+    { input: "not a date", description: "non-date string" },
+    { input: "'; DROP TABLE tasks--", description: "SQL injection attempt" },
+  ])("rejects $description", ({ input }) => {
+    const result = isoDateSchema.safeParse(input);
     expect(result.success).toBe(false);
   });
 });

@@ -14,52 +14,32 @@ describe("taskIdParamSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  test("rejects invalid UUID", () => {
-    const result = taskIdParamSchema.safeParse({ id: "not-a-uuid" });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects empty ID", () => {
-    const result = taskIdParamSchema.safeParse({ id: "" });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects SQL injection", () => {
-    const result = taskIdParamSchema.safeParse({
-      id: "'; DROP TABLE tasks--",
-    });
+  test.each([
+    { id: "not-a-uuid", description: "invalid UUID" },
+    { id: "", description: "empty ID" },
+    { id: "'; DROP TABLE tasks--", description: "SQL injection" },
+  ])("rejects $description", ({ id }) => {
+    const result = taskIdParamSchema.safeParse({ id });
     expect(result.success).toBe(false);
   });
 });
 
 describe("taskStatusSchema", () => {
-  test("validates PENDING status", () => {
-    const result = taskStatusSchema.safeParse("PENDING");
+  test.each([
+    { status: "PENDING", description: "PENDING status" },
+    { status: "IN_PROGRESS", description: "IN_PROGRESS status" },
+    { status: "COMPLETED", description: "COMPLETED status" },
+  ])("validates $description", ({ status }) => {
+    const result = taskStatusSchema.safeParse(status);
     expect(result.success).toBe(true);
   });
 
-  test("validates IN_PROGRESS status", () => {
-    const result = taskStatusSchema.safeParse("IN_PROGRESS");
-    expect(result.success).toBe(true);
-  });
-
-  test("validates COMPLETED status", () => {
-    const result = taskStatusSchema.safeParse("COMPLETED");
-    expect(result.success).toBe(true);
-  });
-
-  test("rejects invalid status", () => {
-    const result = taskStatusSchema.safeParse("INVALID_STATUS");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects lowercase status", () => {
-    const result = taskStatusSchema.safeParse("pending");
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects empty status", () => {
-    const result = taskStatusSchema.safeParse("");
+  test.each([
+    { status: "INVALID_STATUS", description: "invalid status" },
+    { status: "pending", description: "lowercase status" },
+    { status: "", description: "empty status" },
+  ])("rejects $description", ({ status }) => {
+    const result = taskStatusSchema.safeParse(status);
     expect(result.success).toBe(false);
   });
 });
@@ -97,59 +77,43 @@ describe("createTaskBodySchema", () => {
     }
   });
 
-  test("rejects empty content", () => {
-    const result = createTaskBodySchema.safeParse({ content: "" });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects content exceeding max length", () => {
-    const result = createTaskBodySchema.safeParse({
-      content: "a".repeat(1001),
-    });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects invalid status", () => {
-    const result = createTaskBodySchema.safeParse({
-      content: "Task content",
-      status: "INVALID",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects content with SQL injection", () => {
-    const result = createTaskBodySchema.safeParse({
-      content: "'; DROP TABLE tasks--",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects content with XSS", () => {
-    const result = createTaskBodySchema.safeParse({
-      content: "<script>alert('xss')</script>",
-    });
+  test.each([
+    { input: { content: "" }, description: "empty content" },
+    {
+      input: { content: "a".repeat(1001) },
+      description: "content exceeding max length",
+    },
+    {
+      input: { content: "Task content", status: "INVALID" },
+      description: "invalid status",
+    },
+    {
+      input: { content: "'; DROP TABLE tasks--" },
+      description: "content with SQL injection",
+    },
+    {
+      input: { content: "<script>alert('xss')</script>" },
+      description: "content with XSS",
+    },
+  ])("rejects $description", ({ input }) => {
+    const result = createTaskBodySchema.safeParse(input);
     expect(result.success).toBe(false);
   });
 });
 
 describe("updateTaskBodySchema", () => {
-  test("validates content update only", () => {
-    const result = updateTaskBodySchema.safeParse({
-      content: "Updated content",
-    });
-    expect(result.success).toBe(true);
-  });
-
-  test("validates status update only", () => {
-    const result = updateTaskBodySchema.safeParse({ status: "COMPLETED" });
-    expect(result.success).toBe(true);
-  });
-
-  test("validates both content and status update", () => {
-    const result = updateTaskBodySchema.safeParse({
-      content: "Updated content",
-      status: "IN_PROGRESS",
-    });
+  test.each([
+    {
+      input: { content: "Updated content" },
+      description: "content update only",
+    },
+    { input: { status: "COMPLETED" }, description: "status update only" },
+    {
+      input: { content: "Updated content", status: "IN_PROGRESS" },
+      description: "both content and status update",
+    },
+  ])("validates $description", ({ input }) => {
+    const result = updateTaskBodySchema.safeParse(input);
     expect(result.success).toBe(true);
   });
 
@@ -179,15 +143,14 @@ describe("updateTaskBodySchema", () => {
     }
   });
 
-  test("rejects invalid status", () => {
-    const result = updateTaskBodySchema.safeParse({ status: "INVALID" });
-    expect(result.success).toBe(false);
-  });
-
-  test("rejects content with SQL injection", () => {
-    const result = updateTaskBodySchema.safeParse({
-      content: "'; UPDATE tasks SET status='COMPLETED'--",
-    });
+  test.each([
+    { input: { status: "INVALID" }, description: "invalid status" },
+    {
+      input: { content: "'; UPDATE tasks SET status='COMPLETED'--" },
+      description: "content with SQL injection",
+    },
+  ])("rejects $description", ({ input }) => {
+    const result = updateTaskBodySchema.safeParse(input);
     expect(result.success).toBe(false);
   });
 });
