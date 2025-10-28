@@ -22,11 +22,6 @@ export * from './enums';
  */
 export type Tasks = Prisma.TasksModel
 /**
- * Model UserTask
- * 
- */
-export type UserTask = Prisma.UserTaskModel
-/**
  * Model Organization
  * 
  */

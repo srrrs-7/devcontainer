@@ -10,18 +10,18 @@ import {
   updateUser,
 } from "./repository";
 
-// テスト用の有効なUUID
-const TEST_ORG_ID = "00000000-0000-0000-0000-000000000001";
-const TEST_CLIENT_ID = "00000000-0000-0000-0000-000000000002";
+let TEST_CLIENT_ID: string;
+
+// Helper to generate unique username/email
+const uniqueString = () => Math.random().toString(36).substring(7);
 
 // Setup test data before each test
 beforeEach(async () => {
   const prisma = getPrisma();
 
-  // Create test organization
-  await prisma.organization.create({
+  // Create test organization (use default UUID)
+  const organization = await prisma.organization.create({
     data: {
-      id: TEST_ORG_ID,
       name: "Test Organization",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -29,30 +29,34 @@ beforeEach(async () => {
   });
 
   // Create test client
-  await prisma.client.create({
+  const client = await prisma.client.create({
     data: {
-      id: TEST_CLIENT_ID,
-      organizationId: TEST_ORG_ID,
+      organizationId: organization.id,
       name: "Test Client",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   });
+
+  TEST_CLIENT_ID = client.id;
 });
 
 test("createUser: ユーザーを作成できる", async () => {
+  const username = `testuser_${uniqueString()}`;
+  const email = `test_${uniqueString()}@example.com`;
+
   const result = await createUser({
     clientId: TEST_CLIENT_ID,
-    username: "testuser",
-    email: "test@example.com",
+    username,
+    email,
     passwordHash: "hashed_password_123",
   });
 
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
     expect(result.value.clientId).toBe(TEST_CLIENT_ID);
-    expect(result.value.username).toBe("testuser");
-    expect(result.value.email).toBe("test@example.com");
+    expect(result.value.username).toBe(username);
+    expect(result.value.email).toBe(email);
     expect(result.value.passwordHash).toBe("hashed_password_123");
     expect(result.value.userId).toBeDefined();
     expect(result.value.createdAt).toBeInstanceOf(Date);

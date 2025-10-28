@@ -389,7 +389,6 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   Tasks: 'Tasks',
-  UserTask: 'UserTask',
   Organization: 'Organization',
   Client: 'Client',
   User: 'User',
@@ -414,7 +413,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "tasks" | "userTask" | "organization" | "client" | "user" | "application" | "applicationHistory" | "role" | "permission" | "rolePermission" | "userClientRole"
+    modelProps: "tasks" | "organization" | "client" | "user" | "application" | "applicationHistory" | "role" | "permission" | "rolePermission" | "userClientRole"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -489,80 +488,6 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.TasksCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.TasksCountAggregateOutputType> | number
-        }
-      }
-    }
-    UserTask: {
-      payload: Prisma.$UserTaskPayload<ExtArgs>
-      fields: Prisma.UserTaskFieldRefs
-      operations: {
-        findUnique: {
-          args: Prisma.UserTaskFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload> | null
-        }
-        findUniqueOrThrow: {
-          args: Prisma.UserTaskFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        findFirst: {
-          args: Prisma.UserTaskFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload> | null
-        }
-        findFirstOrThrow: {
-          args: Prisma.UserTaskFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        findMany: {
-          args: Prisma.UserTaskFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>[]
-        }
-        create: {
-          args: Prisma.UserTaskCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        createMany: {
-          args: Prisma.UserTaskCreateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        createManyAndReturn: {
-          args: Prisma.UserTaskCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>[]
-        }
-        delete: {
-          args: Prisma.UserTaskDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        update: {
-          args: Prisma.UserTaskUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        deleteMany: {
-          args: Prisma.UserTaskDeleteManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateMany: {
-          args: Prisma.UserTaskUpdateManyArgs<ExtArgs>
-          result: BatchPayload
-        }
-        updateManyAndReturn: {
-          args: Prisma.UserTaskUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>[]
-        }
-        upsert: {
-          args: Prisma.UserTaskUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserTaskPayload>
-        }
-        aggregate: {
-          args: Prisma.UserTaskAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateUserTask>
-        }
-        groupBy: {
-          args: Prisma.UserTaskGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UserTaskGroupByOutputType>[]
-        }
-        count: {
-          args: Prisma.UserTaskCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UserTaskCountAggregateOutputType> | number
         }
       }
     }
@@ -1283,17 +1208,6 @@ export const TasksScalarFieldEnum = {
 export type TasksScalarFieldEnum = (typeof TasksScalarFieldEnum)[keyof typeof TasksScalarFieldEnum]
 
 
-export const UserTaskScalarFieldEnum = {
-  userTaskId: 'userTaskId',
-  userId: 'userId',
-  taskId: 'taskId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type UserTaskScalarFieldEnum = (typeof UserTaskScalarFieldEnum)[keyof typeof UserTaskScalarFieldEnum]
-
-
 export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1600,7 +1514,6 @@ export interface PrismaClientOptions {
 }
 export type GlobalOmitConfig = {
   tasks?: Prisma.TasksOmit
-  userTask?: Prisma.UserTaskOmit
   organization?: Prisma.OrganizationOmit
   client?: Prisma.ClientOmit
   user?: Prisma.UserOmit

@@ -2,19 +2,15 @@ import { getPrisma } from "@packages/db";
 import { beforeEach, expect, test } from "vitest";
 import { createTask, deleteTask, getTask } from "./repository";
 
-// テスト用の有効なUUID
-const TEST_ORG_ID = "00000000-0000-0000-0000-000000000001";
-const TEST_CLIENT_ID = "00000000-0000-0000-0000-000000000002";
-const TEST_USER_ID = "00000000-0000-0000-0000-000000000003";
+let TEST_USER_ID: string;
 
 // Setup test data before each test
 beforeEach(async () => {
   const prisma = getPrisma();
 
-  // Create test organization
-  await prisma.organization.create({
+  // Create test organization (use default UUID)
+  const organization = await prisma.organization.create({
     data: {
-      id: TEST_ORG_ID,
       name: "Test Organization",
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -22,28 +18,29 @@ beforeEach(async () => {
   });
 
   // Create test client
-  await prisma.client.create({
+  const client = await prisma.client.create({
     data: {
-      id: TEST_CLIENT_ID,
-      organizationId: TEST_ORG_ID,
+      organizationId: organization.id,
       name: "Test Client",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   });
 
-  // Create test user
-  await prisma.user.create({
+  // Create test user with unique username/email
+  const randomSuffix = Math.random().toString(36).substring(7);
+  const user = await prisma.user.create({
     data: {
-      id: TEST_USER_ID,
-      clientId: TEST_CLIENT_ID,
-      username: "testuser",
-      email: "test@example.com",
+      clientId: client.id,
+      username: `testuser_${randomSuffix}`,
+      email: `test_${randomSuffix}@example.com`,
       passwordHash: "hashed_password",
       createdAt: new Date(),
       updatedAt: new Date(),
     },
   });
+
+  TEST_USER_ID = user.id;
 });
 
 test("createTask: タスクを作成できる", async () => {

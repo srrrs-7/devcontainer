@@ -202,7 +202,7 @@ export type UserWhereInput = {
   applicationHistories?: Prisma.ApplicationHistoryListRelationFilter
   userClientRoles?: Prisma.UserClientRoleListRelationFilter
   assignedUserClientRoles?: Prisma.UserClientRoleListRelationFilter
-  userTasks?: Prisma.UserTaskListRelationFilter
+  tasks?: Prisma.TasksListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -218,7 +218,7 @@ export type UserOrderByWithRelationInput = {
   applicationHistories?: Prisma.ApplicationHistoryOrderByRelationAggregateInput
   userClientRoles?: Prisma.UserClientRoleOrderByRelationAggregateInput
   assignedUserClientRoles?: Prisma.UserClientRoleOrderByRelationAggregateInput
-  userTasks?: Prisma.UserTaskOrderByRelationAggregateInput
+  tasks?: Prisma.TasksOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -237,7 +237,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   applicationHistories?: Prisma.ApplicationHistoryListRelationFilter
   userClientRoles?: Prisma.UserClientRoleListRelationFilter
   assignedUserClientRoles?: Prisma.UserClientRoleListRelationFilter
-  userTasks?: Prisma.UserTaskListRelationFilter
+  tasks?: Prisma.TasksListRelationFilter
 }, "id" | "username" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -278,7 +278,7 @@ export type UserCreateInput = {
   applicationHistories?: Prisma.ApplicationHistoryCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -293,7 +293,7 @@ export type UserUncheckedCreateInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserUpdateInput = {
@@ -308,7 +308,7 @@ export type UserUpdateInput = {
   applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -323,7 +323,7 @@ export type UserUncheckedUpdateInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -353,11 +353,6 @@ export type UserUncheckedUpdateManyInput = {
   passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type UserScalarRelationFilter = {
-  is?: Prisma.UserWhereInput
-  isNot?: Prisma.UserWhereInput
 }
 
 export type UserListRelationFilter = {
@@ -400,23 +395,52 @@ export type UserMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
+}
+
 export type UserNullableScalarRelationFilter = {
   is?: Prisma.UserWhereInput | null
   isNot?: Prisma.UserWhereInput | null
 }
 
-export type UserCreateNestedOneWithoutUserTasksInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserTasksInput, Prisma.UserUncheckedCreateWithoutUserTasksInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserTasksInput
-  connect?: Prisma.UserWhereUniqueInput
+export type UserCreateNestedManyWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput> | Prisma.UserCreateWithoutTasksInput[] | Prisma.UserUncheckedCreateWithoutTasksInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksInput | Prisma.UserCreateOrConnectWithoutTasksInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
 }
 
-export type UserUpdateOneRequiredWithoutUserTasksNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutUserTasksInput, Prisma.UserUncheckedCreateWithoutUserTasksInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUserTasksInput
-  upsert?: Prisma.UserUpsertWithoutUserTasksInput
-  connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUserTasksInput, Prisma.UserUpdateWithoutUserTasksInput>, Prisma.UserUncheckedUpdateWithoutUserTasksInput>
+export type UserUncheckedCreateNestedManyWithoutTasksInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput> | Prisma.UserCreateWithoutTasksInput[] | Prisma.UserUncheckedCreateWithoutTasksInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksInput | Prisma.UserCreateOrConnectWithoutTasksInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+}
+
+export type UserUpdateManyWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput> | Prisma.UserCreateWithoutTasksInput[] | Prisma.UserUncheckedCreateWithoutTasksInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksInput | Prisma.UserCreateOrConnectWithoutTasksInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutTasksInput | Prisma.UserUpsertWithWhereUniqueWithoutTasksInput[]
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutTasksInput | Prisma.UserUpdateWithWhereUniqueWithoutTasksInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutTasksInput | Prisma.UserUpdateManyWithWhereWithoutTasksInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+}
+
+export type UserUncheckedUpdateManyWithoutTasksNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput> | Prisma.UserCreateWithoutTasksInput[] | Prisma.UserUncheckedCreateWithoutTasksInput[]
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutTasksInput | Prisma.UserCreateOrConnectWithoutTasksInput[]
+  upsert?: Prisma.UserUpsertWithWhereUniqueWithoutTasksInput | Prisma.UserUpsertWithWhereUniqueWithoutTasksInput[]
+  set?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  disconnect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  delete?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  connect?: Prisma.UserWhereUniqueInput | Prisma.UserWhereUniqueInput[]
+  update?: Prisma.UserUpdateWithWhereUniqueWithoutTasksInput | Prisma.UserUpdateWithWhereUniqueWithoutTasksInput[]
+  updateMany?: Prisma.UserUpdateManyWithWhereWithoutTasksInput | Prisma.UserUpdateManyWithWhereWithoutTasksInput[]
+  deleteMany?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
 }
 
 export type UserCreateNestedManyWithoutClientInput = {
@@ -521,7 +545,7 @@ export type UserUpdateOneWithoutAssignedUserClientRolesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssignedUserClientRolesInput, Prisma.UserUpdateWithoutAssignedUserClientRolesInput>, Prisma.UserUncheckedUpdateWithoutAssignedUserClientRolesInput>
 }
 
-export type UserCreateWithoutUserTasksInput = {
+export type UserCreateWithoutTasksInput = {
   id?: string
   username: string
   email: string
@@ -535,7 +559,7 @@ export type UserCreateWithoutUserTasksInput = {
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
 }
 
-export type UserUncheckedCreateWithoutUserTasksInput = {
+export type UserUncheckedCreateWithoutTasksInput = {
   id?: string
   clientId: string
   username: string
@@ -549,48 +573,38 @@ export type UserUncheckedCreateWithoutUserTasksInput = {
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
 }
 
-export type UserCreateOrConnectWithoutUserTasksInput = {
+export type UserCreateOrConnectWithoutTasksInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutUserTasksInput, Prisma.UserUncheckedCreateWithoutUserTasksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput>
 }
 
-export type UserUpsertWithoutUserTasksInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutUserTasksInput, Prisma.UserUncheckedUpdateWithoutUserTasksInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutUserTasksInput, Prisma.UserUncheckedCreateWithoutUserTasksInput>
-  where?: Prisma.UserWhereInput
+export type UserUpsertWithWhereUniqueWithoutTasksInput = {
+  where: Prisma.UserWhereUniqueInput
+  update: Prisma.XOR<Prisma.UserUpdateWithoutTasksInput, Prisma.UserUncheckedUpdateWithoutTasksInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutTasksInput, Prisma.UserUncheckedCreateWithoutTasksInput>
 }
 
-export type UserUpdateToOneWithWhereWithoutUserTasksInput = {
-  where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutUserTasksInput, Prisma.UserUncheckedUpdateWithoutUserTasksInput>
+export type UserUpdateWithWhereUniqueWithoutTasksInput = {
+  where: Prisma.UserWhereUniqueInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutTasksInput, Prisma.UserUncheckedUpdateWithoutTasksInput>
 }
 
-export type UserUpdateWithoutUserTasksInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  client?: Prisma.ClientUpdateOneRequiredWithoutUsersNestedInput
-  applications?: Prisma.ApplicationUpdateManyWithoutUserNestedInput
-  applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
-  userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
-  assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
+export type UserUpdateManyWithWhereWithoutTasksInput = {
+  where: Prisma.UserScalarWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutTasksInput>
 }
 
-export type UserUncheckedUpdateWithoutUserTasksInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  clientId?: Prisma.StringFieldUpdateOperationsInput | string
-  username?: Prisma.StringFieldUpdateOperationsInput | string
-  email?: Prisma.StringFieldUpdateOperationsInput | string
-  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  applications?: Prisma.ApplicationUncheckedUpdateManyWithoutUserNestedInput
-  applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
-  userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
-  assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
+export type UserScalarWhereInput = {
+  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  OR?: Prisma.UserScalarWhereInput[]
+  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
+  id?: Prisma.UuidFilter<"User"> | string
+  clientId?: Prisma.UuidFilter<"User"> | string
+  username?: Prisma.StringFilter<"User"> | string
+  email?: Prisma.StringFilter<"User"> | string
+  passwordHash?: Prisma.StringFilter<"User"> | string
+  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
 }
 
 export type UserCreateWithoutClientInput = {
@@ -604,7 +618,7 @@ export type UserCreateWithoutClientInput = {
   applicationHistories?: Prisma.ApplicationHistoryCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutClientInput = {
@@ -618,7 +632,7 @@ export type UserUncheckedCreateWithoutClientInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserCreateOrConnectWithoutClientInput = {
@@ -647,19 +661,6 @@ export type UserUpdateManyWithWhereWithoutClientInput = {
   data: Prisma.XOR<Prisma.UserUpdateManyMutationInput, Prisma.UserUncheckedUpdateManyWithoutClientInput>
 }
 
-export type UserScalarWhereInput = {
-  AND?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-  OR?: Prisma.UserScalarWhereInput[]
-  NOT?: Prisma.UserScalarWhereInput | Prisma.UserScalarWhereInput[]
-  id?: Prisma.UuidFilter<"User"> | string
-  clientId?: Prisma.UuidFilter<"User"> | string
-  username?: Prisma.StringFilter<"User"> | string
-  email?: Prisma.StringFilter<"User"> | string
-  passwordHash?: Prisma.StringFilter<"User"> | string
-  createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-  updatedAt?: Prisma.DateTimeFilter<"User"> | Date | string
-}
-
 export type UserCreateWithoutApplicationsInput = {
   id?: string
   username: string
@@ -671,7 +672,7 @@ export type UserCreateWithoutApplicationsInput = {
   applicationHistories?: Prisma.ApplicationHistoryCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutApplicationsInput = {
@@ -685,7 +686,7 @@ export type UserUncheckedCreateWithoutApplicationsInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserCreateOrConnectWithoutApplicationsInput = {
@@ -715,7 +716,7 @@ export type UserUpdateWithoutApplicationsInput = {
   applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApplicationsInput = {
@@ -729,7 +730,7 @@ export type UserUncheckedUpdateWithoutApplicationsInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UserCreateWithoutApplicationHistoriesInput = {
@@ -743,7 +744,7 @@ export type UserCreateWithoutApplicationHistoriesInput = {
   applications?: Prisma.ApplicationCreateNestedManyWithoutUserInput
   userClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutApplicationHistoriesInput = {
@@ -757,7 +758,7 @@ export type UserUncheckedCreateWithoutApplicationHistoriesInput = {
   applications?: Prisma.ApplicationUncheckedCreateNestedManyWithoutUserInput
   userClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserCreateOrConnectWithoutApplicationHistoriesInput = {
@@ -787,7 +788,7 @@ export type UserUpdateWithoutApplicationHistoriesInput = {
   applications?: Prisma.ApplicationUpdateManyWithoutUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutApplicationHistoriesInput = {
@@ -801,7 +802,7 @@ export type UserUncheckedUpdateWithoutApplicationHistoriesInput = {
   applications?: Prisma.ApplicationUncheckedUpdateManyWithoutUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UserCreateWithoutUserClientRolesInput = {
@@ -815,7 +816,7 @@ export type UserCreateWithoutUserClientRolesInput = {
   applications?: Prisma.ApplicationCreateNestedManyWithoutUserInput
   applicationHistories?: Prisma.ApplicationHistoryCreateNestedManyWithoutChangedByUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutUserClientRolesInput = {
@@ -829,7 +830,7 @@ export type UserUncheckedCreateWithoutUserClientRolesInput = {
   applications?: Prisma.ApplicationUncheckedCreateNestedManyWithoutUserInput
   applicationHistories?: Prisma.ApplicationHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutAssignedByUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserCreateOrConnectWithoutUserClientRolesInput = {
@@ -848,7 +849,7 @@ export type UserCreateWithoutAssignedUserClientRolesInput = {
   applications?: Prisma.ApplicationCreateNestedManyWithoutUserInput
   applicationHistories?: Prisma.ApplicationHistoryCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleCreateNestedManyWithoutUserInput
-  userTasks?: Prisma.UserTaskCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksCreateNestedManyWithoutUsersInput
 }
 
 export type UserUncheckedCreateWithoutAssignedUserClientRolesInput = {
@@ -862,7 +863,7 @@ export type UserUncheckedCreateWithoutAssignedUserClientRolesInput = {
   applications?: Prisma.ApplicationUncheckedCreateNestedManyWithoutUserInput
   applicationHistories?: Prisma.ApplicationHistoryUncheckedCreateNestedManyWithoutChangedByUserInput
   userClientRoles?: Prisma.UserClientRoleUncheckedCreateNestedManyWithoutUserInput
-  userTasks?: Prisma.UserTaskUncheckedCreateNestedManyWithoutUserInput
+  tasks?: Prisma.TasksUncheckedCreateNestedManyWithoutUsersInput
 }
 
 export type UserCreateOrConnectWithoutAssignedUserClientRolesInput = {
@@ -892,7 +893,7 @@ export type UserUpdateWithoutUserClientRolesInput = {
   applications?: Prisma.ApplicationUpdateManyWithoutUserNestedInput
   applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutUserClientRolesInput = {
@@ -906,7 +907,7 @@ export type UserUncheckedUpdateWithoutUserClientRolesInput = {
   applications?: Prisma.ApplicationUncheckedUpdateManyWithoutUserNestedInput
   applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUpsertWithoutAssignedUserClientRolesInput = {
@@ -931,7 +932,7 @@ export type UserUpdateWithoutAssignedUserClientRolesInput = {
   applications?: Prisma.ApplicationUpdateManyWithoutUserNestedInput
   applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAssignedUserClientRolesInput = {
@@ -945,7 +946,45 @@ export type UserUncheckedUpdateWithoutAssignedUserClientRolesInput = {
   applications?: Prisma.ApplicationUncheckedUpdateManyWithoutUserNestedInput
   applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
+}
+
+export type UserUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  client?: Prisma.ClientUpdateOneRequiredWithoutUsersNestedInput
+  applications?: Prisma.ApplicationUpdateManyWithoutUserNestedInput
+  applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
+  userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
+  assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  applications?: Prisma.ApplicationUncheckedUpdateManyWithoutUserNestedInput
+  applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
+  userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
+  assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
+}
+
+export type UserUncheckedUpdateManyWithoutTasksInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  passwordHash?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type UserCreateManyClientInput = {
@@ -968,7 +1007,7 @@ export type UserUpdateWithoutClientInput = {
   applicationHistories?: Prisma.ApplicationHistoryUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateWithoutClientInput = {
@@ -982,7 +1021,7 @@ export type UserUncheckedUpdateWithoutClientInput = {
   applicationHistories?: Prisma.ApplicationHistoryUncheckedUpdateManyWithoutChangedByUserNestedInput
   userClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutUserNestedInput
   assignedUserClientRoles?: Prisma.UserClientRoleUncheckedUpdateManyWithoutAssignedByUserNestedInput
-  userTasks?: Prisma.UserTaskUncheckedUpdateManyWithoutUserNestedInput
+  tasks?: Prisma.TasksUncheckedUpdateManyWithoutUsersNestedInput
 }
 
 export type UserUncheckedUpdateManyWithoutClientInput = {
@@ -1004,7 +1043,7 @@ export type UserCountOutputType = {
   applicationHistories: number
   userClientRoles: number
   assignedUserClientRoles: number
-  userTasks: number
+  tasks: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1012,7 +1051,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   applicationHistories?: boolean | UserCountOutputTypeCountApplicationHistoriesArgs
   userClientRoles?: boolean | UserCountOutputTypeCountUserClientRolesArgs
   assignedUserClientRoles?: boolean | UserCountOutputTypeCountAssignedUserClientRolesArgs
-  userTasks?: boolean | UserCountOutputTypeCountUserTasksArgs
+  tasks?: boolean | UserCountOutputTypeCountTasksArgs
 }
 
 /**
@@ -1056,8 +1095,8 @@ export type UserCountOutputTypeCountAssignedUserClientRolesArgs<ExtArgs extends 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountUserTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UserTaskWhereInput
+export type UserCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TasksWhereInput
 }
 
 
@@ -1074,7 +1113,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   applicationHistories?: boolean | Prisma.User$applicationHistoriesArgs<ExtArgs>
   userClientRoles?: boolean | Prisma.User$userClientRolesArgs<ExtArgs>
   assignedUserClientRoles?: boolean | Prisma.User$assignedUserClientRolesArgs<ExtArgs>
-  userTasks?: boolean | Prisma.User$userTasksArgs<ExtArgs>
+  tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1117,7 +1156,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   applicationHistories?: boolean | Prisma.User$applicationHistoriesArgs<ExtArgs>
   userClientRoles?: boolean | Prisma.User$userClientRolesArgs<ExtArgs>
   assignedUserClientRoles?: boolean | Prisma.User$assignedUserClientRolesArgs<ExtArgs>
-  userTasks?: boolean | Prisma.User$userTasksArgs<ExtArgs>
+  tasks?: boolean | Prisma.User$tasksArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1135,7 +1174,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     applicationHistories: Prisma.$ApplicationHistoryPayload<ExtArgs>[]
     userClientRoles: Prisma.$UserClientRolePayload<ExtArgs>[]
     assignedUserClientRoles: Prisma.$UserClientRolePayload<ExtArgs>[]
-    userTasks: Prisma.$UserTaskPayload<ExtArgs>[]
+    tasks: Prisma.$TasksPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1544,7 +1583,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   applicationHistories<T extends Prisma.User$applicationHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$applicationHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApplicationHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   userClientRoles<T extends Prisma.User$userClientRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userClientRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserClientRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignedUserClientRoles<T extends Prisma.User$assignedUserClientRolesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assignedUserClientRolesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserClientRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  userTasks<T extends Prisma.User$userTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$userTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  tasks<T extends Prisma.User$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TasksPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2073,27 +2112,27 @@ export type User$assignedUserClientRolesArgs<ExtArgs extends runtime.Types.Exten
 }
 
 /**
- * User.userTasks
+ * User.tasks
  */
-export type User$userTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UserTask
+   * Select specific fields to fetch from the Tasks
    */
-  select?: Prisma.UserTaskSelect<ExtArgs> | null
+  select?: Prisma.TasksSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UserTask
+   * Omit specific fields from the Tasks
    */
-  omit?: Prisma.UserTaskOmit<ExtArgs> | null
+  omit?: Prisma.TasksOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UserTaskInclude<ExtArgs> | null
-  where?: Prisma.UserTaskWhereInput
-  orderBy?: Prisma.UserTaskOrderByWithRelationInput | Prisma.UserTaskOrderByWithRelationInput[]
-  cursor?: Prisma.UserTaskWhereUniqueInput
+  include?: Prisma.TasksInclude<ExtArgs> | null
+  where?: Prisma.TasksWhereInput
+  orderBy?: Prisma.TasksOrderByWithRelationInput | Prisma.TasksOrderByWithRelationInput[]
+  cursor?: Prisma.TasksWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UserTaskScalarFieldEnum | Prisma.UserTaskScalarFieldEnum[]
+  distinct?: Prisma.TasksScalarFieldEnum | Prisma.TasksScalarFieldEnum[]
 }
 
 /**

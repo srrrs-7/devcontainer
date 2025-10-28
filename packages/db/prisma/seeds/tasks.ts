@@ -65,25 +65,17 @@ export async function seedTasks() {
   console.log("🌱 Seeding tasks...");
 
   for (const task of tasks) {
-    // Create Task and UserTask in a transaction
-    await prisma.$transaction(async (tx) => {
-      const createdTask = await tx.tasks.create({
-        data: {
-          content: task.content,
-          status: task.status,
-          completedAt: task.completedAt,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+    await prisma.tasks.create({
+      data: {
+        content: task.content,
+        status: task.status,
+        completedAt: task.completedAt,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        users: {
+          connect: { id: testUserId },
         },
-      });
-
-      // Create UserTask to associate task with user
-      await tx.userTask.create({
-        data: {
-          userId: testUserId,
-          taskId: createdTask.id,
-        },
-      });
+      },
     });
   }
 
