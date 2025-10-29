@@ -83,8 +83,16 @@ export async function seedUserClientRoles() {
   console.log("🌱 Seeding user client roles...");
 
   for (const ucr of userClientRoles) {
-    await prisma.userClientRole.create({
-      data: ucr,
+    await prisma.userClientRole.upsert({
+      where: {
+        userId_clientId_roleId: {
+          userId: ucr.userId,
+          clientId: ucr.clientId,
+          roleId: ucr.roleId,
+        },
+      },
+      update: ucr,
+      create: ucr,
     });
   }
 

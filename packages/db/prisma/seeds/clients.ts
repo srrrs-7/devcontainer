@@ -10,7 +10,7 @@ export async function seedClients() {
   const clients = [
     // Organization 1のクライアント（階層あり）
     {
-      clientId: "20000000-0000-0000-0000-000000000001",
+      id: "20000000-0000-0000-0000-000000000001",
       organizationId: "10000000-0000-0000-0000-000000000001",
       parentClientId: null,
       name: "東京本社",
@@ -18,7 +18,7 @@ export async function seedClients() {
       email: "yamada@tech-innovation.co.jp",
     },
     {
-      clientId: "20000000-0000-0000-0000-000000000002",
+      id: "20000000-0000-0000-0000-000000000002",
       organizationId: "10000000-0000-0000-0000-000000000001",
       parentClientId: "20000000-0000-0000-0000-000000000001", // 東京本社の子
       name: "東京本社 開発部",
@@ -26,7 +26,7 @@ export async function seedClients() {
       email: "sato@tech-innovation.co.jp",
     },
     {
-      clientId: "20000000-0000-0000-0000-000000000003",
+      id: "20000000-0000-0000-0000-000000000003",
       organizationId: "10000000-0000-0000-0000-000000000001",
       parentClientId: "20000000-0000-0000-0000-000000000001", // 東京本社の子
       name: "東京本社 営業部",
@@ -35,7 +35,7 @@ export async function seedClients() {
     },
     // Organization 2のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000004",
+      id: "20000000-0000-0000-0000-000000000004",
       organizationId: "10000000-0000-0000-0000-000000000002",
       parentClientId: null,
       name: "大阪支社",
@@ -43,7 +43,7 @@ export async function seedClients() {
       email: "tanaka@global-consulting.co.jp",
     },
     {
-      clientId: "20000000-0000-0000-0000-000000000005",
+      id: "20000000-0000-0000-0000-000000000005",
       organizationId: "10000000-0000-0000-0000-000000000002",
       parentClientId: "20000000-0000-0000-0000-000000000004", // 大阪支社の子
       name: "大阪支社 コンサルティング部",
@@ -52,7 +52,7 @@ export async function seedClients() {
     },
     // Organization 3のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000006",
+      id: "20000000-0000-0000-0000-000000000006",
       organizationId: "10000000-0000-0000-0000-000000000003",
       parentClientId: null,
       name: "福岡オフィス",
@@ -61,7 +61,7 @@ export async function seedClients() {
     },
     // Organization 4のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000007",
+      id: "20000000-0000-0000-0000-000000000007",
       organizationId: "10000000-0000-0000-0000-000000000004",
       parentClientId: null,
       name: "名古屋支店",
@@ -70,7 +70,7 @@ export async function seedClients() {
     },
     // Organization 5のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000008",
+      id: "20000000-0000-0000-0000-000000000008",
       organizationId: "10000000-0000-0000-0000-000000000005",
       parentClientId: null,
       name: "横浜事業所",
@@ -79,7 +79,7 @@ export async function seedClients() {
     },
     // Organization 6のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000009",
+      id: "20000000-0000-0000-0000-000000000009",
       organizationId: "10000000-0000-0000-0000-000000000006",
       parentClientId: null,
       name: "金融サービス部門",
@@ -88,7 +88,7 @@ export async function seedClients() {
     },
     // Organization 7のクライアント
     {
-      clientId: "20000000-0000-0000-0000-000000000010",
+      id: "20000000-0000-0000-0000-000000000010",
       organizationId: "10000000-0000-0000-0000-000000000007",
       parentClientId: null,
       name: "AI研究センター",
@@ -100,8 +100,10 @@ export async function seedClients() {
   console.log("🌱 Seeding clients...");
 
   for (const client of clients) {
-    await prisma.client.create({
-      data: client,
+    await prisma.client.upsert({
+      where: { id: client.id },
+      update: client,
+      create: client,
     });
   }
 

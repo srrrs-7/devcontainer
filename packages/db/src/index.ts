@@ -2,8 +2,8 @@ import { logger } from "@packages/logger";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { type Prisma, PrismaClient } from "./generated/prisma/client";
 
-const { DB_USERNAME, DB_PASSWORD, DB_HOST, DB_DBNAME } = process.env;
-const connectionString = `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:5432/${DB_DBNAME}?schema=public`;
+const { DB_USERNAME, DB_PASSWORD, DB_HOST, DB_DBNAME, DB_PORT } = process.env;
+const connectionString = `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DBNAME}?schema=public`;
 
 const adapter = new PrismaPg({ connectionString });
 

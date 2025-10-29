@@ -146,8 +146,15 @@ export async function seedRolePermissions() {
   console.log("🌱 Seeding role permissions...");
 
   for (const rp of rolePermissions) {
-    await prisma.rolePermission.create({
-      data: rp,
+    await prisma.rolePermission.upsert({
+      where: {
+        roleId_permissionId: {
+          roleId: rp.roleId,
+          permissionId: rp.permissionId,
+        },
+      },
+      update: rp,
+      create: rp,
     });
   }
 
