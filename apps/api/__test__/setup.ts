@@ -33,6 +33,24 @@ beforeEach(async () => {
   }
 
   await prismaTestingHelper.startNewTransaction();
+
+  // Seed データを全て削除（動的にすべてのテーブルを取得して一括削除）
+  const testPrisma = global.testPrismaClient;
+
+  // すべてのテーブル名を取得
+  const tables = await testPrisma.$queryRaw<Array<{ tablename: string }>>`
+    SELECT tablename::text
+    FROM pg_tables
+    WHERE schemaname = 'public'
+      AND tablename != '_prisma_migrations';
+  `;
+
+  if (tables.length > 0) {
+    const tableNames = tables.map((t) => `"${t.tablename}"`).join(", ");
+    await testPrisma.$executeRawUnsafe(
+      `TRUNCATE TABLE ${tableNames} RESTART IDENTITY CASCADE;`,
+    );
+  }
 });
 
 afterEach(async () => {

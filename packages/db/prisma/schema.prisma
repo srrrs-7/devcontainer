@@ -159,7 +159,7 @@ model Role {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
-  rolePermissions RolePermission[]
+  permissions     Permission[]
   userClientRoles UserClientRole[]
 
   @@index([name])
@@ -167,29 +167,16 @@ model Role {
 }
 
 model Permission {
-  id String   @id @default(uuid()) @map("permission_id") @db.Uuid
-  name         String   @unique @map("name") @db.VarChar(100)
-  description  String?  @map("description") @db.Text
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(uuid()) @map("permission_id") @db.Uuid
+  name        String   @unique @map("name") @db.VarChar(100)
+  description String?  @map("description") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-  rolePermissions RolePermission[]
+  roles Role[]
 
   @@index([name])
   @@map("permissions")
-}
-
-model RolePermission {
-  id           String @id @default(uuid()) @map("id") @db.Uuid
-  roleId       String @map("role_id") @db.Uuid
-  permissionId String @map("permission_id") @db.Uuid
-
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@unique([roleId, permissionId])
-  @@index([permissionId])
-  @@map("role_permissions")
 }
 
 model UserClientRole {

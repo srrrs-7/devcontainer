@@ -12,6 +12,7 @@ words:
   - auggie
   - Auggie
   - AUGGIE
+  - automations
   - Avenir
   - Bluch
   - bunx
@@ -22,16 +23,36 @@ words:
   - dotenvx
   - Entra
   - evenodd
+  - fdisk
+  - gdisk
   - Groot
+  - ichiro
+  - Ichiro
   - initialised
+  - jiro
+  - Jiro
+  - kato
+  - Kato
+  - kenta
+  - Kenta
   - Msal
   - msie
   - mydb
+  - ncat
+  - netcat
   - neverthrow
+  - nftables
+  - pkill
   - pycache
   - qwen
   - Qwen
   - QWEN
+  - sato
+  - Sato
+  - schemaname
+  - tablename
+  - tanaka
+  - Tanaka
   - tfstate
   - TXXX
   - uvx
@@ -39,25 +60,6 @@ words:
   - VITE
   - worktree
   - worktrees
-  - automations
-  - netcat
-  - ncat
-  - fdisk
-  - gdisk
-  - pkill
-  - nftables
-  - sato
-  - Sato
-  - tanaka
-  - Tanaka
-  - kato
-  - Kato
-  - ichiro
-  - Ichiro
-  - jiro
-  - Jiro
-  - kenta
-  - Kenta
   - yosuke
   - Yosuke
 ignoreWords: []
