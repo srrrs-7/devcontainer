@@ -1,45 +1,28 @@
-import { getPrisma } from "@packages/db";
+import {
+  defineClientFactory,
+  defineOrganizationFactory,
+  defineUserFactory,
+} from "@packages/db";
 import { beforeEach, expect, test } from "vitest";
 import { createTask, deleteTask, getTask } from "./repository";
 
 let TEST_USER_ID: string;
 
-// Setup test data before each test
+// Setup test data before each test using fabbrica
 beforeEach(async () => {
-  const prisma = getPrisma();
-
-  // Create test organization (use default UUID)
-  const organization = await prisma.organization.create({
-    data: {
-      name: "Test Organization",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const OrganizationFactory = defineOrganizationFactory();
+  const ClientFactory = defineClientFactory({
+    defaultData: {
+      organization: OrganizationFactory,
+    },
+  });
+  const UserFactory = defineUserFactory({
+    defaultData: {
+      client: ClientFactory,
     },
   });
 
-  // Create test client
-  const client = await prisma.client.create({
-    data: {
-      organizationId: organization.id,
-      name: "Test Client",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
-
-  // Create test user with unique username/email
-  const randomSuffix = Math.random().toString(36).substring(7);
-  const user = await prisma.user.create({
-    data: {
-      clientId: client.id,
-      username: `testuser_${randomSuffix}`,
-      email: `test_${randomSuffix}@example.com`,
-      passwordHash: "hashed_password",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
-
+  const user = await UserFactory.create();
   TEST_USER_ID = user.id;
 });
 

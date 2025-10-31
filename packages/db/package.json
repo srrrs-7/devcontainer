@@ -14,6 +14,7 @@
     "db:seed": "bun run prisma -- db seed",
     "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
+    "db:generate:fabbrica": "prisma generate --generator fabbrica",
     "prisma": "bun run env-file prisma",
     "env-file": "dotenvx run -f .env.db --",
     "clean": "rm -rf src/generated",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@dotenvx/dotenvx": "1.51.0",
+    "@quramy/prisma-fabbrica": "^2.3.1",
     "@types/node": "24.5.2",
     "typescript": "5.9.2"
   }

@@ -8,7 +8,7 @@
  */
 
 import { PrismaTestingHelper } from "@chax-at/transactional-prisma-testing";
-import { getPrisma } from "@packages/db";
+import { getPrisma, initialize } from "@packages/db";
 import { afterEach, beforeEach, vi } from "vitest";
 
 type PrismaClient = ReturnType<typeof getPrisma>;
@@ -19,8 +19,10 @@ declare global {
   var testPrismaClient: PrismaClient;
 }
 
-vi.doMock("@packages/db", () => {
+vi.doMock("@packages/db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@packages/db")>();
   return {
+    ...actual,
     getPrisma: () => global.testPrismaClient,
   };
 });
@@ -33,6 +35,11 @@ beforeEach(async () => {
   }
 
   await prismaTestingHelper.startNewTransaction();
+
+  // Initialize fabbrica with test Prisma client
+  initialize({
+    prisma: () => global.testPrismaClient,
+  });
 
   // Seed データを全て削除（動的にすべてのテーブルを取得して一括削除）
   const testPrisma = global.testPrismaClient;

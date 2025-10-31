@@ -1,4 +1,7 @@
-import { getPrisma } from "@packages/db";
+import {
+  defineOrganizationFactory,
+  defineClientFactory,
+} from "@packages/db";
 import { beforeEach, expect, test } from "vitest";
 import {
   createUser,
@@ -15,29 +18,16 @@ let TEST_CLIENT_ID: string;
 // Helper to generate unique username/email
 const uniqueString = () => Math.random().toString(36).substring(7);
 
-// Setup test data before each test
+// Setup test data before each test using fabbrica
 beforeEach(async () => {
-  const prisma = getPrisma();
-
-  // Create test organization (use default UUID)
-  const organization = await prisma.organization.create({
-    data: {
-      name: "Test Organization",
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const OrganizationFactory = defineOrganizationFactory();
+  const ClientFactory = defineClientFactory({
+    defaultData: {
+      organization: OrganizationFactory,
     },
   });
 
-  // Create test client
-  const client = await prisma.client.create({
-    data: {
-      organizationId: organization.id,
-      name: "Test Client",
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  });
-
+  const client = await ClientFactory.create();
   TEST_CLIENT_ID = client.id;
 });
 

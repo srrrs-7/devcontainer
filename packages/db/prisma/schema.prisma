@@ -9,6 +9,11 @@ generator client {
   output     = "../src/generated/prisma"
 }
 
+generator fabbrica {
+  provider = "prisma-fabbrica"
+  output   = "../src/generated/fabbrica"
+}
+
 enum TaskStatus {
   PENDING
   IN_PROGRESS
