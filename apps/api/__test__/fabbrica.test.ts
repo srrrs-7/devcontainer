@@ -1,13 +1,12 @@
 import {
-  defineOrganizationFactory,
   defineClientFactory,
+  defineOrganizationFactory,
   defineUserFactory,
+  getPrisma,
 } from "@packages/db";
-import { getPrisma } from "@packages/db";
 import { describe, expect, it } from "vitest";
 
 describe("Prisma Fabbrica", () => {
-
   it("should create an organization using factory", async () => {
     const OrganizationFactory = defineOrganizationFactory();
     const organization = await OrganizationFactory.create();

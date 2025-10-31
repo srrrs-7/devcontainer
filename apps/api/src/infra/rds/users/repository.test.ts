@@ -1,7 +1,4 @@
-import {
-  defineOrganizationFactory,
-  defineClientFactory,
-} from "@packages/db";
+import { defineClientFactory, defineOrganizationFactory } from "@packages/db";
 import { beforeEach, expect, test } from "vitest";
 import {
   createUser,

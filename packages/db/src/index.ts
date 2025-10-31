@@ -32,9 +32,8 @@ prisma.$on("error", (event: Prisma.LogEvent) => {
 
 export const getPrisma = () => prisma;
 
+// Re-export fabbrica factories
+export * from "./generated/fabbrica";
 // Re-export Prisma types and generated client
 export type { Prisma } from "./generated/prisma/client";
 export * from "./generated/prisma/client";
-
-// Re-export fabbrica factories
-export * from "./generated/fabbrica";
