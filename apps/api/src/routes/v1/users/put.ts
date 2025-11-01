@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { err, ok } from "neverthrow";
 import { NotFoundError } from "../../../domain/error";
-import { hashPassword } from "../../../domain/service/user";
+import { hashPassword } from "../../../domain/model/user";
 import { updateUser } from "../../../infra/rds/users/repository";
 import {
   databaseErrorResponse,

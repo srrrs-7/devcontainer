@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { hashPassword } from "../../../domain/service/user";
+import { hashPassword } from "../../../domain/model/user";
 import { createUser } from "../../../infra/rds/users/repository";
 import {
   databaseErrorResponse,
