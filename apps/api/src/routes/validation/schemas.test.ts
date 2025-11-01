@@ -65,48 +65,6 @@ describe("safeStringSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  describe("SQL Injection Protection", () => {
-    const schema = safeStringSchema();
-
-    test.each([
-      { input: "SELECT * FROM users", description: "SELECT statement" },
-      {
-        input: "INSERT INTO users VALUES (1)",
-        description: "INSERT statement",
-      },
-      {
-        input: "UPDATE users SET name='hacker'",
-        description: "UPDATE statement",
-      },
-      {
-        input: "DELETE FROM users WHERE id=1",
-        description: "DELETE statement",
-      },
-      { input: "DROP TABLE users", description: "DROP statement" },
-      { input: "admin'--", description: "SQL comments (--)" },
-      { input: "admin' /* comment */", description: "SQL comments (/* */)" },
-      {
-        input: "1' UNION SELECT password FROM users--",
-        description: "SQL union attack",
-      },
-      {
-        input: "admin'; DROP TABLE users;--",
-        description: "SQL with semicolon",
-      },
-      {
-        input: "EXEC xp_cmdshell 'dir'",
-        description: "stored procedure names",
-      },
-      {
-        input: "I need to select a product from the list",
-        description: "normal text with SQL-like words",
-      },
-    ])("rejects $description", ({ input }) => {
-      const result = schema.safeParse(input);
-      expect(result.success).toBe(false);
-    });
-  });
-
   describe("XSS Protection", () => {
     const schema = safeStringSchema();
 
@@ -246,16 +204,64 @@ describe("contentSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  test("rejects content with SQL injection", () => {
-    const schema = contentSchema(1000);
-    const result = schema.safeParse("'; DROP TABLE comments--");
-    expect(result.success).toBe(false);
-  });
-
   test("rejects content with XSS", () => {
     const schema = contentSchema(1000);
     const result = schema.safeParse("<script>alert('xss')</script>");
     expect(result.success).toBe(false);
+  });
+
+  test("escapes HTML special characters: ampersand", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("Tom & Jerry");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("Tom &amp; Jerry");
+    }
+  });
+
+  test("escapes HTML special characters: less than and greater than", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("5 < 10 and 10 > 5");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("5 &lt; 10 and 10 &gt; 5");
+    }
+  });
+
+  test("escapes HTML special characters: forward slash", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("Path: /usr/bin/bash");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("Path: &#x2F;usr&#x2F;bin&#x2F;bash");
+    }
+  });
+
+  test("escapes HTML and trims whitespace together", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("  <b>Bold</b>  ");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("&lt;b&gt;Bold&lt;&#x2F;b&gt;");
+    }
+  });
+
+  test("escapes complex HTML-like content (without dangerous tags)", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("Email: user@example.com with value=123");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("Email: user@example.com with value=123");
+    }
+  });
+
+  test("handles content with multiple ampersands", () => {
+    const schema = contentSchema(1000);
+    const result = schema.safeParse("A & B & C");
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).toBe("A &amp; B &amp; C");
+    }
   });
 });
 

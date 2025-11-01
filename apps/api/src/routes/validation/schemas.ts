@@ -2,19 +2,14 @@ import { z } from "zod";
 
 /**
  * Security-focused validation schemas
- * Protects against SQL injection, XSS, and other common attacks
+ * Protects against XSS and other common attacks
+ * Note: SQL injection protection is handled by Prisma's parameterized queries
  */
 
-// Dangerous patterns that could indicate SQL injection attempts
-const SQL_INJECTION_PATTERNS = [
-  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|DECLARE|CAST|CONVERT)\b)/i,
-  /(--|\/\*|\*\/|;|'|"|`)/,
-  /(\bOR\b|\bAND\b).*?=.*?=/i,
-  /(xp_|sp_|sys\.)/i,
-];
-
 // Dangerous patterns for XSS attacks
-const XSS_PATTERNS = [
+// Note: Using arrow function to create fresh RegExp instances on each call
+// This avoids issues with the 'g' flag's stateful lastIndex property
+const getXSSPatterns = () => [
   /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
   /javascript:/gi,
   /on\w+\s*=/gi, // Event handlers like onclick=, onload=, etc.
@@ -41,17 +36,8 @@ export const safeStringSchema = (minLength = 1, maxLength = 1000) =>
     .max(maxLength, `String must not exceed ${maxLength} characters`)
     .refine(
       (val) => {
-        // Check for SQL injection patterns
-        return !SQL_INJECTION_PATTERNS.some((pattern) => pattern.test(val));
-      },
-      {
-        message: "Input contains potentially dangerous SQL patterns",
-      },
-    )
-    .refine(
-      (val) => {
-        // Check for XSS patterns
-        return !XSS_PATTERNS.some((pattern) => pattern.test(val));
+        // Check for XSS patterns (get fresh patterns each time)
+        return !getXSSPatterns().some((pattern) => pattern.test(val));
       },
       {
         message: "Input contains potentially dangerous script patterns",
@@ -90,6 +76,19 @@ export const usernameSchema = z
  * Note: This doesn't sanitize HTML, but validates against dangerous patterns
  * For HTML content, use a proper HTML sanitizer library like DOMPurify
  */
+/**
+ * Escape HTML special characters to prevent XSS attacks
+ */
+const escapeHtml = (str: string): string => {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+};
+
 export const contentSchema = (maxLength = 5000) =>
   z
     .string()
@@ -97,23 +96,14 @@ export const contentSchema = (maxLength = 5000) =>
     .max(maxLength, `Content must not exceed ${maxLength} characters`)
     .refine(
       (val) => {
-        // Check for SQL injection patterns
-        return !SQL_INJECTION_PATTERNS.some((pattern) => pattern.test(val));
-      },
-      {
-        message: "Content contains potentially dangerous SQL patterns",
-      },
-    )
-    .refine(
-      (val) => {
-        // Allow some HTML but block dangerous XSS patterns
-        return !XSS_PATTERNS.some((pattern) => pattern.test(val));
+        // Block dangerous XSS patterns (get fresh patterns each time)
+        return !getXSSPatterns().some((pattern) => pattern.test(val));
       },
       {
         message: "Content contains potentially dangerous script patterns",
       },
     )
-    .transform((val) => val.trim());
+    .transform((val) => escapeHtml(val.trim()));
 
 /**
  * URL validation with protocol restrictions

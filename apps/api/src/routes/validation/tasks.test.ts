@@ -88,10 +88,6 @@ describe("createTaskBodySchema", () => {
       description: "invalid status",
     },
     {
-      input: { content: "'; DROP TABLE tasks--" },
-      description: "content with SQL injection",
-    },
-    {
       input: { content: "<script>alert('xss')</script>" },
       description: "content with XSS",
     },
@@ -143,14 +139,11 @@ describe("updateTaskBodySchema", () => {
     }
   });
 
-  test.each([
-    { input: { status: "INVALID" }, description: "invalid status" },
-    {
-      input: { content: "'; UPDATE tasks SET status='COMPLETED'--" },
-      description: "content with SQL injection",
+  test.each([{ input: { status: "INVALID" }, description: "invalid status" }])(
+    "rejects $description",
+    ({ input }) => {
+      const result = updateTaskBodySchema.safeParse(input);
+      expect(result.success).toBe(false);
     },
-  ])("rejects $description", ({ input }) => {
-    const result = updateTaskBodySchema.safeParse(input);
-    expect(result.success).toBe(false);
-  });
+  );
 });
