@@ -63,20 +63,18 @@ This is a monorepo using **Bun workspaces** with native Bun features for task or
 
 ### Development
 ```bash
-# Start Web dev server (from root) - default
+# Start BOTH web and api dev servers in parallel (from root)
 bun dev
-# or explicitly:
+
+# Start only Web dev server
 bun dev:web
 
-# Start API dev server
+# Start only API dev server
 bun dev:api
 
-# Start all dev servers (web + api) in parallel
-bun run dev:all
-
-# Start from subdirectories
-cd apps/web && bun dev    # Web dev server
-cd apps/api && bun dev    # API dev server
+# Start from subdirectories (same result as above)
+cd apps/web && bun dev    # Web dev server only
+cd apps/api && bun dev    # API dev server only
 ```
 
 ### Building
@@ -216,12 +214,14 @@ cd apps/api && bun test -t "pattern"
 - **Port**: 3000 (default)
 - **Bundler**: Bun native bundler (no Vite/Webpack needed)
 - **Entry Point**: `apps/web/src/index.tsx` serves `index.html` which imports frontend React code
+- **Build Output**: `apps/web/dist/` directory
 - **Features**:
   - HTML imports for .tsx/.jsx/.css files (import directly in `<script>` tags)
   - Built-in API routing via Bun.serve routes object (see `index.tsx` for examples)
   - Development mode with browser console logging (`console: true`)
   - TypeScript support without compilation step
   - Hot reloading with `--hot` flag in dev mode
+- **Additional Documentation**: See `apps/web/CLAUDE.md` for detailed Bun.serve() API usage and patterns
 
 ### Database Package (`@packages/db`)
 - **Prisma schema**: `packages/db/prisma/schema.prisma`
@@ -249,9 +249,11 @@ cd apps/api && bun test -t "pattern"
 - **Port**: 8080
 - **Entry Point**: `apps/api/src/index.ts`
 - **Development**: Uses `bun --watch` for auto-reload on file changes
-- **Production Build**: TypeScript compiled with `tsc` to `dist/` directory, run with `node dist/index.js`
+- **Production Build**: TypeScript compiled with `bun build` to `dist/` directory, run with `node dist/index.js`
+- **Build Output**: `apps/api/dist/` directory
 - **Error Handling**: Uses `neverthrow` library for Result-based error handling (avoids throwing exceptions)
 - **Validation**: Uses `@hono/zod-validator` with Zod schemas for request validation
+- **Password Hashing**: Uses `bcrypt` for secure password hashing
 
 #### Layered Architecture
 
