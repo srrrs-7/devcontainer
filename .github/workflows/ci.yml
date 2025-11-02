@@ -52,9 +52,9 @@ jobs:
           cacheFrom: ghcr.io/${{ github.repository }}/devcontainer
           push: always
           runCmd: |
-            bun ci
+            bun run ci
             bun run db:generate
             bun run db:migrate:deploy
-            bun check
-            bun build:ws
-            bun test
+            bun run check
+            bun run build:ws
+            bun run test:run
