@@ -9,7 +9,7 @@
 
 import { PrismaTestingHelper } from "@chax-at/transactional-prisma-testing";
 import { getPrisma, initialize } from "@packages/db";
-import { afterEach, beforeAll, beforeEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
 
 type PrismaClient = ReturnType<typeof getPrisma>;
 
@@ -19,6 +19,12 @@ declare global {
   var testPrismaClient: PrismaClient;
 }
 
+// Initialize Prisma testing helper at setup time (module top-level)
+const originalPrisma = getPrisma();
+prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
+global.testPrismaClient = prismaTestingHelper.getProxyClient();
+
+// Mock getPrisma to return test client for any code that calls it
 vi.doMock("@packages/db", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@packages/db")>();
   return {
@@ -27,21 +33,13 @@ vi.doMock("@packages/db", async (importOriginal) => {
   };
 });
 
-beforeAll(() => {
-  // Initialize Prisma testing helper and fabbrica at setup time
-  const originalPrisma = getPrisma();
-  prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
-  global.testPrismaClient = prismaTestingHelper.getProxyClient();
-
-  // Initialize fabbrica with test Prisma client (must be done before any test runs)
-  // IMPORTANT: Pass the client instance directly, not as a getter function
-  initialize({
-    prisma: global.testPrismaClient,
-  });
-});
-
 beforeEach(async () => {
   await prismaTestingHelper.startNewTransaction();
+
+  // Re-initialize fabbrica for each test to ensure it uses the current transaction's proxy client
+  initialize({
+    prisma: () => global.testPrismaClient,
+  });
 
   // Seed データを全て削除（動的にすべてのテーブルを取得して一括削除）
   const testPrisma = global.testPrismaClient;
