@@ -9,7 +9,7 @@
 
 import { PrismaTestingHelper } from "@chax-at/transactional-prisma-testing";
 import { getPrisma, initialize } from "@packages/db";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, vi } from "vitest";
 
 type PrismaClient = ReturnType<typeof getPrisma>;
 
@@ -27,15 +27,17 @@ vi.doMock("@packages/db", async (importOriginal) => {
   };
 });
 
-// Initialize Prisma testing helper and fabbrica at setup time
-const originalPrisma = getPrisma();
-prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
-global.testPrismaClient = prismaTestingHelper.getProxyClient();
+beforeAll(() => {
+  // Initialize Prisma testing helper and fabbrica at setup time
+  const originalPrisma = getPrisma();
+  prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
+  global.testPrismaClient = prismaTestingHelper.getProxyClient();
 
-// Initialize fabbrica with test Prisma client (must be done before any test runs)
-// IMPORTANT: Pass the client instance directly, not as a getter function
-initialize({
-  prisma: global.testPrismaClient,
+  // Initialize fabbrica with test Prisma client (must be done before any test runs)
+  // IMPORTANT: Pass the client instance directly, not as a getter function
+  initialize({
+    prisma: global.testPrismaClient,
+  });
 });
 
 beforeEach(async () => {
