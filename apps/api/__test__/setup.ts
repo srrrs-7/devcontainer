@@ -33,8 +33,9 @@ prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
 global.testPrismaClient = prismaTestingHelper.getProxyClient();
 
 // Initialize fabbrica with test Prisma client (must be done before any test runs)
+// IMPORTANT: Pass the client instance directly, not as a getter function
 initialize({
-  prisma: () => global.testPrismaClient,
+  prisma: global.testPrismaClient,
 });
 
 beforeEach(async () => {
