@@ -27,19 +27,18 @@ vi.doMock("@packages/db", async (importOriginal) => {
   };
 });
 
+// Initialize Prisma testing helper and fabbrica at setup time
+const originalPrisma = getPrisma();
+prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
+global.testPrismaClient = prismaTestingHelper.getProxyClient();
+
+// Initialize fabbrica with test Prisma client (must be done before any test runs)
+initialize({
+  prisma: () => global.testPrismaClient,
+});
+
 beforeEach(async () => {
-  if (prismaTestingHelper == null) {
-    const originalPrisma = getPrisma();
-    prismaTestingHelper = new PrismaTestingHelper(originalPrisma);
-    global.testPrismaClient = prismaTestingHelper.getProxyClient();
-  }
-
   await prismaTestingHelper.startNewTransaction();
-
-  // Initialize fabbrica with test Prisma client
-  initialize({
-    prisma: () => global.testPrismaClient,
-  });
 
   // Seed データを全て削除（動的にすべてのテーブルを取得して一括削除）
   const testPrisma = global.testPrismaClient;
