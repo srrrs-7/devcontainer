@@ -4,6 +4,7 @@ import { hashPassword } from "../../../domain/model/user";
 import { createUser } from "../../../infra/rds/users/repository";
 import {
   databaseErrorResponse,
+  domainErrorResponse,
   okResponse,
   unExpectedErrorResponse,
   validationErrorResponse,
@@ -25,33 +26,32 @@ export default new Hono().post(
     }
   }),
   async (c) => {
-    const body = c.req.valid("json");
+    const { clientId, username, email, password } = c.req.valid("json");
 
-    const hashPasswordResult = await hashPassword(body.password);
-    if (hashPasswordResult.isErr()) {
-      return c.json({ error: "Failed to hash password" }, 500);
-    }
-    const passwordHash = hashPasswordResult.value;
-
-    return await createUser({
-      clientId: body.clientId,
-      username: body.username,
-      email: body.email,
-      passwordHash,
-    })
-      .map((user): Response => {
-        return {
+    return await hashPassword(password)
+      .andThen((passwordHash) =>
+        createUser({
+          clientId: clientId,
+          username: username,
+          email: email,
+          passwordHash,
+        }),
+      )
+      .map(
+        (user): Response => ({
           userId: user.userId,
           clientId: user.clientId,
           username: user.username,
           email: user.email,
-        };
-      })
+        }),
+      )
       .match(
         (response) => okResponse(c, response),
         (error) => {
           const errorName = error.name;
           switch (errorName) {
+            case "DomainError":
+              return domainErrorResponse(c, error);
             case "DatabaseError":
               return databaseErrorResponse(c, error);
             default:

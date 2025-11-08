@@ -5,7 +5,9 @@ import { NotFoundError } from "../../../domain/error";
 import { hashPassword } from "../../../domain/model/user";
 import { updateUser } from "../../../infra/rds/users/repository";
 import {
+  conflictResponse,
   databaseErrorResponse,
+  domainErrorResponse,
   notFoundResponse,
   okResponse,
   unExpectedErrorResponse,
@@ -37,27 +39,21 @@ export default new Hono().put(
   }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const body = c.req.valid("json");
+    const { username, email, password } = c.req.valid("json");
 
-    let passwordHash: string | undefined;
-    if (body.password) {
-      const hashPasswordResult = await hashPassword(body.password);
-
-      if (hashPasswordResult.isErr()) {
-        return c.json({ error: "Failed to hash password" }, 500);
-      }
-
-      passwordHash = hashPasswordResult.value;
-    }
-
-    return await updateUser({
-      userId: id,
-      username: body.username,
-      email: body.email,
-      passwordHash,
-    })
+    return await hashPassword(password)
+      .andThen((passwordHash) =>
+        updateUser({
+          userId: id,
+          username: username,
+          email: email,
+          passwordHash,
+        }),
+      )
       .andThen((user) => {
-        return user ? ok(user) : err(new NotFoundError("user"));
+        return user
+          ? ok(user)
+          : err(new NotFoundError(new Error("User not found"), "User"));
       })
       .map((user): Response => {
         return {
@@ -74,6 +70,10 @@ export default new Hono().put(
           switch (errorName) {
             case "NotFoundError":
               return notFoundResponse(c, error);
+            case "ConflictError":
+              return conflictResponse(c, error);
+            case "DomainError":
+              return domainErrorResponse(c, error);
             case "DatabaseError":
               return databaseErrorResponse(c, error);
             default:

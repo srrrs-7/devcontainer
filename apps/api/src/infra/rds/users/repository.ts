@@ -1,6 +1,10 @@
 import { getPrisma } from "@packages/db";
 import { ResultAsync } from "neverthrow";
-import { DatabaseError } from "../../../domain/error";
+import {
+  ConflictError,
+  DatabaseError,
+  NotFoundError,
+} from "../../../domain/error";
 import type {
   CreateUserInput,
   DeleteUserInput,
@@ -51,7 +55,7 @@ export const createUser = (
  */
 export const updateUser = (
   input: UpdateUserInput,
-): ResultAsync<User | null, DatabaseError> => {
+): ResultAsync<User | null, NotFoundError | ConflictError | DatabaseError> => {
   const prisma = getPrisma();
 
   // Build update data object with only provided fields
@@ -81,7 +85,28 @@ export const updateUser = (
       },
       data: updateData,
     }),
-    (error) => new DatabaseError(error),
+    (error) => {
+      // Type guard for Prisma errors
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+      ) {
+        // P2025: Record not found
+        if (error.code === "P2025") {
+          return NotFoundError.fromPrismaNotFoundError(error, "User");
+        }
+
+        // P2002: Unique constraint violation (duplicate email/username)
+        if (error.code === "P2002") {
+          return new ConflictError(error, "User");
+        }
+      }
+
+      // Other database errors
+      return new DatabaseError(error);
+    },
   ).map(
     (user): User => ({
       userId: user.id,
@@ -100,7 +125,10 @@ export const updateUser = (
  */
 export const deleteUser = (
   input: DeleteUserInput,
-): ResultAsync<{ count: number }, DatabaseError> => {
+): ResultAsync<
+  { count: number },
+  NotFoundError | ConflictError | DatabaseError
+> => {
   const prisma = getPrisma();
 
   return ResultAsync.fromPromise(
@@ -109,7 +137,28 @@ export const deleteUser = (
         id: input.userId,
       },
     }),
-    (error) => new DatabaseError(error),
+    (error) => {
+      // Type guard for Prisma errors
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        typeof error.code === "string"
+      ) {
+        // P2025: Record not found
+        if (error.code === "P2025") {
+          return NotFoundError.fromPrismaNotFoundError(error, "User");
+        }
+
+        // P2003, P2014, P2002: Constraint violations
+        if (["P2003", "P2014", "P2002"].includes(error.code)) {
+          return new ConflictError(error, "User");
+        }
+      }
+
+      // Other database errors
+      return new DatabaseError(error);
+    },
   ).map(() => ({ count: 1 }));
 };
 

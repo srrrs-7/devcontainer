@@ -1,5 +1,6 @@
 import * as bcrypt from "bcrypt";
 import { ResultAsync } from "neverthrow";
+import { DomainError } from "../error";
 
 export type User = {
   userId: string;
@@ -54,15 +55,12 @@ const SALT_ROUNDS = 10;
  * @param password - プレーンテキストのパスワード
  * @returns ハッシュ化されたパスワードのResultAsync
  */
-export const hashPassword = (password: string): ResultAsync<string, Error> => {
+export const hashPassword = (
+  password: string,
+): ResultAsync<string, DomainError> => {
   return ResultAsync.fromPromise(
     bcrypt.hash(password, SALT_ROUNDS),
-    (error) => {
-      if (error instanceof Error) {
-        return error;
-      }
-      return new Error("Failed to hash password");
-    },
+    (error) => new DomainError(error, "PasswordHashing"),
   );
 };
 
@@ -75,11 +73,9 @@ export const hashPassword = (password: string): ResultAsync<string, Error> => {
 export const verifyPassword = (
   password: string,
   hash: string,
-): ResultAsync<boolean, Error> => {
-  return ResultAsync.fromPromise(bcrypt.compare(password, hash), (error) => {
-    if (error instanceof Error) {
-      return error;
-    }
-    return new Error("Failed to verify password");
-  });
+): ResultAsync<boolean, DomainError> => {
+  return ResultAsync.fromPromise(
+    bcrypt.compare(password, hash),
+    (error) => new DomainError(error, "PasswordVerification"),
+  );
 };

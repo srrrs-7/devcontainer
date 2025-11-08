@@ -31,7 +31,9 @@ export default new Hono().delete(
 
     return await deleteTask({ userId, taskId: id })
       .andThen((result) => {
-        return result.count > 0 ? ok(result) : err(new NotFoundError("task"));
+        return result.count > 0
+          ? ok(result)
+          : err(new NotFoundError("Task not found", "task"));
       })
       .match(
         () => noContentResponse(c),

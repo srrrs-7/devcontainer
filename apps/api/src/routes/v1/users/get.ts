@@ -31,7 +31,9 @@ export default new Hono().get(
 
     return await getUser({ userId: id })
       .andThen((user) => {
-        return user ? ok(user) : err(new NotFoundError("user"));
+        return user
+          ? ok(user)
+          : err(new NotFoundError(new Error("User not found"), "User"));
       })
       .map((user): Response => {
         return {

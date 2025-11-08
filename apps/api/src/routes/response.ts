@@ -20,44 +20,40 @@ export const validationErrorResponse = (
   issues: z.ZodError["issues"],
 ) => {
   logger.warn({ issues }, "Validation failed");
-  return c.json(
-    {
-      message: "Validation failed",
-      error: issues,
-    },
-    400,
-  );
+  return c.json(issues, 400);
+};
+
+export const forbiddenResponse = (c: Context, error: Error) => {
+  logger.warn({ error }, "Forbidden");
+  return c.json(error, 403);
+};
+
+export const unauthorizedResponse = (c: Context, error: Error) => {
+  logger.warn({ error }, "Unauthorized");
+  return c.json(error, 401);
+};
+
+export const conflictResponse = (c: Context, error: Error) => {
+  logger.warn({ error }, "Conflict");
+  return c.json(error, 409);
 };
 
 export const notFoundResponse = (c: Context, error: NotFoundError) => {
-  logger.error({ error }, "Not found");
-  return c.json(
-    {
-      message: error.message,
-      error: error,
-    },
-    404,
-  );
+  logger.warn({ error }, "Not found");
+  return c.json(error, 404);
+};
+
+export const domainErrorResponse = (c: Context, error: Error) => {
+  logger.warn({ error }, "Domain error");
+  return c.json(error, 500);
 };
 
 export const databaseErrorResponse = (c: Context, error: DatabaseError) => {
   logger.error({ error }, "Database error");
-  return c.json(
-    {
-      message: error.message,
-      error: error,
-    },
-    500,
-  );
+  return c.json(error, 500);
 };
 
 export const unExpectedErrorResponse = (c: Context, error: unknown) => {
   logger.error({ error }, "Unexpected server error");
-  return c.json(
-    {
-      message: "Unexpected server error",
-      error: error,
-    },
-    500,
-  );
+  return c.json(error, 500);
 };

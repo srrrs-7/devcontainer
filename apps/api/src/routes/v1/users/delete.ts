@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { deleteUser } from "../../../infra/rds/users/repository";
 import {
+  conflictResponse,
   databaseErrorResponse,
   noContentResponse,
   notFoundResponse,
@@ -25,16 +26,11 @@ export default new Hono().delete(
       (error) => {
         const errorName = error.name;
         switch (errorName) {
+          case "NotFoundError":
+            return notFoundResponse(c, error);
+          case "ConflictError":
+            return conflictResponse(c, error);
           case "DatabaseError":
-            // Prisma throws error if user not found with delete()
-            // Check if it's a "Record to delete does not exist" error
-            if (error.error.includes("Record to delete does not exist")) {
-              return notFoundResponse(c, {
-                name: "NotFoundError",
-                message: "Resource not found",
-                resourceName: "user",
-              });
-            }
             return databaseErrorResponse(c, error);
           default:
             errorName satisfies never;

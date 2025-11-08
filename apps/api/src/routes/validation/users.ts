@@ -25,8 +25,8 @@ export const createUserBodySchema = z.object({
 
 export const updateUserBodySchema = z
   .object({
-    username: usernameSchema.optional(),
-    email: emailSchema.optional(),
+    username: usernameSchema,
+    email: emailSchema,
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -34,8 +34,7 @@ export const updateUserBodySchema = z
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-      )
-      .optional(),
+      ),
   })
   .refine(
     (data) =>
@@ -55,13 +54,11 @@ export const listUsersQuerySchema = z.object({
     .int("Page must be an integer")
     .min(1, "Page must be at least 1")
     .max(10000, "Page must not exceed 10000")
-    .default(1)
-    .optional(),
+    .default(1),
   limit: z.coerce
     .number()
     .int("Limit must be an integer")
     .min(1, "Limit must be at least 1")
     .max(100, "Limit must not exceed 100")
-    .default(20)
-    .optional(),
+    .default(20),
 });
