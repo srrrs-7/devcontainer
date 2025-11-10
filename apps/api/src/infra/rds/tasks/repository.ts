@@ -1,4 +1,5 @@
 import { getPrisma } from "@packages/db";
+import dayjs from "dayjs";
 import { ResultAsync } from "neverthrow";
 import { DatabaseError } from "../../../domain/error";
 import type {
@@ -19,8 +20,8 @@ export const createTask = (
     prisma.tasks.create({
       data: {
         content: input.content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: dayjs().toDate(),
+        updatedAt: dayjs().toDate(),
         users: {
           connect: { id: input.userId },
         },
@@ -49,7 +50,7 @@ export const updateTask = (
     completedAt?: Date | null;
     updatedAt: Date;
   } = {
-    updatedAt: new Date(),
+    updatedAt: dayjs().toDate(),
   };
 
   if (input.content !== undefined) {
@@ -75,7 +76,7 @@ export const updateTask = (
   );
 };
 
-export const deleteTask = (
+export const _deleteTask = (
   input: DeleteTaskInput,
 ): ResultAsync<{ count: number }, DatabaseError> => {
   const prisma = getPrisma();
@@ -95,7 +96,7 @@ export const deleteTask = (
   );
 };
 
-export const getTask = (
+export const _getTask = (
   input: GetTaskInput,
 ): ResultAsync<Task | null, DatabaseError> => {
   const prisma = getPrisma();
@@ -125,7 +126,7 @@ export const getTask = (
   });
 };
 
-export const listTasks = (
+export const _listTasks = (
   input: ListTasksInput,
 ): ResultAsync<Task[], DatabaseError> => {
   const prisma = getPrisma();
@@ -142,6 +143,8 @@ export const listTasks = (
       orderBy: {
         createdAt: "desc",
       },
+      skip: (input.page - 1) * input.limit,
+      take: input.limit,
     }),
     (error) => new DatabaseError(error),
   ).map((tasks): Task[] =>

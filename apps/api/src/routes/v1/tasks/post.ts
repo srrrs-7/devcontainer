@@ -1,6 +1,11 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { okResponse, validationErrorResponse } from "../../response";
+import { createTask } from "../../../infra/rds/tasks/repository";
+import {
+  databaseErrorResponse,
+  unExpectedErrorResponse,
+  validationErrorResponse,
+} from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import { createTaskBodySchema } from "../../validation/tasks";
 
@@ -26,12 +31,32 @@ export default new Hono().post(
   async (c) => {
     const body = c.req.valid("json");
     const { "x-user-id": userId } = c.req.valid("header");
-    const response: Response = {
-      taskId: "new-task-id",
+
+    const result = createTask({
       userId,
       content: body.content,
-      completedAt: null,
-    };
-    return okResponse(c, response);
+    }).map(
+      (task): Response => ({
+        taskId: task.taskId,
+        userId: task.userId,
+        content: task.content,
+        completedAt: task.completedAt,
+      }),
+    );
+
+    return result.match(
+      (response) => {
+        return c.json(response, 200);
+      },
+      (error) => {
+        const errName = error.name;
+        switch (errName) {
+          case "DatabaseError":
+            return databaseErrorResponse(c, error);
+          default:
+            return unExpectedErrorResponse(c, error);
+        }
+      },
+    );
   },
 );

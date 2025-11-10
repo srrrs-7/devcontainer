@@ -52,7 +52,7 @@ export default new Hono().get(
       );
 
     return result.match(
-      (task) => okResponse(c, task),
+      (response) => okResponse(c, response),
       (error) => {
         const errName = error.name;
         switch (errName) {

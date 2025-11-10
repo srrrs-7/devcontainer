@@ -31,4 +31,6 @@ export type GetTaskInput = {
 
 export type ListTasksInput = {
   userId: string;
+  page: number;
+  limit: number;
 };

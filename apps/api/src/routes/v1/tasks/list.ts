@@ -1,6 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { okResponse, validationErrorResponse } from "../../response";
+import { listTasks } from "../../../infra/rds/tasks/repository";
+import {
+  databaseErrorResponse,
+  okResponse,
+  unExpectedErrorResponse,
+  validationErrorResponse,
+} from "../../response";
 import { paginationSchema, userHeaderSchema } from "../../validation/schemas";
 
 type TaskItem = {
@@ -28,27 +34,37 @@ export default new Hono().get(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  (c) => {
+  async (c) => {
     const { page, limit } = c.req.valid("query");
     const { "x-user-id": userId } = c.req.valid("header");
-    const response: Response = {
-      tasks: [
-        {
-          taskId: "task-1",
-          userId,
-          content: "Sample task 1",
-          completedAt: null,
-        },
-        {
-          taskId: "task-2",
-          userId,
-          content: "Sample task 2",
-          completedAt: new Date(),
-        },
-      ],
-      page,
-      limit,
-    };
-    return okResponse(c, response);
+
+    const result = await listTasks({ userId, page, limit }).map(
+      (tasks): Response => {
+        return {
+          tasks: tasks.map((task) => ({
+            taskId: task.taskId,
+            userId: task.userId,
+            content: task.content,
+            completedAt: task.completedAt,
+          })),
+          page,
+          limit,
+        };
+      },
+    );
+
+    return result.match(
+      (response) => okResponse(c, response),
+      (error) => {
+        const errName = error.name;
+        switch (errName) {
+          case "DatabaseError":
+            return databaseErrorResponse(c, error);
+          default:
+            errName satisfies never;
+            return unExpectedErrorResponse(c, error);
+        }
+      },
+    );
   },
 );

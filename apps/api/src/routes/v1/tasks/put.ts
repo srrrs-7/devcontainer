@@ -1,6 +1,12 @@
 import { zValidator } from "@hono/zod-validator";
+import dayjs from "dayjs";
 import { Hono } from "hono";
-import { okResponse, validationErrorResponse } from "../../response";
+import { updateTask } from "../../../infra/rds/tasks/repository";
+import {
+  databaseErrorResponse,
+  okResponse,
+  validationErrorResponse,
+} from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import {
   taskIdParamSchema,
@@ -8,10 +14,7 @@ import {
 } from "../../validation/tasks";
 
 type Response = {
-  taskId: string;
-  userId: string;
-  content: string;
-  completedAt: Date | null;
+  count: number;
 };
 
 export default new Hono().put(
@@ -33,14 +36,28 @@ export default new Hono().put(
   }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const body = c.req.valid("json");
+    const { content, status } = c.req.valid("json");
     const { "x-user-id": userId } = c.req.valid("header");
-    const response: Response = {
+
+    const result = updateTask({
       taskId: id,
       userId,
-      content: body.content ?? "Sample task content",
-      completedAt: null,
-    };
-    return okResponse(c, response);
+      content: content,
+      completedAt: status === "COMPLETED" ? dayjs().toDate() : null,
+    }).map((count): Response => count);
+
+    return result.match(
+      (response) => okResponse(c, response),
+      (error) => {
+        const errName = error.name;
+        switch (errName) {
+          case "DatabaseError":
+            return databaseErrorResponse(c, error);
+          default:
+            errName satisfies never;
+            return databaseErrorResponse(c, error);
+        }
+      },
+    );
   },
 );
