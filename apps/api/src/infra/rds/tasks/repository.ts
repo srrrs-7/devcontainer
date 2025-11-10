@@ -76,7 +76,7 @@ export const updateTask = (
   );
 };
 
-export const _deleteTask = (
+export const deleteTask = (
   input: DeleteTaskInput,
 ): ResultAsync<{ count: number }, DatabaseError> => {
   const prisma = getPrisma();
@@ -96,7 +96,7 @@ export const _deleteTask = (
   );
 };
 
-export const _getTask = (
+export const getTask = (
   input: GetTaskInput,
 ): ResultAsync<Task | null, DatabaseError> => {
   const prisma = getPrisma();
@@ -126,7 +126,7 @@ export const _getTask = (
   });
 };
 
-export const _listTasks = (
+export const listTasks = (
   input: ListTasksInput,
 ): ResultAsync<Task[], DatabaseError> => {
   const prisma = getPrisma();
