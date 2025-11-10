@@ -36,7 +36,7 @@ export default new Hono().put(
   }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const { content, status } = c.req.valid("json");
+    const { content, status, version } = c.req.valid("json");
     const { "x-user-id": userId } = c.req.valid("header");
 
     const result = updateTask({
@@ -44,6 +44,7 @@ export default new Hono().put(
       userId,
       content: content,
       completedAt: status === "COMPLETED" ? dayjs().toDate() : null,
+      version,
     }).map((count): Response => count);
 
     return result.match(

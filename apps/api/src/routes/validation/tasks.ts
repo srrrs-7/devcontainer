@@ -24,6 +24,7 @@ export const updateTaskBodySchema = z
   .object({
     content: contentSchema(1000).optional(),
     status: taskStatusSchema.optional(),
+    version: z.number().int().min(0).describe("Version for optimistic locking"),
   })
   .refine((data) => data.content !== undefined || data.status !== undefined, {
     message: "At least one field (content or status) must be provided",

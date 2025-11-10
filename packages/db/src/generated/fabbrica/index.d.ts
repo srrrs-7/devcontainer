@@ -28,6 +28,7 @@ type TasksFactoryDefineInput = {
     content?: string;
     status?: TaskStatus;
     completedAt?: Date | null;
+    version?: number;
     createdAt?: Date;
     updatedAt?: Date;
     users?: Prisma.UserCreateNestedManyWithoutTasksInput;

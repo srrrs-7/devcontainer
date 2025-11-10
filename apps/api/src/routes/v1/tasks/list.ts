@@ -14,6 +14,7 @@ type TaskItem = {
   userId: string;
   content: string;
   completedAt: Date | null;
+  version: number;
 };
 
 type Response = {
@@ -46,6 +47,7 @@ export default new Hono().get(
             userId: task.userId,
             content: task.content,
             completedAt: task.completedAt,
+            version: task.version,
           })),
           page,
           limit,

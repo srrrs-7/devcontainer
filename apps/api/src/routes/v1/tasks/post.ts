@@ -14,6 +14,7 @@ type Response = {
   userId: string;
   content: string;
   completedAt: Date | null;
+  version: number;
 };
 
 export default new Hono().post(
@@ -41,6 +42,7 @@ export default new Hono().post(
         userId: task.userId,
         content: task.content,
         completedAt: task.completedAt,
+        version: task.version,
       }),
     );
 

@@ -34,6 +34,7 @@ export const createTask = (
       taskId: task.id,
       content: task.content,
       completedAt: task.completedAt,
+      version: task.version,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     }),
@@ -48,8 +49,10 @@ export const updateTask = (
   const updateData: {
     content?: string;
     completedAt?: Date | null;
+    version: { increment: number };
     updatedAt: Date;
   } = {
+    version: { increment: 1 },
     updatedAt: dayjs().toDate(),
   };
 
@@ -64,6 +67,7 @@ export const updateTask = (
     prisma.tasks.updateMany({
       where: {
         id: input.taskId,
+        version: input.version,
         users: {
           some: {
             id: input.userId,
@@ -120,6 +124,7 @@ export const getTask = (
       taskId: task.id,
       content: task.content,
       completedAt: task.completedAt,
+      version: task.version,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     };
@@ -153,6 +158,7 @@ export const listTasks = (
       taskId: task.id,
       content: task.content,
       completedAt: task.completedAt,
+      version: task.version,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
     })),

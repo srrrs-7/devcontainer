@@ -68,6 +68,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           content: "Updated task content",
+          version: 0,
         }),
       });
 
@@ -96,6 +97,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           status: "COMPLETED",
+          version: 0,
         }),
       });
 
@@ -125,6 +127,7 @@ describe("PUT /task/:id", () => {
         body: JSON.stringify({
           content: "Updated and completed",
           status: "COMPLETED",
+          version: 0,
         }),
       });
 
@@ -146,12 +149,12 @@ describe("PUT /task/:id", () => {
     test.each([
       {
         description: "status to IN_PROGRESS",
-        body: { status: "IN_PROGRESS" },
+        body: { status: "IN_PROGRESS", version: 0 },
         expectedCompletedAt: null,
       },
       {
         description: "status to PENDING",
-        body: { status: "PENDING" },
+        body: { status: "PENDING", version: 0 },
         expectedCompletedAt: null,
       },
     ])(
@@ -192,6 +195,7 @@ describe("PUT /task/:id", () => {
           },
           body: JSON.stringify({
             content: "Updated content",
+            version: 0,
           }),
         },
       );
@@ -212,6 +216,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           content: "Updated content",
+          version: 0,
         }),
       });
 
@@ -272,35 +277,35 @@ describe("PUT /task/:id", () => {
         description: "empty body (no fields)",
         body: {},
         expectedStatus: 400,
-        expectedMessageContains: "At least one field",
+        expectedMessageContains: "invalid_type",
       },
       {
         description: "empty content string",
-        body: { content: "" },
+        body: { content: "", version: 0 },
         expectedStatus: 400,
         expectedMessageContains: "Content cannot be empty",
       },
       {
         description: "content exceeds max length (1001 chars)",
-        body: { content: "a".repeat(1001) },
+        body: { content: "a".repeat(1001), version: 0 },
         expectedStatus: 400,
         expectedMessageContains: "must not exceed 1000 characters",
       },
       {
         description: "content with script tag (XSS)",
-        body: { content: "<script>alert('xss')</script>" },
+        body: { content: "<script>alert('xss')</script>", version: 0 },
         expectedStatus: 400,
         expectedMessageContains: "dangerous script patterns",
       },
       {
         description: "invalid status value",
-        body: { status: "INVALID_STATUS" },
+        body: { status: "INVALID_STATUS", version: 0 },
         expectedStatus: 400,
         expectedMessageContains: "Status must be one of",
       },
       {
         description: "content is not a string",
-        body: { content: 123 },
+        body: { content: 123, version: 0 },
         expectedStatus: 400,
         expectedMessageContains: "Expected string",
       },
@@ -365,7 +370,7 @@ describe("PUT /task/:id", () => {
         const req = new Request(`http://localhost/task/${testTaskId}`, {
           method: "PUT",
           headers,
-          body: JSON.stringify({ content: "Valid content" }),
+          body: JSON.stringify({ content: "Valid content", version: 0 }),
         });
 
         const res = await app.request(req);
@@ -390,6 +395,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           content: "Task: #1 - Update & Review!",
+          version: 0,
         }),
       });
 
@@ -412,6 +418,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           content: "タスク更新 🚀 émojis",
+          version: 0,
         }),
       });
 
@@ -434,6 +441,7 @@ describe("PUT /task/:id", () => {
         },
         body: JSON.stringify({
           content: "  Content with spaces  ",
+          version: 0,
         }),
       });
 
@@ -445,6 +453,86 @@ describe("PUT /task/:id", () => {
         where: { id: testTaskId },
       });
       expect(task?.content).toBe("Content with spaces");
+    });
+  });
+
+  describe("Optimistic Locking", () => {
+    test("should return count 0 when version conflicts (optimistic locking)", async () => {
+      // First update: version 0 -> 1
+      const req1 = new Request(`http://localhost/task/${testTaskId}`, {
+        method: "PUT",
+        headers: {
+          "x-user-id": testUserId,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          content: "First update",
+          version: 0,
+        }),
+      });
+
+      const res1 = await app.request(req1);
+      expect(res1.status).toBe(200);
+      const data1 = await res1.json();
+      expect(data1.count).toBe(1);
+
+      // Verify version was incremented
+      const prisma = getPrisma();
+      const task1 = await prisma.tasks.findUnique({
+        where: { id: testTaskId },
+      });
+      expect(task1?.version).toBe(1);
+      expect(task1?.content).toBe("First update");
+
+      // Second update with old version (0): should fail
+      const req2 = new Request(`http://localhost/task/${testTaskId}`, {
+        method: "PUT",
+        headers: {
+          "x-user-id": testUserId,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          content: "Second update with old version",
+          version: 0, // Old version, should conflict
+        }),
+      });
+
+      const res2 = await app.request(req2);
+      expect(res2.status).toBe(200);
+      const data2 = await res2.json();
+      expect(data2.count).toBe(0); // Update failed due to version mismatch
+
+      // Verify content was not updated
+      const task2 = await prisma.tasks.findUnique({
+        where: { id: testTaskId },
+      });
+      expect(task2?.content).toBe("First update"); // Still the first update
+      expect(task2?.version).toBe(1); // Version unchanged
+
+      // Third update with correct version (1): should succeed
+      const req3 = new Request(`http://localhost/task/${testTaskId}`, {
+        method: "PUT",
+        headers: {
+          "x-user-id": testUserId,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          content: "Third update with correct version",
+          version: 1, // Correct version
+        }),
+      });
+
+      const res3 = await app.request(req3);
+      expect(res3.status).toBe(200);
+      const data3 = await res3.json();
+      expect(data3.count).toBe(1); // Update succeeded
+
+      // Verify content was updated
+      const task3 = await prisma.tasks.findUnique({
+        where: { id: testTaskId },
+      });
+      expect(task3?.content).toBe("Third update with correct version");
+      expect(task3?.version).toBe(2); // Version incremented
     });
   });
 });

@@ -3,6 +3,7 @@ export type Task = {
   taskId: string;
   content: string;
   completedAt: Date | null;
+  version: number;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -17,6 +18,7 @@ export type UpdateTaskInput = {
   taskId: string;
   content?: string;
   completedAt?: Date | null;
+  version: number;
 };
 
 export type DeleteTaskInput = {

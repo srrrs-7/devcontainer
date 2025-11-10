@@ -100,12 +100,15 @@ describe("createTaskBodySchema", () => {
 describe("updateTaskBodySchema", () => {
   test.each([
     {
-      input: { content: "Updated content" },
+      input: { content: "Updated content", version: 0 },
       description: "content update only",
     },
-    { input: { status: "COMPLETED" }, description: "status update only" },
     {
-      input: { content: "Updated content", status: "IN_PROGRESS" },
+      input: { status: "COMPLETED", version: 0 },
+      description: "status update only",
+    },
+    {
+      input: { content: "Updated content", status: "IN_PROGRESS", version: 0 },
       description: "both content and status update",
     },
   ])("validates $description", ({ input }) => {
@@ -117,7 +120,7 @@ describe("updateTaskBodySchema", () => {
     const result = updateTaskBodySchema.safeParse({});
     expect(result.success).toBe(false);
     if (!result.success) {
-      expect(result.error.issues[0].message).toContain("At least one field");
+      expect(result.error.issues[0].message).toContain("expected number");
     }
   });
 
@@ -125,6 +128,7 @@ describe("updateTaskBodySchema", () => {
     const result = updateTaskBodySchema.safeParse({
       content: undefined,
       status: undefined,
+      version: 0,
     });
     expect(result.success).toBe(false);
   });
@@ -132,6 +136,7 @@ describe("updateTaskBodySchema", () => {
   test("trims content whitespace", () => {
     const result = updateTaskBodySchema.safeParse({
       content: "  Updated content  ",
+      version: 0,
     });
     expect(result.success).toBe(true);
     if (result.success) {
@@ -139,11 +144,10 @@ describe("updateTaskBodySchema", () => {
     }
   });
 
-  test.each([{ input: { status: "INVALID" }, description: "invalid status" }])(
-    "rejects $description",
-    ({ input }) => {
-      const result = updateTaskBodySchema.safeParse(input);
-      expect(result.success).toBe(false);
-    },
-  );
+  test.each([
+    { input: { status: "INVALID", version: 0 }, description: "invalid status" },
+  ])("rejects $description", ({ input }) => {
+    const result = updateTaskBodySchema.safeParse(input);
+    expect(result.success).toBe(false);
+  });
 });
