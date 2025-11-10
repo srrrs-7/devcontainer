@@ -1,6 +1,15 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { okResponse, validationErrorResponse } from "../../response";
+import { err, ok } from "neverthrow";
+import { NotFoundError } from "../../../domain/error";
+import { getTask } from "../../../infra/rds/tasks/repository";
+import {
+  databaseErrorResponse,
+  notFoundResponse,
+  okResponse,
+  unExpectedErrorResponse,
+  validationErrorResponse,
+} from "../../response";
 import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
 
@@ -23,15 +32,39 @@ export default new Hono().get(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  (c) => {
-    const { id } = c.req.valid("param");
+  async (c) => {
+    const { id: taskId } = c.req.valid("param");
     const { "x-user-id": userId } = c.req.valid("header");
-    const response: Response = {
-      taskId: id,
-      userId,
-      content: "Sample task content",
-      completedAt: null,
-    };
-    return okResponse(c, response);
+
+    const result = await getTask({ taskId, userId })
+      .andThen((task) => {
+        return !task
+          ? err(new NotFoundError(new Error("Task not found"), "task"))
+          : ok(task);
+      })
+      .map(
+        (task): Response => ({
+          taskId: task.taskId,
+          userId: task.userId,
+          content: task.content,
+          completedAt: task.completedAt,
+        }),
+      );
+
+    return result.match(
+      (task) => okResponse(c, task),
+      (error) => {
+        const errName = error.name;
+        switch (errName) {
+          case "NotFoundError":
+            return notFoundResponse(c, error);
+          case "DatabaseError":
+            return databaseErrorResponse(c, error);
+          default:
+            errName satisfies never;
+            return unExpectedErrorResponse(c, error);
+        }
+      },
+    );
   },
 );
