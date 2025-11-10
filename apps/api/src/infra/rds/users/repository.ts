@@ -1,4 +1,5 @@
 import { getPrisma } from "@packages/db";
+import dayjs from "dayjs";
 import { ResultAsync } from "neverthrow";
 import {
   ConflictError,
@@ -31,8 +32,8 @@ export const createUser = (
         username: input.username,
         email: input.email,
         passwordHash: input.passwordHash,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: dayjs().toDate(),
+        updatedAt: dayjs().toDate(),
       },
     }),
     (error) => new DatabaseError(error),
@@ -65,7 +66,7 @@ export const updateUser = (
     passwordHash?: string;
     updatedAt: Date;
   } = {
-    updatedAt: new Date(),
+    updatedAt: dayjs().toDate(),
   };
 
   if (input.username !== undefined) {
