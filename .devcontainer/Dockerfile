@@ -29,7 +29,4 @@ RUN /home/vscode/.local/bin/uv python install 3.12
 # Install spec-kit (Spec-Driven Development toolkit)
 RUN /home/vscode/.local/bin/uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
 
-# Switch back to root for any additional setup
-USER root
-
 WORKDIR /workspace/main
