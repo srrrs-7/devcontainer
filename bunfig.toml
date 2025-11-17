@@ -1,0 +1,9 @@
+  [install]
+  minimumReleaseAge = 259200 # 3 日
+  minimumReleaseAgeExcludes = [
+    "@types/bun",
+    "typescript"
+  ]
+
+  [install.security]
+  scanner = "@acme/bun-security-scanner"
