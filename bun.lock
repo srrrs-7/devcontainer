@@ -10,6 +10,7 @@
       },
       "devDependencies": {
         "@prisma/client": "^6.18.0",
+        "@socketsecurity/bun-security-scanner": "^1.1.1",
         "bin": "^0.0.0",
         "install": "^0.13.0",
         "prisma": "^6.18.0",
@@ -380,6 +381,8 @@
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.52.4", "", { "os": "win32", "cpu": "x64" }, "sha512-UF9KfsH9yEam0UjTwAgdK0anlQ7c8/pWPU2yVjyWcF1I1thABt6WXE47cI71pGiZ8wGvxohBoLnxM04L/wj8mQ=="],
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.52.4", "", { "os": "win32", "cpu": "x64" }, "sha512-bf9PtUa0u8IXDVxzRToFQKsNCRz9qLYfR/MpECxl4mRoWYjAeFjgxj1XdZr2M/GNVpT05p+LgQOHopYDlUu6/w=="],
+
+    "@socketsecurity/bun-security-scanner": ["@socketsecurity/bun-security-scanner@1.1.1", "", {}, "sha512-DJ/dHmfivdveby89k0J9JMGkbMK8JazMKZnhuVfdvvArMzDIrw/0ZRYdf25S6Khc33jXznYX12/HoKCYlXzLKA=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.0.0", "", {}, "sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA=="],
 

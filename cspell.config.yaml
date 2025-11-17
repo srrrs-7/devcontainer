@@ -23,6 +23,7 @@ words:
   - dotenvx
   - émojis
   - Entra
+  - esac
   - evenodd
   - fabbrica
   - fdisk
@@ -45,6 +46,7 @@ words:
   - netcat
   - neverthrow
   - nftables
+  - pipefail
   - pkill
   - pycache
   - quramy
@@ -54,10 +56,12 @@ words:
   - sato
   - Sato
   - schemaname
+  - socketsecurity
   - tablename
   - tanaka
   - Tanaka
   - tfstate
+  - trixie
   - TXXX
   - uvx
   - venv
