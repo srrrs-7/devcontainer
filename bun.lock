@@ -9,8 +9,8 @@
         "husky": "^9.1.7",
       },
       "devDependencies": {
+        "@bun-security-scanner/osv": "^1.0.0",
         "@prisma/client": "^6.18.0",
-        "@socketsecurity/bun-security-scanner": "^1.1.1",
         "bin": "^0.0.0",
         "install": "^0.13.0",
         "prisma": "^6.18.0",
@@ -99,6 +99,8 @@
     "@biomejs/cli-win32-arm64": ["@biomejs/cli-win32-arm64@2.3.2", "", { "os": "win32", "cpu": "arm64" }, "sha512-lCruqQlfWjhMlOdyf5pDHOxoNm4WoyY2vZ4YN33/nuZBRstVDuqPPjS0yBkbUlLEte11FbpW+wWSlfnZfSIZvg=="],
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@2.3.2", "", { "os": "win32", "cpu": "x64" }, "sha512-6Ee9P26DTb4D8sN9nXxgbi9Dw5vSOfH98M7UlmkjKB2vtUbrRqCbZiNfryGiwnPIpd6YUoTl7rLVD2/x1CyEHQ=="],
+
+    "@bun-security-scanner/osv": ["@bun-security-scanner/osv@1.0.0", "", { "dependencies": { "zod": "^4.1.12" } }, "sha512-hHtsD2VyaF5JGCzJp3pGXykgNyOFQUuG8qJ7TJ5OfNl7xfPO2AnER1aGx/PzvLFJVJI6Qsj+oUt/5vpcdMK8oQ=="],
 
     "@chax-at/transactional-prisma-testing": ["@chax-at/transactional-prisma-testing@1.4.0", "", { "peerDependencies": { "@prisma/client": "^4.7.0 || 5 || 6" } }, "sha512-JGt6eEAIvrG5mRwcykO8sP0TF1RFcLfDJGU2fhx+RmfsbLKil/kSYM+v5Gn1hRzZid8tFx0Tz0AsT35uD6tauQ=="],
 
@@ -381,8 +383,6 @@
     "@rollup/rollup-win32-x64-gnu": ["@rollup/rollup-win32-x64-gnu@4.52.4", "", { "os": "win32", "cpu": "x64" }, "sha512-UF9KfsH9yEam0UjTwAgdK0anlQ7c8/pWPU2yVjyWcF1I1thABt6WXE47cI71pGiZ8wGvxohBoLnxM04L/wj8mQ=="],
 
     "@rollup/rollup-win32-x64-msvc": ["@rollup/rollup-win32-x64-msvc@4.52.4", "", { "os": "win32", "cpu": "x64" }, "sha512-bf9PtUa0u8IXDVxzRToFQKsNCRz9qLYfR/MpECxl4mRoWYjAeFjgxj1XdZr2M/GNVpT05p+LgQOHopYDlUu6/w=="],
-
-    "@socketsecurity/bun-security-scanner": ["@socketsecurity/bun-security-scanner@1.1.1", "", {}, "sha512-DJ/dHmfivdveby89k0J9JMGkbMK8JazMKZnhuVfdvvArMzDIrw/0ZRYdf25S6Khc33jXznYX12/HoKCYlXzLKA=="],
 
     "@standard-schema/spec": ["@standard-schema/spec@1.0.0", "", {}, "sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA=="],
 
