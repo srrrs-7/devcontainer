@@ -435,7 +435,34 @@ CloudFront ─→ S3 (static)
 | Deletion Protection | No | Yes |
 | Log Retention | 7 days | 90 days |
 
-### Terraform Commands
+### IaC Workflow (`.github/workflows/iac.yml`)
+
+Manual workflow for Terraform deployments:
+
+**Trigger**: `workflow_dispatch` (manual only)
+- **environment**: `dev` or `prd`
+- **action**: `plan`, `apply`, or `destroy`
+
+**Branch Restrictions**:
+- Only `main` or `develop` branches can run workflow
+- `prd` deployment only from `main` branch
+- `destroy` action blocked for `prd` environment
+
+**Pipeline Jobs**:
+```
+validate → plan → apply/destroy
+```
+
+**Required GitHub Environment Configuration**:
+| Type | Name | Description |
+|------|------|-------------|
+| Variable | `AWS_ROLE_ARN` | OIDC IAM role ARN |
+| Variable | `DOMAIN_NAME` | Route53 hosted zone domain |
+| Variable | `APP_DOMAIN_NAME` | Application subdomain |
+| Secret | `DB_USERNAME` | Database username |
+| Secret | `DB_PASSWORD` | Database password |
+
+### Local Terraform Commands
 ```bash
 cd apps/iac/environments/dev  # or prd
 
