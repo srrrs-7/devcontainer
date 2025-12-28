@@ -9,6 +9,7 @@ dictionaryDefinitions: []
 dictionaries: []
 words:
   - anthropics
+  - biomejs
   - auggie
   - Auggie
   - AUGGIE
@@ -26,6 +27,7 @@ words:
   - esac
   - evenodd
   - fabbrica
+  - hono
   - fdisk
   - gdisk
   - Groot
@@ -46,6 +48,7 @@ words:
   - netcat
   - neverthrow
   - nftables
+  - pino
   - pipefail
   - pkill
   - pycache
@@ -62,9 +65,11 @@ words:
   - Tanaka
   - tfstate
   - trixie
+  - tsgo
   - TXXX
   - uvx
   - venv
+  - vitest
   - VITE
   - worktree
   - worktrees

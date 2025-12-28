@@ -1,7 +1,7 @@
 {
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": ["serena", "chrome-devtools"],
-  "sandbox": {
-    "enabled": true
+  "permissions": {
+    "allow": ["Bash(bunx why vite)"]
   }
 }

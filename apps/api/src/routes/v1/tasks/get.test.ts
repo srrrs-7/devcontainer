@@ -102,25 +102,26 @@ describe("GET /task/:taskId", () => {
         expectedStatus: 400,
         expectedMessageContains: "Invalid uuid",
       },
-    ])(
-      "should return error when taskId is $description",
-      async ({ taskId, expectedStatus, expectedMessageContains }) => {
-        const req = new Request(`http://localhost/task/${taskId}`, {
-          headers: { "x-user-id": testUserId },
-        });
+    ])("should return error when taskId is $description", async ({
+      taskId,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const req = new Request(`http://localhost/task/${taskId}`, {
+        headers: { "x-user-id": testUserId },
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        if (expectedMessageContains) {
-          const data = await res.json();
-          const jsonStr = JSON.stringify(data);
-          expect(jsonStr.toLowerCase()).toContain(
-            expectedMessageContains.toLowerCase(),
-          );
-        }
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      if (expectedMessageContains) {
+        const data = await res.json();
+        const jsonStr = JSON.stringify(data);
+        expect(jsonStr.toLowerCase()).toContain(
+          expectedMessageContains.toLowerCase(),
+        );
+      }
+    });
   });
 
   describe("Validation errors - header", () => {
@@ -154,23 +155,24 @@ describe("GET /task/:taskId", () => {
         expectedStatus: 400,
         expectedMessageContains: "Invalid uuid",
       },
-    ])(
-      "should return 400 when $description",
-      async ({ headers, expectedStatus, expectedMessageContains }) => {
-        const req = new Request(`http://localhost/task/${testTaskId}`, {
-          headers,
-        });
+    ])("should return 400 when $description", async ({
+      headers,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const req = new Request(`http://localhost/task/${testTaskId}`, {
+        headers,
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      const data = await res.json();
+      const jsonStr = JSON.stringify(data);
+      expect(jsonStr.toLowerCase()).toContain(
+        expectedMessageContains.toLowerCase(),
+      );
+    });
   });
 
   describe("Not found cases", () => {
@@ -258,24 +260,24 @@ describe("GET /task/:taskId", () => {
             .join(""),
         shouldSucceed: true,
       },
-    ])(
-      "should handle $description correctly",
-      async ({ getTaskId, shouldSucceed }) => {
-        const modifiedTaskId = getTaskId(testTaskId);
-        const req = new Request(`http://localhost/task/${modifiedTaskId}`, {
-          headers: { "x-user-id": testUserId },
-        });
+    ])("should handle $description correctly", async ({
+      getTaskId,
+      shouldSucceed,
+    }) => {
+      const modifiedTaskId = getTaskId(testTaskId);
+      const req = new Request(`http://localhost/task/${modifiedTaskId}`, {
+        headers: { "x-user-id": testUserId },
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        if (shouldSucceed) {
-          expect(res.status).toBe(200);
-          const data = await res.json();
-          expect(data.taskId).toBe(testTaskId);
-        } else {
-          expect(res.status).not.toBe(200);
-        }
-      },
-    );
+      if (shouldSucceed) {
+        expect(res.status).toBe(200);
+        const data = await res.json();
+        expect(data.taskId).toBe(testTaskId);
+      } else {
+        expect(res.status).not.toBe(200);
+      }
+    });
   });
 });

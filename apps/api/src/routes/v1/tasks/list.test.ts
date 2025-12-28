@@ -138,28 +138,30 @@ describe("GET /tasks", () => {
         expectedCount: 1,
         expectedFirstContent: "Task 4",
       },
-    ])(
-      "should return correct pagination for $description",
-      async ({ page, limit, expectedCount, expectedFirstContent }) => {
-        const req = new Request(
-          `http://localhost/tasks?page=${page}&limit=${limit}`,
-          {
-            headers: { "x-user-id": testUserId },
-          },
-        );
+    ])("should return correct pagination for $description", async ({
+      page,
+      limit,
+      expectedCount,
+      expectedFirstContent,
+    }) => {
+      const req = new Request(
+        `http://localhost/tasks?page=${page}&limit=${limit}`,
+        {
+          headers: { "x-user-id": testUserId },
+        },
+      );
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(200);
-        const data = await res.json();
-        expect(data.page).toBe(page);
-        expect(data.limit).toBe(limit);
-        expect(data.tasks).toHaveLength(expectedCount);
-        if (expectedFirstContent) {
-          expect(data.tasks[0].content).toBe(expectedFirstContent);
-        }
-      },
-    );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.page).toBe(page);
+      expect(data.limit).toBe(limit);
+      expect(data.tasks).toHaveLength(expectedCount);
+      if (expectedFirstContent) {
+        expect(data.tasks[0].content).toBe(expectedFirstContent);
+      }
+    });
 
     test("should return empty array when user has no tasks", async () => {
       const req = new Request("http://localhost/tasks", {
@@ -244,30 +246,32 @@ describe("GET /tasks", () => {
         expectedStatus: 400,
         expectedMessageContains: "integer",
       },
-    ])(
-      "should return 400 when $description",
-      async ({ page, limit, expectedStatus, expectedMessageContains }) => {
-        const queryParams = new URLSearchParams();
-        if (page) queryParams.set("page", page);
-        if (limit) queryParams.set("limit", limit);
+    ])("should return 400 when $description", async ({
+      page,
+      limit,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const queryParams = new URLSearchParams();
+      if (page) queryParams.set("page", page);
+      if (limit) queryParams.set("limit", limit);
 
-        const req = new Request(
-          `http://localhost/tasks?${queryParams.toString()}`,
-          {
-            headers: { "x-user-id": testUserId },
-          },
-        );
+      const req = new Request(
+        `http://localhost/tasks?${queryParams.toString()}`,
+        {
+          headers: { "x-user-id": testUserId },
+        },
+      );
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      const data = await res.json();
+      const jsonStr = JSON.stringify(data);
+      expect(jsonStr.toLowerCase()).toContain(
+        expectedMessageContains.toLowerCase(),
+      );
+    });
   });
 
   describe("Validation errors - header", () => {
@@ -301,23 +305,24 @@ describe("GET /tasks", () => {
         expectedStatus: 400,
         expectedMessageContains: "Invalid uuid",
       },
-    ])(
-      "should return 400 when $description",
-      async ({ headers, expectedStatus, expectedMessageContains }) => {
-        const req = new Request("http://localhost/tasks", {
-          headers,
-        });
+    ])("should return 400 when $description", async ({
+      headers,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const req = new Request("http://localhost/tasks", {
+        headers,
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      const data = await res.json();
+      const jsonStr = JSON.stringify(data);
+      expect(jsonStr.toLowerCase()).toContain(
+        expectedMessageContains.toLowerCase(),
+      );
+    });
   });
 
   describe("Edge cases", () => {
@@ -368,20 +373,21 @@ describe("GET /tasks", () => {
         expectedPage: 1, // default
         expectedLimit: 5,
       },
-    ])(
-      "should handle $description correctly",
-      async ({ query, expectedPage, expectedLimit }) => {
-        const req = new Request(`http://localhost/tasks${query}`, {
-          headers: { "x-user-id": testUserId },
-        });
+    ])("should handle $description correctly", async ({
+      query,
+      expectedPage,
+      expectedLimit,
+    }) => {
+      const req = new Request(`http://localhost/tasks${query}`, {
+        headers: { "x-user-id": testUserId },
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(200);
-        const data = await res.json();
-        expect(data.page).toBe(expectedPage);
-        expect(data.limit).toBe(expectedLimit);
-      },
-    );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.page).toBe(expectedPage);
+      expect(data.limit).toBe(expectedLimit);
+    });
   });
 });

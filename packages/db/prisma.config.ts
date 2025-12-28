@@ -1,7 +1,14 @@
-import { defineConfig } from "prisma/config";
+import path from "node:path";
+import type { PrismaConfig } from "prisma";
 
-export default defineConfig({
+const { DB_USERNAME, DB_PASSWORD, DB_HOST, DB_DBNAME, DB_PORT } = process.env;
+
+export default {
+  schema: path.join(__dirname, "prisma", "schema.prisma"),
   migrations: {
-    seed: "bun run prisma/seeds/index.ts",
+    path: path.join(__dirname, "prisma", "migrations"),
   },
-});
+  datasource: {
+    url: `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT ?? 5432}/${DB_DBNAME}?schema=public`,
+  },
+} satisfies PrismaConfig;

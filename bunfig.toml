@@ -1,6 +1,6 @@
 [install]
-minimumReleaseAge = 1814400                              # 21 days
-minimumReleaseAgeExcludes = ["@types/bun", "typescript"]
+minimumReleaseAge = 1814400 # 21 days
+minimumReleaseAgeExcludes = ["@types/bun", "bun-types", "typescript"]
 
 [install.security]
 scanner = "@bun-security-scanner/osv"

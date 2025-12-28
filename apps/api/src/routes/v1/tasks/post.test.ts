@@ -129,25 +129,25 @@ describe("POST /task", () => {
         content: "Line 1\nLine 2\nLine 3",
         expectedContent: "Line 1\nLine 2\nLine 3",
       },
-    ])(
-      "should create task with $description",
-      async ({ content, expectedContent }) => {
-        const req = new Request("http://localhost/task", {
-          method: "POST",
-          headers: {
-            "x-user-id": testUserId,
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({ content }),
-        });
+    ])("should create task with $description", async ({
+      content,
+      expectedContent,
+    }) => {
+      const req = new Request("http://localhost/task", {
+        method: "POST",
+        headers: {
+          "x-user-id": testUserId,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(200);
-        const data = await res.json();
-        expect(data.content).toBe(expectedContent);
-      },
-    );
+      expect(res.status).toBe(200);
+      const data = await res.json();
+      expect(data.content).toBe(expectedContent);
+    });
   });
 
   describe("Validation errors - body", () => {
@@ -217,28 +217,29 @@ describe("POST /task", () => {
         expectedStatus: 400,
         expectedMessageContains: "Expected string",
       },
-    ])(
-      "should return 400 when $description",
-      async ({ body, expectedStatus, expectedMessageContains }) => {
-        const req = new Request("http://localhost/task", {
-          method: "POST",
-          headers: {
-            "x-user-id": testUserId,
-            "content-type": "application/json",
-          },
-          body: body === null ? "null" : JSON.stringify(body),
-        });
+    ])("should return 400 when $description", async ({
+      body,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const req = new Request("http://localhost/task", {
+        method: "POST",
+        headers: {
+          "x-user-id": testUserId,
+          "content-type": "application/json",
+        },
+        body: body === null ? "null" : JSON.stringify(body),
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      const data = await res.json();
+      const jsonStr = JSON.stringify(data);
+      expect(jsonStr.toLowerCase()).toContain(
+        expectedMessageContains.toLowerCase(),
+      );
+    });
   });
 
   describe("Validation errors - header", () => {
@@ -272,25 +273,26 @@ describe("POST /task", () => {
         expectedStatus: 400,
         expectedMessageContains: "Invalid uuid",
       },
-    ])(
-      "should return 400 when $description",
-      async ({ headers, expectedStatus, expectedMessageContains }) => {
-        const req = new Request("http://localhost/task", {
-          method: "POST",
-          headers,
-          body: JSON.stringify({ content: "Valid content" }),
-        });
+    ])("should return 400 when $description", async ({
+      headers,
+      expectedStatus,
+      expectedMessageContains,
+    }) => {
+      const req = new Request("http://localhost/task", {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ content: "Valid content" }),
+      });
 
-        const res = await app.request(req);
+      const res = await app.request(req);
 
-        expect(res.status).toBe(expectedStatus);
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      },
-    );
+      expect(res.status).toBe(expectedStatus);
+      const data = await res.json();
+      const jsonStr = JSON.stringify(data);
+      expect(jsonStr.toLowerCase()).toContain(
+        expectedMessageContains.toLowerCase(),
+      );
+    });
   });
 
   describe("Edge cases", () => {

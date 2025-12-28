@@ -7,17 +7,16 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "check:type": "tsc --noEmit",
+    "check:type": "tsgo --noEmit",
     "test": "bun test --watch",
     "clean": "echo 'No build artifacts to clean'",
     "build": "echo 'No build step needed (TypeScript source directly used)'"
   },
   "dependencies": {
-    "pino": "9.13.1"
+    "pino": "^10.1.0"
   },
   "devDependencies": {
-    "@types/node": "24.5.2",
-    "typescript": "5.9.2",
-    "vitest": "^2.1.8"
+    "@types/bun": "latest",
+    "vitest": "^4.0.15"
   }
 }

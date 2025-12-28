@@ -25,7 +25,9 @@
         "biomejs.biome",
         "Prisma.prisma",
         "streetsidesoftware.code-spell-checker",
-        "vitest.explorer"
+        "vitest.explorer",
+        "shd101wyy.markdown-preview-enhanced",
+        "bierner.markdown-mermaid"
       ],
       "settings": {
         "eslint.enable": false,

@@ -7,7 +7,7 @@
     "dev": "bun --hot src/index.tsx",
     "build": "bun build ./src/index.html --outdir=dist --sourcemap --target=browser --minify --define:process.env.NODE_ENV='\"production\"' --env='BUN_PUBLIC_*'",
     "start": "NODE_ENV=production bun src/index.tsx",
-    "check:type": "tsc --noEmit",
+    "check:type": "tsgo --noEmit",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -17,7 +17,6 @@
   "devDependencies": {
     "@types/bun": "latest",
     "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "typescript": "^5.9.3"
+    "@types/react-dom": "^19"
   }
 }

@@ -7,7 +7,7 @@
   },
   "types": "./src/index.ts",
   "scripts": {
-    "check:type": "bun tsc --noEmit",
+    "check:type": "tsgo --noEmit",
     "db:migrate:deploy": "bun run prisma -- migrate deploy",
     "db:migrate:dev": "bun run prisma -- migrate dev",
     "db:migrate:reset": "bun run prisma -- migrate reset --force",
@@ -15,22 +15,19 @@
     "db:studio": "bun run prisma studio",
     "db:generate": "prisma generate",
     "db:generate:fabbrica": "prisma generate --generator fabbrica",
-    "prisma": "bun run env-file prisma",
-    "env-file": "dotenvx run -f .env.db --",
+    "prisma": "bun run prisma",
     "clean": "rm -rf src/generated",
     "build": "echo 'No build step needed (TypeScript source directly used)'"
   },
   "packageManager": "bun@1.3.0",
   "dependencies": {
     "@packages/logger": "workspace:*",
-    "@prisma/adapter-pg": "6.16.2",
-    "@prisma/client": "6.16.2",
-    "prisma": "^6.16.3"
+    "@prisma/adapter-pg": "7.1.0",
+    "@prisma/client": "7.1.0",
+    "prisma": "^7.1.0"
   },
   "devDependencies": {
-    "@dotenvx/dotenvx": "1.51.0",
     "@quramy/prisma-fabbrica": "^2.3.1",
-    "@types/node": "24.5.2",
-    "typescript": "5.9.2"
+    "@types/bun": "latest"
   }
 }
