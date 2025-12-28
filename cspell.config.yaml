@@ -8,16 +8,19 @@ ignorePaths:
 dictionaryDefinitions: []
 dictionaries: []
 words:
+  - apigatewayv
   - anthropics
-  - biomejs
   - auggie
   - Auggie
   - AUGGIE
   - automations
   - Avenir
+  - awsdns
+  - biomejs
   - Bluch
   - bunx
   - chax-at
+  - CICD
   - clippy
   - DBNAME
   - Dockerfiles
@@ -27,10 +30,11 @@ words:
   - esac
   - evenodd
   - fabbrica
-  - hono
   - fdisk
   - gdisk
   - Groot
+  - hono
+  - hostnames
   - ichiro
   - Ichiro
   - initialised
@@ -59,18 +63,21 @@ words:
   - sato
   - Sato
   - schemaname
+  - serverlessv
   - socketsecurity
+  - sqli
   - tablename
   - tanaka
   - Tanaka
   - tfstate
+  - tfvars
   - trixie
   - tsgo
   - TXXX
   - uvx
   - venv
-  - vitest
   - VITE
+  - vitest
   - worktree
   - worktrees
   - yosuke

@@ -1,0 +1,17 @@
+# Production Environment Variables
+# Copy this file to terraform.tfvars and fill in your values
+# IMPORTANT: Never commit terraform.tfvars with real credentials to version control
+
+project     = "play-devcontainer"
+environment = "prd"
+aws_region  = "ap-northeast-1"
+vpc_cidr    = "10.1.0.0/16"
+
+# Domain configuration
+domain_name     = "example.com"     # Your root domain (must have Route53 hosted zone)
+app_domain_name = "example.com"     # Production domain (or app.example.com)
+
+# Database configuration
+db_name     = "app"
+db_username = "admin"
+db_password = "CHANGE_ME_TO_SECURE_PASSWORD"

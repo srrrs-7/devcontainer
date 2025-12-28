@@ -1,7 +1,13 @@
 {
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": ["serena", "chrome-devtools"],
   "permissions": {
-    "allow": ["Bash(bunx why vite)"]
-  }
+    "allow": [
+      "Bash(bunx why vite)",
+      "mcp__serena__list_dir"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "serena",
+    "chrome-devtools"
+  ]
 }

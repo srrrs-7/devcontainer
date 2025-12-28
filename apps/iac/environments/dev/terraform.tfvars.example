@@ -1,0 +1,16 @@
+# Development Environment Variables
+# Copy this file to terraform.tfvars and fill in your values
+
+project     = "play-devcontainer"
+environment = "dev"
+aws_region  = "ap-northeast-1"
+vpc_cidr    = "10.0.0.0/16"
+
+# Domain configuration
+domain_name     = "example.com"       # Your root domain (must have Route53 hosted zone)
+app_domain_name = "dev.example.com"   # Application subdomain
+
+# Database configuration
+db_name     = "app"
+db_username = "admin"
+db_password = "CHANGE_ME_TO_SECURE_PASSWORD"

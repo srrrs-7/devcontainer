@@ -27,7 +27,8 @@
         "streetsidesoftware.code-spell-checker",
         "vitest.explorer",
         "shd101wyy.markdown-preview-enhanced",
-        "bierner.markdown-mermaid"
+        "bierner.markdown-mermaid",
+        "hashicorp.terraform"
       ],
       "settings": {
         "eslint.enable": false,
