@@ -8,14 +8,15 @@ ignorePaths:
 dictionaryDefinitions: []
 dictionaries: []
 words:
-  - apigatewayv
   - anthropics
+  - apigatewayv
   - auggie
   - Auggie
   - AUGGIE
   - automations
   - Avenir
   - awsdns
+  - bierner
   - biomejs
   - Bluch
   - bunx

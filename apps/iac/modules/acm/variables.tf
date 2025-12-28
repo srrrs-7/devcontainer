@@ -29,3 +29,9 @@ variable "create_regional_certificate" {
   type        = bool
   default     = true
 }
+
+variable "regional_region" {
+  description = "AWS region for regional certificate (e.g., ap-northeast-1)"
+  type        = string
+  default     = "ap-northeast-1"
+}

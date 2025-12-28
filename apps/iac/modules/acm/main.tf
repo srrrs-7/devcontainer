@@ -22,7 +22,8 @@ resource "aws_acm_certificate" "cloudfront" {
 
 # Certificate for regional resources (API Gateway, ALB, etc.)
 resource "aws_acm_certificate" "regional" {
-  count = var.create_regional_certificate ? 1 : 0
+  provider = aws.regional
+  count    = var.create_regional_certificate ? 1 : 0
 
   domain_name               = var.domain_name
   subject_alternative_names = var.subject_alternative_names
@@ -85,7 +86,8 @@ resource "aws_acm_certificate_validation" "cloudfront" {
 
 # Certificate validation for regional
 resource "aws_acm_certificate_validation" "regional" {
-  count = var.create_regional_certificate ? 1 : 0
+  provider = aws.regional
+  count    = var.create_regional_certificate ? 1 : 0
 
   certificate_arn         = aws_acm_certificate.regional[0].arn
   validation_record_fqdns = [for record in aws_route53_record.regional_validation : record.fqdn]

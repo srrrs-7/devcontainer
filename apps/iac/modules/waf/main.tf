@@ -2,8 +2,8 @@
 # Creates WAF Web ACL for CloudFront protection
 
 # WAF Web ACL (must be in us-east-1 for CloudFront)
+# Provider is configured in providers.tf to use us-east-1
 resource "aws_wafv2_web_acl" "main" {
-  provider = aws.us_east_1
 
   name        = "${var.project}-${var.environment}-waf"
   description = "WAF Web ACL for ${var.project} ${var.environment}"
@@ -212,8 +212,6 @@ resource "aws_wafv2_web_acl" "main" {
 
 # CloudWatch Log Group for WAF
 resource "aws_cloudwatch_log_group" "waf" {
-  provider = aws.us_east_1
-
   name              = "aws-waf-logs-${var.project}-${var.environment}"
   retention_in_days = var.log_retention_days
 
@@ -226,8 +224,6 @@ resource "aws_cloudwatch_log_group" "waf" {
 
 # WAF Logging Configuration
 resource "aws_wafv2_web_acl_logging_configuration" "main" {
-  provider = aws.us_east_1
-
   log_destination_configs = [aws_cloudwatch_log_group.waf.arn]
   resource_arn            = aws_wafv2_web_acl.main.arn
 
@@ -254,8 +250,7 @@ resource "aws_wafv2_web_acl_logging_configuration" "main" {
 
 # IP Set for block list (optional)
 resource "aws_wafv2_ip_set" "block_list" {
-  count    = length(var.blocked_ip_addresses) > 0 ? 1 : 0
-  provider = aws.us_east_1
+  count = length(var.blocked_ip_addresses) > 0 ? 1 : 0
 
   name               = "${var.project}-${var.environment}-ip-block-list"
   description        = "IP addresses to block"

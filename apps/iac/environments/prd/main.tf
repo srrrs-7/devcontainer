@@ -34,20 +34,6 @@ provider "aws" {
   }
 }
 
-# Provider for us-east-1 (required for CloudFront ACM certificates and WAF)
-provider "aws" {
-  alias  = "us_east_1"
-  region = "us-east-1"
-
-  default_tags {
-    tags = {
-      Project     = var.project
-      Environment = var.environment
-      ManagedBy   = "Terraform"
-    }
-  }
-}
-
 # Data sources
 data "aws_caller_identity" "current" {}
 
@@ -88,25 +74,18 @@ module "ecr" {
 module "acm" {
   source = "../../modules/acm"
 
-  providers = {
-    aws.us_east_1 = aws.us_east_1
-  }
-
   project                     = var.project
   environment                 = var.environment
   domain_name                 = var.app_domain_name
   subject_alternative_names   = ["www.${var.app_domain_name}"]
   route53_zone_id             = data.aws_route53_zone.main.zone_id
   create_regional_certificate = true
+  regional_region             = var.aws_region
 }
 
 # WAF Module
 module "waf" {
   source = "../../modules/waf"
-
-  providers = {
-    aws.us_east_1 = aws.us_east_1
-  }
 
   project     = var.project
   environment = var.environment
@@ -161,8 +140,6 @@ module "ecs" {
   max_capacity               = 10
   cpu_target_value           = 70
   memory_target_value        = 70
-
-  depends_on = [module.aurora]
 }
 
 # API Gateway Module
