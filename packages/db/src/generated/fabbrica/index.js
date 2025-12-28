@@ -411,9 +411,9 @@ function isUserclientFactory(x) {
 }
 function autoGenerateUserScalarsOrEnums({ seq }) {
     return {
+        id: (0, internal_1.getScalarFieldValueGenerator)().String({ modelName: "User", fieldName: "id", isId: true, isUnique: false, seq }),
         username: (0, internal_1.getScalarFieldValueGenerator)().String({ modelName: "User", fieldName: "username", isId: false, isUnique: true, seq }),
-        email: (0, internal_1.getScalarFieldValueGenerator)().String({ modelName: "User", fieldName: "email", isId: false, isUnique: true, seq }),
-        passwordHash: (0, internal_1.getScalarFieldValueGenerator)().String({ modelName: "User", fieldName: "passwordHash", isId: false, isUnique: false, seq })
+        email: (0, internal_1.getScalarFieldValueGenerator)().String({ modelName: "User", fieldName: "email", isId: false, isUnique: true, seq })
     };
 }
 function defineUserFactoryInternal({ defaultData: defaultDataResolver, onAfterBuild, onBeforeCreate, onAfterCreate, traits: traitsDefs = {} }, defaultTransientFieldValues) {

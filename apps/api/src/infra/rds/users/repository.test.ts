@@ -29,60 +29,81 @@ beforeEach(async () => {
 });
 
 test("createUser: ユーザーを作成できる", async () => {
+  const userId = crypto.randomUUID();
   const username = `testuser_${uniqueString()}`;
   const email = `test_${uniqueString()}@example.com`;
 
   const result = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username,
     email,
-    passwordHash: "hashed_password_123",
+    name: "Test User",
+    picture: "https://example.com/avatar.jpg",
   });
 
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
+    expect(result.value.userId).toBe(userId);
     expect(result.value.clientId).toBe(TEST_CLIENT_ID);
     expect(result.value.username).toBe(username);
     expect(result.value.email).toBe(email);
-    expect(result.value.passwordHash).toBe("hashed_password_123");
-    expect(result.value.userId).toBeDefined();
+    expect(result.value.name).toBe("Test User");
+    expect(result.value.picture).toBe("https://example.com/avatar.jpg");
     expect(result.value.createdAt).toBeInstanceOf(Date);
     expect(result.value.updatedAt).toBeInstanceOf(Date);
   }
 });
 
+test("createUser: 名前と画像なしでユーザーを作成できる", async () => {
+  const userId = crypto.randomUUID();
+  const username = `testuser_${uniqueString()}`;
+  const email = `test_${uniqueString()}@example.com`;
+
+  const result = await createUser({
+    userId,
+    clientId: TEST_CLIENT_ID,
+    username,
+    email,
+  });
+
+  expect(result.isOk()).toBe(true);
+  if (result.isOk()) {
+    expect(result.value.userId).toBe(userId);
+    expect(result.value.name).toBeNull();
+    expect(result.value.picture).toBeNull();
+  }
+});
+
 test("getUser: 作成したユーザーを取得できる", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "getuser_test",
     email: "getuser@example.com",
-    passwordHash: "password_hash",
   });
   expect(createResult.isOk()).toBe(true);
 
-  if (createResult.isOk()) {
-    const userId = createResult.value.userId;
+  // 実行: 作成したユーザーを取得
+  const getResult = await getUser({
+    userId: userId,
+  });
 
-    // 実行: 作成したユーザーを取得
-    const getResult = await getUser({
-      userId: userId,
-    });
-
-    // 検証
-    expect(getResult.isOk()).toBe(true);
-    if (getResult.isOk()) {
-      expect(getResult.value).not.toBeNull();
-      expect(getResult.value?.userId).toBe(userId);
-      expect(getResult.value?.username).toBe("getuser_test");
-      expect(getResult.value?.email).toBe("getuser@example.com");
-    }
+  // 検証
+  expect(getResult.isOk()).toBe(true);
+  if (getResult.isOk()) {
+    expect(getResult.value).not.toBeNull();
+    expect(getResult.value?.userId).toBe(userId);
+    expect(getResult.value?.username).toBe("getuser_test");
+    expect(getResult.value?.email).toBe("getuser@example.com");
   }
 });
 
 test("getUser: 存在しないユーザーはnullを返す", async () => {
   const result = await getUser({
-    userId: "00000000-0000-0000-0000-000000000099",
+    userId: "nonexistent-user-id",
   });
 
   expect(result.isOk()).toBe(true);
@@ -93,27 +114,26 @@ test("getUser: 存在しないユーザーはnullを返す", async () => {
 
 test("getUserByEmail: メールアドレスでユーザーを取得できる", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "emailuser",
     email: "unique_email@example.com",
-    passwordHash: "password_hash",
   });
   expect(createResult.isOk()).toBe(true);
 
-  if (createResult.isOk()) {
-    // 実行: メールアドレスで取得
-    const getResult = await getUserByEmail({
-      email: "unique_email@example.com",
-    });
+  // 実行: メールアドレスで取得
+  const getResult = await getUserByEmail({
+    email: "unique_email@example.com",
+  });
 
-    // 検証
-    expect(getResult.isOk()).toBe(true);
-    if (getResult.isOk()) {
-      expect(getResult.value).not.toBeNull();
-      expect(getResult.value?.email).toBe("unique_email@example.com");
-      expect(getResult.value?.username).toBe("emailuser");
-    }
+  // 検証
+  expect(getResult.isOk()).toBe(true);
+  if (getResult.isOk()) {
+    expect(getResult.value).not.toBeNull();
+    expect(getResult.value?.email).toBe("unique_email@example.com");
+    expect(getResult.value?.username).toBe("emailuser");
   }
 });
 
@@ -130,27 +150,26 @@ test("getUserByEmail: 存在しないメールアドレスはnullを返す", asy
 
 test("getUserByUsername: ユーザー名でユーザーを取得できる", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "uniqueusername",
     email: "username_test@example.com",
-    passwordHash: "password_hash",
   });
   expect(createResult.isOk()).toBe(true);
 
-  if (createResult.isOk()) {
-    // 実行: ユーザー名で取得
-    const getResult = await getUserByUsername({
-      username: "uniqueusername",
-    });
+  // 実行: ユーザー名で取得
+  const getResult = await getUserByUsername({
+    username: "uniqueusername",
+  });
 
-    // 検証
-    expect(getResult.isOk()).toBe(true);
-    if (getResult.isOk()) {
-      expect(getResult.value).not.toBeNull();
-      expect(getResult.value?.username).toBe("uniqueusername");
-      expect(getResult.value?.email).toBe("username_test@example.com");
-    }
+  // 検証
+  expect(getResult.isOk()).toBe(true);
+  if (getResult.isOk()) {
+    expect(getResult.value).not.toBeNull();
+    expect(getResult.value?.username).toBe("uniqueusername");
+    expect(getResult.value?.email).toBe("username_test@example.com");
   }
 });
 
@@ -167,48 +186,50 @@ test("getUserByUsername: 存在しないユーザー名はnullを返す", async 
 
 test("updateUser: ユーザー情報を更新できる", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "updateuser",
     email: "update@example.com",
-    passwordHash: "old_password",
+    name: "Old Name",
   });
   expect(createResult.isOk()).toBe(true);
 
-  if (createResult.isOk()) {
-    const userId = createResult.value.userId;
+  // 実行: ユーザー情報を更新
+  const updateResult = await updateUser({
+    userId: userId,
+    username: "updated_username",
+    email: "updated@example.com",
+    name: "New Name",
+    picture: "https://example.com/new-avatar.jpg",
+  });
 
-    // 実行: ユーザー情報を更新
-    const updateResult = await updateUser({
-      userId: userId,
-      username: "updated_username",
-      email: "updated@example.com",
-      passwordHash: "new_password",
-    });
-
-    // 検証
-    expect(updateResult.isOk()).toBe(true);
-    if (updateResult.isOk()) {
-      expect(updateResult.value).not.toBeNull();
-      expect(updateResult.value?.username).toBe("updated_username");
-      expect(updateResult.value?.email).toBe("updated@example.com");
-      expect(updateResult.value?.passwordHash).toBe("new_password");
-    }
+  // 検証
+  expect(updateResult.isOk()).toBe(true);
+  if (updateResult.isOk()) {
+    expect(updateResult.value).not.toBeNull();
+    expect(updateResult.value?.username).toBe("updated_username");
+    expect(updateResult.value?.email).toBe("updated@example.com");
+    expect(updateResult.value?.name).toBe("New Name");
+    expect(updateResult.value?.picture).toBe(
+      "https://example.com/new-avatar.jpg",
+    );
   }
 });
 
 test("updateUser: 部分的な更新ができる（usernameのみ）", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "partialuser",
     email: "partial@example.com",
-    passwordHash: "password",
   });
   expect(createResult.isOk()).toBe(true);
 
   if (createResult.isOk()) {
-    const userId = createResult.value.userId;
     const originalEmail = createResult.value.email;
 
     // 実行: usernameのみ更新
@@ -228,42 +249,39 @@ test("updateUser: 部分的な更新ができる（usernameのみ）", async () 
 
 test("deleteUser: ユーザーを削除できる", async () => {
   // 準備: ユーザーを作成
+  const userId = crypto.randomUUID();
   const createResult = await createUser({
+    userId,
     clientId: TEST_CLIENT_ID,
     username: "deleteuser",
     email: "delete@example.com",
-    passwordHash: "password",
   });
   expect(createResult.isOk()).toBe(true);
 
-  if (createResult.isOk()) {
-    const userId = createResult.value.userId;
+  // 実行: ユーザーを削除
+  const deleteResult = await deleteUser({
+    userId: userId,
+  });
 
-    // 実行: ユーザーを削除
-    const deleteResult = await deleteUser({
-      userId: userId,
-    });
+  // 検証: 削除が成功する
+  expect(deleteResult.isOk()).toBe(true);
+  if (deleteResult.isOk()) {
+    expect(deleteResult.value.count).toBe(1);
+  }
 
-    // 検証: 削除が成功する
-    expect(deleteResult.isOk()).toBe(true);
-    if (deleteResult.isOk()) {
-      expect(deleteResult.value.count).toBe(1);
-    }
-
-    // 検証: 削除後は取得できない
-    const getResult = await getUser({
-      userId: userId,
-    });
-    expect(getResult.isOk()).toBe(true);
-    if (getResult.isOk()) {
-      expect(getResult.value).toBeNull();
-    }
+  // 検証: 削除後は取得できない
+  const getResult = await getUser({
+    userId: userId,
+  });
+  expect(getResult.isOk()).toBe(true);
+  if (getResult.isOk()) {
+    expect(getResult.value).toBeNull();
   }
 });
 
 test("deleteUser: 存在しないユーザーの削除はエラーを返す", async () => {
   const result = await deleteUser({
-    userId: "00000000-0000-0000-0000-000000000099",
+    userId: "nonexistent-user-id",
   });
 
   // Prisma delete throws error if record not found
@@ -273,22 +291,22 @@ test("deleteUser: 存在しないユーザーの削除はエラーを返す", as
 test("listUsers: クライアントIDでユーザー一覧を取得できる", async () => {
   // 準備: 複数のユーザーを作成
   await createUser({
+    userId: crypto.randomUUID(),
     clientId: TEST_CLIENT_ID,
     username: "listuser1",
     email: "listuser1@example.com",
-    passwordHash: "password",
   });
   await createUser({
+    userId: crypto.randomUUID(),
     clientId: TEST_CLIENT_ID,
     username: "listuser2",
     email: "listuser2@example.com",
-    passwordHash: "password",
   });
   await createUser({
+    userId: crypto.randomUUID(),
     clientId: TEST_CLIENT_ID,
     username: "listuser3",
     email: "listuser3@example.com",
-    passwordHash: "password",
   });
 
   // 実行: ユーザー一覧を取得
@@ -312,10 +330,10 @@ test("listUsers: ページネーションが機能する", async () => {
   // 準備: 複数のユーザーを作成
   for (let i = 1; i <= 5; i++) {
     await createUser({
+      userId: crypto.randomUUID(),
       clientId: TEST_CLIENT_ID,
       username: `paginationuser${i}`,
       email: `pagination${i}@example.com`,
-      passwordHash: "password",
     });
   }
 
@@ -350,7 +368,7 @@ test("listUsers: ページネーションが機能する", async () => {
 test("トランザクション分離: 各テストは独立している", async () => {
   // このテストは他のテストで作成されたユーザーの影響を受けない
   const result = await getUser({
-    userId: "00000000-0000-0000-0000-000000000088",
+    userId: "some-nonexistent-user-id",
   });
 
   expect(result.isOk()).toBe(true);

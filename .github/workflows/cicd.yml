@@ -161,7 +161,10 @@ jobs:
       - name: Build frontend
         run: bun run build:web
         env:
-          VITE_API_URL: ${{ vars.API_URL }}
+          BUN_PUBLIC_API_URL: ${{ vars.API_URL }}
+          BUN_PUBLIC_COGNITO_USER_POOL_ID: ${{ vars.COGNITO_USER_POOL_ID }}
+          BUN_PUBLIC_COGNITO_CLIENT_ID: ${{ vars.COGNITO_CLIENT_ID }}
+          BUN_PUBLIC_COGNITO_DOMAIN: ${{ vars.COGNITO_DOMAIN }}
 
       - name: Deploy frontend to S3
         run: |

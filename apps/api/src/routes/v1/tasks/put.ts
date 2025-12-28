@@ -7,7 +7,6 @@ import {
   okResponse,
   validationErrorResponse,
 } from "../../response";
-import { userHeaderSchema } from "../../validation/schemas";
 import {
   taskIdParamSchema,
   updateTaskBodySchema,
@@ -29,15 +28,10 @@ export default new Hono().put(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  zValidator("header", userHeaderSchema, (result, c) => {
-    if (!result.success) {
-      return validationErrorResponse(c, result.error.issues);
-    }
-  }),
   async (c) => {
     const { id } = c.req.valid("param");
     const { content, status, version } = c.req.valid("json");
-    const { "x-user-id": userId } = c.req.valid("header");
+    const { userId } = c.get("user");
 
     const result = updateTask({
       taskId: id,

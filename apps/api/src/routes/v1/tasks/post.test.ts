@@ -1,7 +1,10 @@
 import { getPrisma } from "@packages/db";
 import dayjs from "dayjs";
 import { beforeEach, describe, expect, test } from "vitest";
-import app from "./post";
+import { createTestApp, setTestUser } from "../../../../__test__/setup";
+import routeHandler from "./post";
+
+const app = createTestApp(routeHandler);
 
 describe("POST /task", () => {
   let testUserId: string;
@@ -30,18 +33,21 @@ describe("POST /task", () => {
       },
     });
 
-    // Create test user
-    const user = await prisma.user.create({
+    // Create test user with explicit ID (simulating Cognito sub)
+    testUserId = crypto.randomUUID();
+    await prisma.user.create({
       data: {
+        id: testUserId,
         clientId: client.id,
         username: `testuser_${timestamp}_${random}`,
         email: `test_${timestamp}_${random}@example.com`,
-        passwordHash: "hashed_password",
         createdAt: now,
         updatedAt: now,
       },
     });
-    testUserId = user.id;
+
+    // Set the test user for auth middleware mock
+    setTestUser({ userId: testUserId });
   });
 
   describe("Success cases", () => {
@@ -49,7 +55,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: JSON.stringify({
@@ -80,7 +85,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: JSON.stringify({
@@ -136,7 +140,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: JSON.stringify({ content }),
@@ -225,63 +228,9 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: body === null ? "null" : JSON.stringify(body),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(expectedStatus);
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
-      expect(jsonStr.toLowerCase()).toContain(
-        expectedMessageContains.toLowerCase(),
-      );
-    });
-  });
-
-  describe("Validation errors - header", () => {
-    test.each<{
-      description: string;
-      headers: Record<string, string>;
-      expectedStatus: number;
-      expectedMessageContains: string;
-    }>([
-      {
-        description: "missing x-user-id header",
-        headers: { "content-type": "application/json" },
-        expectedStatus: 400,
-        expectedMessageContains: "invalid_type",
-      },
-      {
-        description: "invalid UUID format in x-user-id",
-        headers: {
-          "x-user-id": "invalid-uuid",
-          "content-type": "application/json",
-        },
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-      {
-        description: "empty x-user-id header",
-        headers: {
-          "x-user-id": "",
-          "content-type": "application/json",
-        },
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-    ])("should return 400 when $description", async ({
-      headers,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
-      const req = new Request("http://localhost/task", {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ content: "Valid content" }),
       });
 
       const res = await app.request(req);
@@ -300,7 +249,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: JSON.stringify({ content: "Task content" }),
@@ -317,7 +265,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json; charset=utf-8",
         },
         body: JSON.stringify({ content: "Task content" }),
@@ -334,7 +281,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: JSON.stringify({ content: "タスク内容 🚀 émojis" }),
@@ -353,7 +299,6 @@ describe("POST /task", () => {
           new Request("http://localhost/task", {
             method: "POST",
             headers: {
-              "x-user-id": testUserId,
               "content-type": "application/json",
             },
             body: JSON.stringify({ content: "Task 1" }),
@@ -363,7 +308,6 @@ describe("POST /task", () => {
           new Request("http://localhost/task", {
             method: "POST",
             headers: {
-              "x-user-id": testUserId,
               "content-type": "application/json",
             },
             body: JSON.stringify({ content: "Task 2" }),
@@ -386,7 +330,6 @@ describe("POST /task", () => {
       const req = new Request("http://localhost/task", {
         method: "POST",
         headers: {
-          "x-user-id": testUserId,
           "content-type": "application/json",
         },
         body: "{invalid json",

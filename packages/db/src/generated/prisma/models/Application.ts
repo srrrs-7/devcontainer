@@ -185,7 +185,7 @@ export type ApplicationWhereInput = {
   OR?: Prisma.ApplicationWhereInput[]
   NOT?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
   id?: Prisma.UuidFilter<"Application"> | string
-  userId?: Prisma.UuidFilter<"Application"> | string
+  userId?: Prisma.StringFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringFilter<"Application"> | string
   applicationDate?: Prisma.DateTimeFilter<"Application"> | Date | string
@@ -210,7 +210,7 @@ export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
   OR?: Prisma.ApplicationWhereInput[]
   NOT?: Prisma.ApplicationWhereInput | Prisma.ApplicationWhereInput[]
-  userId?: Prisma.UuidFilter<"Application"> | string
+  userId?: Prisma.StringFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringFilter<"Application"> | string
   applicationDate?: Prisma.DateTimeFilter<"Application"> | Date | string
@@ -236,7 +236,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
   OR?: Prisma.ApplicationScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ApplicationScalarWhereWithAggregatesInput | Prisma.ApplicationScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"Application"> | string
-  userId?: Prisma.UuidWithAggregatesFilter<"Application"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeWithAggregatesFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringWithAggregatesFilter<"Application"> | string
   applicationDate?: Prisma.DateTimeWithAggregatesFilter<"Application"> | Date | string
@@ -460,7 +460,7 @@ export type ApplicationScalarWhereInput = {
   OR?: Prisma.ApplicationScalarWhereInput[]
   NOT?: Prisma.ApplicationScalarWhereInput | Prisma.ApplicationScalarWhereInput[]
   id?: Prisma.UuidFilter<"Application"> | string
-  userId?: Prisma.UuidFilter<"Application"> | string
+  userId?: Prisma.StringFilter<"Application"> | string
   type?: Prisma.EnumApplicationTypeFilter<"Application"> | $Enums.ApplicationType
   description?: Prisma.StringFilter<"Application"> | string
   applicationDate?: Prisma.DateTimeFilter<"Application"> | Date | string

@@ -1,29 +1,29 @@
-import * as bcrypt from "bcrypt";
-import { ResultAsync } from "neverthrow";
-import { DomainError } from "../error";
-
 export type User = {
-  userId: string;
+  userId: string; // Cognito sub
   clientId: string;
   username: string;
   email: string;
-  passwordHash: string;
+  name: string | null;
+  picture: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
 export type CreateUserInput = {
+  userId: string; // Required: Cognito sub
   clientId: string;
   username: string;
   email: string;
-  passwordHash: string;
+  name?: string;
+  picture?: string;
 };
 
 export type UpdateUserInput = {
   userId: string;
   username?: string;
   email?: string;
-  passwordHash?: string;
+  name?: string;
+  picture?: string;
 };
 
 export type DeleteUserInput = {
@@ -46,36 +46,4 @@ export type ListUsersInput = {
   clientId: string;
   page?: number;
   limit?: number;
-};
-
-const SALT_ROUNDS = 10;
-
-/**
- * パスワードをハッシュ化する
- * @param password - プレーンテキストのパスワード
- * @returns ハッシュ化されたパスワードのResultAsync
- */
-export const hashPassword = (
-  password: string,
-): ResultAsync<string, DomainError> => {
-  return ResultAsync.fromPromise(
-    bcrypt.hash(password, SALT_ROUNDS),
-    (error) => new DomainError(error, "PasswordHashing"),
-  );
-};
-
-/**
- * パスワードを検証する
- * @param password - プレーンテキストのパスワード
- * @param hash - ハッシュ化されたパスワード
- * @returns 検証結果のResultAsync
- */
-export const verifyPassword = (
-  password: string,
-  hash: string,
-): ResultAsync<boolean, DomainError> => {
-  return ResultAsync.fromPromise(
-    bcrypt.compare(password, hash),
-    (error) => new DomainError(error, "PasswordVerification"),
-  );
 };

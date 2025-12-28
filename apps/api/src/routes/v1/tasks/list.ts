@@ -7,7 +7,7 @@ import {
   unExpectedErrorResponse,
   validationErrorResponse,
 } from "../../response";
-import { paginationSchema, userHeaderSchema } from "../../validation/schemas";
+import { paginationSchema } from "../../validation/schemas";
 
 type TaskItem = {
   taskId: string;
@@ -30,14 +30,9 @@ export default new Hono().get(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  zValidator("header", userHeaderSchema, (result, c) => {
-    if (!result.success) {
-      return validationErrorResponse(c, result.error.issues);
-    }
-  }),
   async (c) => {
     const { page, limit } = c.req.valid("query");
-    const { "x-user-id": userId } = c.req.valid("header");
+    const { userId } = c.get("user");
 
     const result = await listTasks({ userId, page, limit }).map(
       (tasks): Response => {

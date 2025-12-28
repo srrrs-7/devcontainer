@@ -98,6 +98,24 @@ module "waf" {
   log_retention_days = 90
 }
 
+# Cognito Module
+module "cognito" {
+  source = "../../modules/cognito"
+
+  project     = var.project
+  environment = var.environment
+
+  callback_urls = [
+    "https://${var.app_domain_name}/auth/callback"
+  ]
+  logout_urls = [
+    "https://${var.app_domain_name}"
+  ]
+
+  google_client_id     = var.google_client_id
+  google_client_secret = var.google_client_secret
+}
+
 # ECS Module
 module "ecs" {
   source = "../../modules/ecs"
@@ -117,11 +135,15 @@ module "ecs" {
   health_check_path = "/health"
 
   environment_variables = {
-    NODE_ENV   = "production"
-    LOG_LEVEL  = "info"
-    DB_HOST    = module.aurora.cluster_endpoint
-    DB_PORT    = tostring(module.aurora.cluster_port)
-    DB_DBNAME  = var.db_name
+    NODE_ENV             = "production"
+    LOG_LEVEL            = "info"
+    DB_HOST              = module.aurora.cluster_endpoint
+    DB_PORT              = tostring(module.aurora.cluster_port)
+    DB_DBNAME            = var.db_name
+    COGNITO_USER_POOL_ID = module.cognito.user_pool_id
+    COGNITO_CLIENT_ID    = module.cognito.spa_client_id
+    COGNITO_ISSUER       = module.cognito.issuer
+    COGNITO_JWKS_URI     = module.cognito.jwks_uri
   }
 
   secrets = {

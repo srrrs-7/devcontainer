@@ -91,13 +91,14 @@ model Client {
 // ========================================
 
 model User {
-  id           String   @id @default(uuid()) @map("user_id") @db.Uuid
-  clientId     String   @map("client_id") @db.Uuid
-  username     String   @unique @map("username") @db.VarChar(100)
-  email        String   @unique @map("email") @db.VarChar(255)
-  passwordHash String   @map("password_hash") @db.VarChar(255)
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id        String   @id @map("user_id") @db.VarChar(128) // Cognito sub (UUID or federated IdP sub)
+  clientId  String   @map("client_id") @db.Uuid
+  username  String   @unique @map("username") @db.VarChar(100)
+  email     String   @unique @map("email") @db.VarChar(255)
+  name      String?  @map("name") @db.VarChar(255)
+  picture   String?  @map("picture") @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
@@ -119,7 +120,7 @@ model User {
 
 model Application {
   id              String            @id @default(uuid()) @map("application_id") @db.Uuid
-  userId          String            @map("user_id") @db.Uuid
+  userId          String            @map("user_id") @db.VarChar(128)
   type            ApplicationType   @map("type")
   description     String            @map("description") @db.Text
   applicationDate DateTime          @default(now()) @map("application_date")
@@ -138,7 +139,7 @@ model Application {
 model ApplicationHistory {
   id              String            @id @default(uuid()) @map("history_id") @db.Uuid
   applicationId   String            @map("application_id") @db.Uuid
-  changedByUserId String?           @map("changed_by_user_id") @db.Uuid
+  changedByUserId String?           @map("changed_by_user_id") @db.VarChar(128)
   status          ApplicationStatus @map("status")
   comment         String?           @map("comment") @db.Text
   changeDate      DateTime          @default(now()) @map("change_date")
@@ -186,10 +187,10 @@ model Permission {
 
 model UserClientRole {
   id               String   @id @default(uuid()) @map("id") @db.Uuid
-  userId           String   @map("user_id") @db.Uuid
+  userId           String   @map("user_id") @db.VarChar(128)
   clientId         String   @map("client_id") @db.Uuid
   roleId           String   @map("role_id") @db.Uuid
-  assignedByUserId String?  @map("assigned_by_user_id") @db.Uuid
+  assignedByUserId String?  @map("assigned_by_user_id") @db.VarChar(128)
   assignedAt       DateTime @default(now()) @map("assigned_at")
 
   user           User    @relation("UserRoles", fields: [userId], references: [id], onDelete: Cascade)

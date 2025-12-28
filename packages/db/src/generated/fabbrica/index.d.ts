@@ -181,7 +181,8 @@ type UserFactoryDefineInput = {
     id?: string;
     username?: string;
     email?: string;
-    passwordHash?: string;
+    name?: string | null;
+    picture?: string | null;
     createdAt?: Date;
     updatedAt?: Date;
     client: UserclientFactory | Prisma.ClientCreateNestedOneWithoutUsersInput;

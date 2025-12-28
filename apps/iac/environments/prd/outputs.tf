@@ -57,3 +57,37 @@ output "app_url" {
   description = "Application URL"
   value       = "https://${var.app_domain_name}"
 }
+
+# ===================
+# Cognito Outputs
+# ===================
+
+output "cognito_user_pool_id" {
+  description = "Cognito User Pool ID"
+  value       = module.cognito.user_pool_id
+}
+
+output "cognito_spa_client_id" {
+  description = "Cognito SPA Client ID"
+  value       = module.cognito.spa_client_id
+}
+
+output "cognito_hosted_ui_url" {
+  description = "Cognito Hosted UI URL"
+  value       = module.cognito.hosted_ui_url
+}
+
+output "cognito_domain" {
+  description = "Cognito domain for frontend configuration"
+  value       = module.cognito.cognito_domain
+}
+
+output "cognito_issuer" {
+  description = "Cognito token issuer URL"
+  value       = module.cognito.issuer
+}
+
+output "cognito_jwks_uri" {
+  description = "Cognito JWKS URI for token validation"
+  value       = module.cognito.jwks_uri
+}

@@ -2,12 +2,10 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { err, ok } from "neverthrow";
 import { NotFoundError } from "../../../domain/error";
-import { hashPassword } from "../../../domain/model/user";
 import { updateUser } from "../../../infra/rds/users/repository";
 import {
   conflictResponse,
   databaseErrorResponse,
-  domainErrorResponse,
   notFoundResponse,
   okResponse,
   unExpectedErrorResponse,
@@ -23,6 +21,8 @@ type Response = {
   clientId: string;
   username: string;
   email: string;
+  name: string | null;
+  picture: string | null;
 };
 
 export default new Hono().put(
@@ -39,17 +39,15 @@ export default new Hono().put(
   }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const { username, email, password } = c.req.valid("json");
+    const { username, email, name, picture } = c.req.valid("json");
 
-    return await hashPassword(password)
-      .andThen((passwordHash) =>
-        updateUser({
-          userId: id,
-          username: username,
-          email: email,
-          passwordHash,
-        }),
-      )
+    return await updateUser({
+      userId: id,
+      username,
+      email,
+      name: name ?? undefined,
+      picture: picture ?? undefined,
+    })
       .andThen((user) => {
         return user
           ? ok(user)
@@ -61,6 +59,8 @@ export default new Hono().put(
           clientId: user.clientId,
           username: user.username,
           email: user.email,
+          name: user.name,
+          picture: user.picture,
         };
       })
       .match(
@@ -72,8 +72,6 @@ export default new Hono().put(
               return notFoundResponse(c, error);
             case "ConflictError":
               return conflictResponse(c, error);
-            case "DomainError":
-              return domainErrorResponse(c, error);
             case "DatabaseError":
               return databaseErrorResponse(c, error);
             default:

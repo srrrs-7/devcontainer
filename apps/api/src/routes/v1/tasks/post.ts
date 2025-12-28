@@ -6,7 +6,6 @@ import {
   unExpectedErrorResponse,
   validationErrorResponse,
 } from "../../response";
-import { userHeaderSchema } from "../../validation/schemas";
 import { createTaskBodySchema } from "../../validation/tasks";
 
 type Response = {
@@ -24,14 +23,9 @@ export default new Hono().post(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  zValidator("header", userHeaderSchema, (result, c) => {
-    if (!result.success) {
-      return validationErrorResponse(c, result.error.issues);
-    }
-  }),
   async (c) => {
     const body = c.req.valid("json");
-    const { "x-user-id": userId } = c.req.valid("header");
+    const { userId } = c.get("user");
 
     const result = createTask({
       userId,

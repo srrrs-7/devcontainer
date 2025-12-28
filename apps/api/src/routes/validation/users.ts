@@ -3,47 +3,46 @@ import { emailSchema, usernameSchema, uuidSchema } from "./schemas";
 
 /**
  * User-specific validation schemas
+ * Note: With Cognito authentication, userId is the Cognito sub which can be
+ * either a UUID (for Cognito User Pool) or a different format (for federated IdPs)
  */
 
+// Cognito sub can be up to 128 characters
+export const cognitoSubSchema = z
+  .string()
+  .min(1, "User ID must not be empty")
+  .max(128, "User ID must not exceed 128 characters");
+
 export const userIdParamSchema = z.object({
-  id: uuidSchema.describe("User ID must be a valid UUID"),
+  id: cognitoSubSchema.describe("User ID (Cognito sub)"),
 });
 
 export const createUserBodySchema = z.object({
+  userId: cognitoSubSchema.describe("User ID (Cognito sub)"),
   clientId: uuidSchema.describe("Client ID must be a valid UUID"),
   username: usernameSchema,
   email: emailSchema,
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(100, "Password must not exceed 100 characters")
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-    ),
+  name: z.string().max(255, "Name must not exceed 255 characters").optional(),
+  picture: z.string().url("Picture must be a valid URL").optional(),
 });
 
 export const updateUserBodySchema = z
   .object({
     username: usernameSchema,
     email: emailSchema,
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .max(100, "Password must not exceed 100 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-      ),
+    name: z.string().max(255, "Name must not exceed 255 characters").nullable(),
+    picture: z.string().url("Picture must be a valid URL").nullable(),
   })
+  .partial()
   .refine(
     (data) =>
       data.username !== undefined ||
       data.email !== undefined ||
-      data.password !== undefined,
+      data.name !== undefined ||
+      data.picture !== undefined,
     {
       message:
-        "At least one field (username, email, or password) must be provided",
+        "At least one field (username, email, name, or picture) must be provided",
     },
   );
 

@@ -130,13 +130,17 @@ jobs:
               -var="domain_name=${{ vars.DOMAIN_NAME }}" \
               -var="app_domain_name=${{ vars.APP_DOMAIN_NAME }}" \
               -var="db_username=${{ secrets.DB_USERNAME }}" \
-              -var="db_password=${{ secrets.DB_PASSWORD }}"
+              -var="db_password=${{ secrets.DB_PASSWORD }}" \
+              -var="google_client_id=${{ secrets.GOOGLE_CLIENT_ID }}" \
+              -var="google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}"
           else
             terraform plan -detailed-exitcode -out=tfplan \
               -var="domain_name=${{ vars.DOMAIN_NAME }}" \
               -var="app_domain_name=${{ vars.APP_DOMAIN_NAME }}" \
               -var="db_username=${{ secrets.DB_USERNAME }}" \
-              -var="db_password=${{ secrets.DB_PASSWORD }}"
+              -var="db_password=${{ secrets.DB_PASSWORD }}" \
+              -var="google_client_id=${{ secrets.GOOGLE_CLIENT_ID }}" \
+              -var="google_client_secret=${{ secrets.GOOGLE_CLIENT_SECRET }}"
           fi
         continue-on-error: true
 

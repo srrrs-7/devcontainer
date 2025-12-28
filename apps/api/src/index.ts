@@ -1,7 +1,11 @@
 import { serve } from "@hono/node-server";
 import { logger } from "@packages/logger";
 import { Hono } from "hono";
-import { requestIdMiddleware, requestLoggerMiddleware } from "./middleware";
+import {
+  cognitoAuthMiddleware,
+  requestIdMiddleware,
+  requestLoggerMiddleware,
+} from "./middleware";
 import deleteTask from "./routes/v1/tasks/delete";
 import getTask from "./routes/v1/tasks/get";
 import listTask from "./routes/v1/tasks/list";
@@ -10,9 +14,9 @@ import putTask from "./routes/v1/tasks/put";
 
 // Create v1 API router with base path
 const v1 = new Hono()
-  // .use(bearerAuthMiddleware())
   .use("/*", requestLoggerMiddleware())
   .use("/*", requestIdMiddleware())
+  .use("/*", cognitoAuthMiddleware())
   // Define task routes
   .route("/", getTask)
   .route("/", listTask)

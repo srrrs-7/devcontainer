@@ -186,7 +186,7 @@ export type ApplicationHistoryWhereInput = {
   NOT?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
   id?: Prisma.UuidFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidFilter<"ApplicationHistory"> | string
-  changedByUserId?: Prisma.UuidNullableFilter<"ApplicationHistory"> | string | null
+  changedByUserId?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
   comment?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   changeDate?: Prisma.DateTimeFilter<"ApplicationHistory"> | Date | string
@@ -211,7 +211,7 @@ export type ApplicationHistoryWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ApplicationHistoryWhereInput[]
   NOT?: Prisma.ApplicationHistoryWhereInput | Prisma.ApplicationHistoryWhereInput[]
   applicationId?: Prisma.UuidFilter<"ApplicationHistory"> | string
-  changedByUserId?: Prisma.UuidNullableFilter<"ApplicationHistory"> | string | null
+  changedByUserId?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
   comment?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   changeDate?: Prisma.DateTimeFilter<"ApplicationHistory"> | Date | string
@@ -237,7 +237,7 @@ export type ApplicationHistoryScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ApplicationHistoryScalarWhereWithAggregatesInput | Prisma.ApplicationHistoryScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidWithAggregatesFilter<"ApplicationHistory"> | string
-  changedByUserId?: Prisma.UuidNullableWithAggregatesFilter<"ApplicationHistory"> | string | null
+  changedByUserId?: Prisma.StringNullableWithAggregatesFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusWithAggregatesFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
   comment?: Prisma.StringNullableWithAggregatesFilter<"ApplicationHistory"> | string | null
   changeDate?: Prisma.DateTimeWithAggregatesFilter<"ApplicationHistory"> | Date | string
@@ -477,7 +477,7 @@ export type ApplicationHistoryScalarWhereInput = {
   NOT?: Prisma.ApplicationHistoryScalarWhereInput | Prisma.ApplicationHistoryScalarWhereInput[]
   id?: Prisma.UuidFilter<"ApplicationHistory"> | string
   applicationId?: Prisma.UuidFilter<"ApplicationHistory"> | string
-  changedByUserId?: Prisma.UuidNullableFilter<"ApplicationHistory"> | string | null
+  changedByUserId?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   status?: Prisma.EnumApplicationStatusFilter<"ApplicationHistory"> | $Enums.ApplicationStatus
   comment?: Prisma.StringNullableFilter<"ApplicationHistory"> | string | null
   changeDate?: Prisma.DateTimeFilter<"ApplicationHistory"> | Date | string

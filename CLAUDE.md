@@ -42,7 +42,7 @@ This is a monorepo using **Bun workspaces** with native Bun features for task or
 
 ## Package Manager & Workspaces
 
-- Uses **Bun** (version 1.3.0) - **ALWAYS use `bun` or `bunx` commands, NEVER `npm`, `yarn`, `pnpm`, or `npx`**
+- Uses **Bun** (version 1.3.5) - **ALWAYS use `bun` or `bunx` commands, NEVER `npm`, `yarn`, `pnpm`, or `npx`**
 - Workspace packages are linked using `workspace:*` protocol
 - Root workspace defines common dev tools (Biome, cspell, husky)
 - Uses Bun's built-in `--filter` and `--workspaces` flags for monorepo management
@@ -158,9 +158,8 @@ bun db:studio
 # Seed database with initial data
 bun run db:seed
 
-# Run any Prisma command
-# From packages/db:
-bun prisma [command]
+# Run any Prisma command directly (from packages/db):
+prisma [command]
 ```
 
 **Database Seeding**:
@@ -232,9 +231,9 @@ cd apps/api && bun test -t "pattern"
 - **Logging**: Prisma events (query, info, warn, error) are logged via `@packages/logger`
 - **Connection**: Database URL constructed from environment variables (not from `.env` file directly)
 - **Data Model**:
-  - **Tasks**: Simple task management with composite PK (userId, taskId), status tracking
+  - **Tasks**: Simple task management with UUID PK, status tracking, optimistic locking (version)
   - **Organization Management**: Organizations and hierarchical Client structure
-  - **User Management**: Users linked to clients with authentication (password hash)
+  - **User Management**: Users linked to clients, ID is Cognito sub (VARCHAR(128), not UUID)
   - **Application Management**: Application workflow with type, status, and history tracking
   - **RBAC System**: Role-Based Access Control with Roles, Permissions, and client-specific user role assignments
 
@@ -254,7 +253,7 @@ cd apps/api && bun test -t "pattern"
 - **Build Output**: `apps/api/dist/` directory
 - **Error Handling**: Uses `neverthrow` library for Result-based error handling (avoids throwing exceptions)
 - **Validation**: Uses `@hono/zod-validator` with Zod schemas for request validation
-- **Password Hashing**: Uses `bcrypt` for secure password hashing
+- **Authentication**: AWS Cognito JWT validation via `jose` library (see middleware/cognitoAuth.ts)
 
 #### Layered Architecture
 
@@ -413,16 +412,20 @@ apps/iac/
     ├── s3_cloudfront/# Static hosting with CDN
     ├── waf/          # Web Application Firewall
     ├── acm/          # SSL certificates
-    └── route53/      # DNS records
+    ├── route53/      # DNS records
+    └── cognito/      # User Pool, Hosted UI, Google IdP
 ```
 
 ### AWS Architecture
 ```
-CloudFront ─→ S3 (static)
-     │
-     └─→ API Gateway ─→ VPC Link ─→ NLB ─→ ECS Fargate ─→ Aurora Serverless v2
-                                              │
-                                              └─→ Secrets Manager
+                          Cognito User Pool (Hosted UI, Google IdP)
+                                    │
+                                    ▼ JWT
+Browser ─→ CloudFront ─→ S3 (static)
+                │
+                └─→ API Gateway ─→ VPC Link ─→ NLB ─→ ECS Fargate ─→ Aurora Serverless v2
+                                                          │
+                                                          └─→ Secrets Manager
 ```
 
 ### Environment Differences
@@ -459,8 +462,13 @@ validate → plan → apply/destroy
 | Variable | `AWS_ROLE_ARN` | OIDC IAM role ARN |
 | Variable | `DOMAIN_NAME` | Route53 hosted zone domain |
 | Variable | `APP_DOMAIN_NAME` | Application subdomain |
+| Variable | `COGNITO_USER_POOL_ID` | Cognito User Pool ID |
+| Variable | `COGNITO_CLIENT_ID` | Cognito SPA client ID |
+| Variable | `COGNITO_DOMAIN` | Cognito Hosted UI domain |
 | Secret | `DB_USERNAME` | Database username |
 | Secret | `DB_PASSWORD` | Database password |
+| Secret | `GOOGLE_CLIENT_ID` | Google OAuth client ID (optional) |
+| Secret | `GOOGLE_CLIENT_SECRET` | Google OAuth client secret (optional) |
 
 ### Local Terraform Commands
 ```bash

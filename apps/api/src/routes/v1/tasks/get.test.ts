@@ -1,7 +1,10 @@
 import { getPrisma } from "@packages/db";
 import dayjs from "dayjs";
 import { beforeEach, describe, expect, test } from "vitest";
-import app from "./get";
+import { createTestApp, setTestUser } from "../../../../__test__/setup";
+import routeHandler from "./get";
+
+const app = createTestApp(routeHandler);
 
 describe("GET /task/:taskId", () => {
   let testUserId: string;
@@ -31,18 +34,21 @@ describe("GET /task/:taskId", () => {
       },
     });
 
-    // Create test user
-    const user = await prisma.user.create({
+    // Create test user with explicit ID (simulating Cognito sub)
+    testUserId = crypto.randomUUID();
+    await prisma.user.create({
       data: {
+        id: testUserId,
         clientId: client.id,
         username: `testuser_${timestamp}_${random}`,
         email: `test_${timestamp}_${random}@example.com`,
-        passwordHash: "hashed_password",
         createdAt: now,
         updatedAt: now,
       },
     });
-    testUserId = user.id;
+
+    // Set the test user for auth middleware mock
+    setTestUser({ userId: testUserId });
 
     // Create test task
     const task = await prisma.tasks.create({
@@ -60,9 +66,7 @@ describe("GET /task/:taskId", () => {
 
   describe("Success cases", () => {
     test("should return 200 with task data when task exists", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        headers: { "x-user-id": testUserId },
-      });
+      const req = new Request(`http://localhost/task/${testTaskId}`);
 
       const res = await app.request(req);
 
@@ -107,9 +111,7 @@ describe("GET /task/:taskId", () => {
       expectedStatus,
       expectedMessageContains,
     }) => {
-      const req = new Request(`http://localhost/task/${taskId}`, {
-        headers: { "x-user-id": testUserId },
-      });
+      const req = new Request(`http://localhost/task/${taskId}`);
 
       const res = await app.request(req);
 
@@ -124,64 +126,10 @@ describe("GET /task/:taskId", () => {
     });
   });
 
-  describe("Validation errors - header", () => {
-    test.each<{
-      description: string;
-      headers: Record<string, string>;
-      expectedStatus: number;
-      expectedMessageContains: string;
-    }>([
-      {
-        description: "missing x-user-id header",
-        headers: {},
-        expectedStatus: 400,
-        expectedMessageContains: "invalid_type",
-      },
-      {
-        description: "invalid UUID format in x-user-id",
-        headers: { "x-user-id": "invalid-uuid" },
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-      {
-        description: "empty x-user-id header",
-        headers: { "x-user-id": "" },
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-      {
-        description: "non-UUID string in x-user-id",
-        headers: { "x-user-id": "not-a-uuid" },
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-    ])("should return 400 when $description", async ({
-      headers,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        headers,
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(expectedStatus);
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
-      expect(jsonStr.toLowerCase()).toContain(
-        expectedMessageContains.toLowerCase(),
-      );
-    });
-  });
-
   describe("Not found cases", () => {
     test("should return 404 when task does not exist", async () => {
       const req = new Request(
         "http://localhost/task/123e4567-e89b-42d3-8456-426614174000",
-        {
-          headers: { "x-user-id": testUserId },
-        },
       );
 
       const res = await app.request(req);
@@ -192,9 +140,10 @@ describe("GET /task/:taskId", () => {
     });
 
     test("should return 404 when task exists but belongs to different user", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        headers: { "x-user-id": "123e4567-e89b-42d3-8456-426614174001" },
-      });
+      // Set a different user for this test
+      setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174001" });
+
+      const req = new Request(`http://localhost/task/${testTaskId}`);
 
       const res = await app.request(req);
 
@@ -224,9 +173,7 @@ describe("GET /task/:taskId", () => {
         },
       });
 
-      const req = new Request(`http://localhost/task/${completedTask.id}`, {
-        headers: { "x-user-id": testUserId },
-      });
+      const req = new Request(`http://localhost/task/${completedTask.id}`);
 
       const res = await app.request(req);
 
@@ -265,9 +212,7 @@ describe("GET /task/:taskId", () => {
       shouldSucceed,
     }) => {
       const modifiedTaskId = getTaskId(testTaskId);
-      const req = new Request(`http://localhost/task/${modifiedTaskId}`, {
-        headers: { "x-user-id": testUserId },
-      });
+      const req = new Request(`http://localhost/task/${modifiedTaskId}`);
 
       const res = await app.request(req);
 

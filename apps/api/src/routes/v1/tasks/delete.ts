@@ -10,7 +10,6 @@ import {
   unExpectedErrorResponse,
   validationErrorResponse,
 } from "../../response";
-import { userHeaderSchema } from "../../validation/schemas";
 import { taskIdParamSchema } from "../../validation/tasks";
 
 export default new Hono().delete(
@@ -20,14 +19,9 @@ export default new Hono().delete(
       return validationErrorResponse(c, result.error.issues);
     }
   }),
-  zValidator("header", userHeaderSchema, (result, c) => {
-    if (!result.success) {
-      return validationErrorResponse(c, result.error.issues);
-    }
-  }),
   async (c) => {
     const { id } = c.req.valid("param");
-    const { "x-user-id": userId } = c.req.valid("header");
+    const { userId } = c.get("user");
 
     return await deleteTask({ userId, taskId: id })
       .andThen((result) => {

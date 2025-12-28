@@ -49,3 +49,21 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+# ===================
+# Cognito Configuration
+# ===================
+
+variable "google_client_id" {
+  description = "Google OAuth client ID (optional - leave null to disable Google login)"
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth client secret (required if google_client_id is set)"
+  type        = string
+  default     = null
+  sensitive   = true
+}

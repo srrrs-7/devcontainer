@@ -18,7 +18,8 @@ import type {
 } from "../../../domain/model/user";
 
 /**
- * Create a new user
+ * Create a new user (for Cognito-authenticated users)
+ * The userId should be the Cognito sub claim
  */
 export const createUser = (
   input: CreateUserInput,
@@ -28,10 +29,12 @@ export const createUser = (
   return ResultAsync.fromPromise(
     prisma.user.create({
       data: {
+        id: input.userId, // Cognito sub
         clientId: input.clientId,
         username: input.username,
         email: input.email,
-        passwordHash: input.passwordHash,
+        name: input.name ?? null,
+        picture: input.picture ?? null,
         createdAt: dayjs().toDate(),
         updatedAt: dayjs().toDate(),
       },
@@ -43,7 +46,8 @@ export const createUser = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }),
@@ -63,7 +67,8 @@ export const updateUser = (
   const updateData: {
     username?: string;
     email?: string;
-    passwordHash?: string;
+    name?: string | null;
+    picture?: string | null;
     updatedAt: Date;
   } = {
     updatedAt: dayjs().toDate(),
@@ -75,8 +80,11 @@ export const updateUser = (
   if (input.email !== undefined) {
     updateData.email = input.email;
   }
-  if (input.passwordHash !== undefined) {
-    updateData.passwordHash = input.passwordHash;
+  if (input.name !== undefined) {
+    updateData.name = input.name;
+  }
+  if (input.picture !== undefined) {
+    updateData.picture = input.picture;
   }
 
   return ResultAsync.fromPromise(
@@ -114,7 +122,8 @@ export const updateUser = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }),
@@ -185,7 +194,8 @@ export const getUser = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -214,7 +224,8 @@ export const getUserByEmail = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -243,7 +254,8 @@ export const getUserByUsername = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
@@ -280,7 +292,8 @@ export const listUsers = (
       clientId: user.clientId,
       username: user.username,
       email: user.email,
-      passwordHash: user.passwordHash,
+      name: user.name,
+      picture: user.picture,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     })),

@@ -185,10 +185,10 @@ export type UserClientRoleWhereInput = {
   OR?: Prisma.UserClientRoleWhereInput[]
   NOT?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
   id?: Prisma.UuidFilter<"UserClientRole"> | string
-  userId?: Prisma.UuidFilter<"UserClientRole"> | string
+  userId?: Prisma.StringFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidFilter<"UserClientRole"> | string
-  assignedByUserId?: Prisma.UuidNullableFilter<"UserClientRole"> | string | null
+  assignedByUserId?: Prisma.StringNullableFilter<"UserClientRole"> | string | null
   assignedAt?: Prisma.DateTimeFilter<"UserClientRole"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
@@ -215,10 +215,10 @@ export type UserClientRoleWhereUniqueInput = Prisma.AtLeast<{
   AND?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
   OR?: Prisma.UserClientRoleWhereInput[]
   NOT?: Prisma.UserClientRoleWhereInput | Prisma.UserClientRoleWhereInput[]
-  userId?: Prisma.UuidFilter<"UserClientRole"> | string
+  userId?: Prisma.StringFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidFilter<"UserClientRole"> | string
-  assignedByUserId?: Prisma.UuidNullableFilter<"UserClientRole"> | string | null
+  assignedByUserId?: Prisma.StringNullableFilter<"UserClientRole"> | string | null
   assignedAt?: Prisma.DateTimeFilter<"UserClientRole"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
@@ -243,10 +243,10 @@ export type UserClientRoleScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserClientRoleScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserClientRoleScalarWhereWithAggregatesInput | Prisma.UserClientRoleScalarWhereWithAggregatesInput[]
   id?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
-  userId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
+  userId?: Prisma.StringWithAggregatesFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidWithAggregatesFilter<"UserClientRole"> | string
-  assignedByUserId?: Prisma.UuidNullableWithAggregatesFilter<"UserClientRole"> | string | null
+  assignedByUserId?: Prisma.StringNullableWithAggregatesFilter<"UserClientRole"> | string | null
   assignedAt?: Prisma.DateTimeWithAggregatesFilter<"UserClientRole"> | Date | string
 }
 
@@ -567,10 +567,10 @@ export type UserClientRoleScalarWhereInput = {
   OR?: Prisma.UserClientRoleScalarWhereInput[]
   NOT?: Prisma.UserClientRoleScalarWhereInput | Prisma.UserClientRoleScalarWhereInput[]
   id?: Prisma.UuidFilter<"UserClientRole"> | string
-  userId?: Prisma.UuidFilter<"UserClientRole"> | string
+  userId?: Prisma.StringFilter<"UserClientRole"> | string
   clientId?: Prisma.UuidFilter<"UserClientRole"> | string
   roleId?: Prisma.UuidFilter<"UserClientRole"> | string
-  assignedByUserId?: Prisma.UuidNullableFilter<"UserClientRole"> | string | null
+  assignedByUserId?: Prisma.StringNullableFilter<"UserClientRole"> | string | null
   assignedAt?: Prisma.DateTimeFilter<"UserClientRole"> | Date | string
 }
 

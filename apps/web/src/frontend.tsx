@@ -8,6 +8,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { configureAmplify } from "./config/amplify";
+import { AuthProvider } from "./features/auth";
+
+// Initialize Amplify configuration
+configureAmplify();
 
 const elem = document.getElementById("root");
 if (!elem) {
@@ -16,7 +21,9 @@ if (!elem) {
 
 const app = (
   <StrictMode>
-    <App />
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>
 );
 

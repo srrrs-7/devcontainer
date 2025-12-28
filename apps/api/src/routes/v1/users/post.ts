@@ -1,12 +1,9 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
-import { hashPassword } from "../../../domain/model/user";
 import { createUser } from "../../../infra/rds/users/repository";
 import {
   databaseErrorResponse,
-  domainErrorResponse,
   okResponse,
-  unExpectedErrorResponse,
   validationErrorResponse,
 } from "../../response";
 import { createUserBodySchema } from "../../validation/users";
@@ -16,8 +13,15 @@ type Response = {
   clientId: string;
   username: string;
   email: string;
+  name: string | null;
+  picture: string | null;
 };
 
+/**
+ * Create a new user in the database
+ * This endpoint is typically called when a user first authenticates via Cognito
+ * The userId should be the Cognito sub claim
+ */
 export default new Hono().post(
   "/user",
   zValidator("json", createUserBodySchema, (result, c) => {
@@ -26,39 +30,30 @@ export default new Hono().post(
     }
   }),
   async (c) => {
-    const { clientId, username, email, password } = c.req.valid("json");
+    const { userId, clientId, username, email, name, picture } =
+      c.req.valid("json");
 
-    return await hashPassword(password)
-      .andThen((passwordHash) =>
-        createUser({
-          clientId: clientId,
-          username: username,
-          email: email,
-          passwordHash,
-        }),
-      )
+    return await createUser({
+      userId,
+      clientId,
+      username,
+      email,
+      name,
+      picture,
+    })
       .map(
         (user): Response => ({
           userId: user.userId,
           clientId: user.clientId,
           username: user.username,
           email: user.email,
+          name: user.name,
+          picture: user.picture,
         }),
       )
       .match(
         (response) => okResponse(c, response),
-        (error) => {
-          const errorName = error.name;
-          switch (errorName) {
-            case "DomainError":
-              return domainErrorResponse(c, error);
-            case "DatabaseError":
-              return databaseErrorResponse(c, error);
-            default:
-              errorName satisfies never;
-              return unExpectedErrorResponse(c, error);
-          }
-        },
+        (error) => databaseErrorResponse(c, error),
       );
   },
 );

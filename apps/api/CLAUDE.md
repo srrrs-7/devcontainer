@@ -486,41 +486,54 @@ cd apps/api && bun test -t "should return task"
    - Bearer トークン認証
    - `Authorization: Bearer <token>` ヘッダーを検証
 
+4. **Cognito Auth Middleware** (`cognitoAuth.ts`)
+   - AWS Cognito JWT 検証（`jose` ライブラリ使用）
+   - JWKS エンドポイントからの公開鍵取得とキャッシュ
+   - ユーザーコンテキスト設定: `c.get("user")` で `AuthUser` 取得
+   - グループベース認可: `requireGroups()` ミドルウェア
+
 ### Middleware Usage
 
 ```typescript
 import { Hono } from "hono";
-import { requestId, requestLogger } from "./middleware";
+import { requestIdMiddleware, requestLoggerMiddleware, cognitoAuthMiddleware } from "./middleware";
 
 const app = new Hono();
 
 // Apply middleware globally
-app.use("*", requestId);
-app.use("*", requestLogger);
+app.use("*", requestIdMiddleware());
+app.use("*", requestLoggerMiddleware());
+app.use("*", cognitoAuthMiddleware());
 
-// Apply to specific routes
-app.use("/api/*", bearerAuth);
+// Access authenticated user in route handlers
+app.get("/task/:id", (c) => {
+  const { userId } = c.get("user"); // Cognito sub
+  // ...
+});
 ```
 
-## Password Hashing
+## Authentication
 
-**bcrypt** を使用した安全なパスワードハッシング:
+**AWS Cognito** を使用した JWT 認証:
 
 ```typescript
-import bcrypt from "bcrypt";
+// Route handler でユーザー情報を取得
+const { userId, email, groups } = c.get("user");
 
-// Hash password
-const saltRounds = 10;
-const passwordHash = await bcrypt.hash(password, saltRounds);
-
-// Verify password
-const isValid = await bcrypt.compare(password, passwordHash);
+// グループベース認可
+import { requireGroups } from "./middleware/cognitoAuth";
+app.use("/admin/*", requireGroups("admin"));
 ```
 
+**必要な環境変数**:
+- `COGNITO_ISSUER`: Cognito User Pool の issuer URL
+- `COGNITO_JWKS_URI`: JWKS エンドポイント URL
+- `COGNITO_CLIENT_ID`: SPA クライアント ID（オプション）
+
 **重要な規約**:
-- **NEVER** パスワードを平文で保存
-- `saltRounds = 10` を使用（セキュリティと性能のバランス）
-- パスワードハッシュは `passwordHash` フィールドに保存（Prisma schema 参照）
+- パスワード管理は Cognito に委譲（アプリケーションでパスワードを保存しない）
+- User.id は Cognito sub（VARCHAR(128)、UUID ではない）
+- アクセストークンのみ使用（`token_use: "access"`）
 
 ## Development Workflow
 
