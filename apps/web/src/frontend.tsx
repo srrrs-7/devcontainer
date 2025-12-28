@@ -7,9 +7,9 @@
 
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { App } from "./App";
+import { AppProvider, AppRouter } from "./app";
 import { configureAmplify } from "./config/amplify";
-import { AuthProvider } from "./features/auth";
+import "./index.css";
 
 // Initialize Amplify configuration
 configureAmplify();
@@ -21,9 +21,9 @@ if (!elem) {
 
 const app = (
   <StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <AppProvider>
+      <AppRouter />
+    </AppProvider>
   </StrictMode>
 );
 

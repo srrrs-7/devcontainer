@@ -210,11 +210,13 @@ cd apps/api && bun test -t "pattern"
 
 ### Web App (`apps/web`)
 - **Framework**: React 19
+- **Architecture**: Bulletproof React (feature-based organization)
 - **Server**: Bun.serve() with native HMR (Hot Module Replacement)
 - **Port**: 3000 (default)
 - **Bundler**: Bun native bundler (no Vite/Webpack needed)
 - **Entry Point**: `apps/web/src/index.tsx` serves `index.html` which imports frontend React code
 - **Build Output**: `apps/web/dist/` directory
+- **Authentication**: AWS Amplify with Cognito (PKCE flow)
 - **Features**:
   - HTML imports for .tsx/.jsx/.css files (import directly in `<script>` tags)
   - Built-in API routing via Bun.serve routes object (see `index.tsx` for examples)
@@ -222,6 +224,40 @@ cd apps/api && bun test -t "pattern"
   - TypeScript support without compilation step
   - Hot reloading with `--hot` flag in dev mode
 - **Additional Documentation**: See `apps/web/CLAUDE.md` for detailed Bun.serve() API usage and patterns
+
+#### Frontend Architecture (Bulletproof React)
+
+```
+apps/web/src/
+├── app/                    # Application layer
+│   ├── provider.tsx        # Global providers (AuthProvider)
+│   ├── router.tsx          # Path-based routing
+│   └── routes/             # Route components
+│       └── home.tsx
+├── assets/                 # Static assets (images, SVGs)
+├── components/             # Shared UI components
+│   ├── layouts/
+│   └── errors/
+├── config/                 # Configuration
+│   ├── amplify.ts          # AWS Amplify config
+│   └── env.ts
+├── features/               # Feature modules (domain-specific)
+│   ├── auth/               # Authentication feature
+│   │   ├── components/     # Feature-specific components
+│   │   ├── AuthContext.tsx # Auth state management
+│   │   ├── useApiClient.ts # Authenticated API calls
+│   │   └── index.ts        # Public exports
+│   ├── misc/               # Development tools
+│   └── tasks/              # Task management feature
+├── frontend.tsx            # React entry point
+└── index.tsx               # Server entry (Bun.serve)
+```
+
+**Key Principles**:
+- **Feature-based organization**: Each feature is self-contained with its own components, hooks, and API calls
+- **Unidirectional imports**: Features should not import from other features; use shared `components/` or `lib/`
+- **No barrel files in components**: Export from feature `index.ts` only
+- **Colocate related code**: Tests, styles, and types live near their components
 
 ### Database Package (`@packages/db`)
 - **Prisma schema**: `packages/db/prisma/schema.prisma`

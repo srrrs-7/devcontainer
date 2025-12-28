@@ -1,5 +1,8 @@
 import { type FormEvent, useRef } from "react";
 
+/**
+ * API endpoint testing component for development.
+ */
 export function APITester() {
   const responseInputRef = useRef<HTMLTextAreaElement>(null);
 
