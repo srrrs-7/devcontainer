@@ -15,7 +15,7 @@ COPY --from=installer /app .
 RUN bun build:api
 
 # Runner
-FROM node:24-alpine AS runner
+FROM node:25-alpine AS runner
 # Copy built application and dependencies
 COPY --from=builder /app/apps/api/dist .
 EXPOSE 8080
