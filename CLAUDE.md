@@ -56,8 +56,9 @@ This is a monorepo using **Bun workspaces** with native Bun features for task or
 - **`--workspaces`**: Run scripts across all workspace packages
   - Example: `bun run --workspaces test` runs test in all packages
 - **Fast installation**: Bun installs dependencies significantly faster than npm/yarn
-- **Built-in test runner**: Use `bun test` for fast, native testing (no Vitest needed)
+- **Built-in test runner**: Use `bun test` for fast, native testing
 - **TypeScript support**: Direct execution of .ts files without compilation
+- **Type checking**: Uses `tsgo` (TypeScript 7 native compiler) - 10x faster than traditional tsc
 
 ## Common Commands
 
@@ -187,7 +188,7 @@ bun run test:watch
 bun test:watch
 
 # Run specific test file
-cd apps/api && bun test src/routes/task/get.test.ts
+cd apps/api && bun test src/routes/v1/tasks/get.test.ts
 
 # Run tests matching a pattern
 cd apps/api && bun test -t "pattern"
@@ -261,47 +262,39 @@ The API follows a clean layered architecture with clear separation of concerns:
 
 ```
 apps/api/src/
-├── routes/         → HTTP handlers (request/response)
-├── service/        → Business logic layer
+├── routes/v1/      → HTTP handlers (request/response)
 ├── infra/rds/      → Data access layer (repositories)
 └── domain/         → Domain models and errors
 ```
 
 **Layer Responsibilities**:
 
-1. **Routes Layer** (`routes/task/`)
+1. **Routes Layer** (`routes/v1/tasks/`)
    - HTTP request/response handling
    - Request validation using Zod schemas
-   - Maps HTTP concepts to service calls
+   - Maps HTTP concepts to repository calls
    - Co-located with test files (e.g., `get.ts` and `get.test.ts`)
    - Each route exports a Hono instance for composition
 
-2. **Service Layer** (`service/task/`)
-   - Business logic and orchestration
-   - Returns `Result<T, AppError>` using neverthrow
-   - No direct HTTP knowledge
-   - Files: `get.ts`, `post.ts`, `put.ts`, `delete.ts`, `list.ts`
-
-3. **Repository Layer** (`infra/rds/task/`)
+2. **Repository Layer** (`infra/rds/tasks/`)
    - Database access via Prisma
    - Handles database errors and transforms them to domain errors
+   - Returns `ResultAsync<T, DatabaseError>` using neverthrow
    - Isolates Prisma client from business logic
-   - Example: `repository.ts` with CRUD operations
 
-4. **Domain Layer** (`domain/`)
+3. **Domain Layer** (`domain/`)
    - Domain models: `model/task.ts` defines Task type
    - Domain errors: `error.ts` defines error hierarchy
      - `AppError` (base class)
-     - `NotFoundError`
-     - `DatabaseError`
-     - `ApiError`
+     - `NotFoundError`, `ForbiddenError`, `UnauthorizedError`, `ConflictError`
+     - `ValidationError`, `DatabaseError`, `DomainError`, `ApiError`
 
 **Data Flow Example**:
 ```
-HTTP Request → Route Handler → Service → Repository → Prisma → Database
-                    ↓              ↓          ↓
-              Validation    Business      Data
-                           Logic        Access
+HTTP Request → Route Handler → Repository → Prisma → Database
+                    ↓              ↓
+              Validation       Data Access
+              (Zod)           (neverthrow Result)
 ```
 
 ## Important Conventions
@@ -314,6 +307,8 @@ HTTP Request → Route Handler → Service → Repository → Prisma → Databas
 - **Spell checking**: Custom words defined in `cspell.config.yaml` (includes project-specific terms like "bunx", "dotenvx", "neverthrow")
 
 ### TypeScript Configuration
+- **Type checker**: `tsgo` (@typescript/native-preview 7.x) - Go-based TypeScript compiler
+- **Type definitions**: Uses `@types/bun` (NOT @types/node) for Bun runtime types
 - **Strict mode**: All packages use `strict: true`
 - **Module resolution**: `bundler` mode for modern bundler semantics
 - **JSX Configuration**:
@@ -323,6 +318,7 @@ HTTP Request → Route Handler → Service → Repository → Prisma → Databas
 - **Additional strict checks** (web app):
   - `noUncheckedIndexedAccess: true` - Prevents unchecked array/object access
   - `noImplicitOverride: true` - Requires explicit `override` keyword
+- **Note**: `baseUrl` is NOT supported by tsgo - use relative paths in `paths` config
 
 ### Environment Files
 - Database package uses `.env.db` file (loaded via dotenvx)
@@ -331,10 +327,15 @@ HTTP Request → Route Handler → Service → Repository → Prisma → Databas
 - **Never edit** files in `packages/db/src/generated/prisma/` - regenerate with `bun db:generate`
 - Prisma client is generated to custom output directory (not default node_modules)
 
-### Prisma Workflow
+### Prisma Workflow (Prisma 7)
 1. Edit `packages/db/prisma/schema.prisma`
 2. Run `bun db:migrate:dev` (creates migration + regenerates client)
 3. Or run `bun db:generate` (just regenerates client without migration)
+
+**Prisma 7 Configuration**:
+- Uses `prisma.config.ts` for datasource URL (NOT in schema.prisma)
+- Schema file: `packages/db/prisma/schema.prisma` (no `url` in datasource block)
+- Config file: `packages/db/prisma.config.ts` (contains migration URL)
 
 ## Development Environment
 
@@ -365,6 +366,21 @@ HTTP Request → Route Handler → Service → Repository → Prisma → Databas
 - **Setup step**: Copies `compose.override.yaml.sample` to `compose.override.yaml` before building devcontainer
 - CI pipeline runs: checks (lint, spell, type check), build all workspaces, and tests
 - Builds and caches devcontainer image to GitHub Container Registry
+
+## Dependency Management
+
+### Dependabot
+- Configuration: `.github/dependabot.yml`
+- **Package ecosystem**: `bun` (NOT npm)
+- Weekly updates on Monday 09:00 JST
+- Groups related packages (hono, react, prisma, etc.)
+- Covers: Bun packages, GitHub Actions, Docker images
+
+### Security Policies (bunfig.toml)
+- **Minimum release age**: 21 days (1814400 seconds) - prevents installing very new packages
+- **Exclusions**: `@types/bun`, `bun-types`, `typescript` are exempt from age restriction
+- **Security scanner**: Uses `@bun-security-scanner/osv` for vulnerability scanning
+- Run `bun audit` to check for known vulnerabilities
 
 ## Git Worktree Workflow
 
