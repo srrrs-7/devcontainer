@@ -200,6 +200,35 @@ cd apps/api && bun test -t "pattern"
 - **Test pattern**: Route test files are co-located with route files (e.g., `get.ts` and `get.test.ts` in same directory)
 - Tests run with `LOG_LEVEL=silent` to reduce noise (configured in `vitest.config.ts`)
 
+**Test Structure Pattern**:
+Tests are organized by HTTP status code using `test.each` for parameterized testing:
+
+```typescript
+describe("GET /task/:taskId", () => {
+  describe("200 OK", () => {
+    test.each<{ name: string; getTaskId: () => string; ... }>([
+      { name: "returns task data", getTaskId: () => testTaskId, ... },
+      { name: "handles uppercase UUID", getTaskId: () => testTaskId.toUpperCase(), ... },
+    ])("$name", async ({ getTaskId, ... }) => {
+      // Arrange, Act, Assert
+    });
+  });
+
+  describe("400 Bad Request", () => {
+    test.each<{ name: string; taskId: string; expectedMessage: string }>([
+      { name: "invalid UUID format", taskId: "invalid", expectedMessage: "invalid uuid" },
+    ])("$name", async ({ taskId, expectedMessage }) => { ... });
+  });
+
+  describe("404 Not Found", () => {
+    test.each<{ name: string; getTaskId: () => string; setupUser?: () => void }>([
+      { name: "task does not exist", getTaskId: () => "non-existent-uuid" },
+      { name: "task belongs to different user", getTaskId: () => testTaskId, setupUser: () => setTestUser({ userId: "other" }) },
+    ])("$name", async ({ getTaskId, setupUser }) => { ... });
+  });
+});
+```
+
 ## Architecture
 
 ### Monorepo Structure

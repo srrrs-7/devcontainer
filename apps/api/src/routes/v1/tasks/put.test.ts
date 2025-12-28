@@ -64,111 +64,106 @@ describe("PUT /task/:id", () => {
     setTestUser({ userId: testUserId });
   });
 
-  describe("Success cases", () => {
-    test("should return 200 and update task content only", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "Updated task content",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("count", 1);
-
-      // Verify task was updated in database
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("Updated task content");
-      expect(task?.status).toBe("PENDING");
-      expect(task?.completedAt).toBeNull();
-    });
-
-    test("should update task status to COMPLETED and set completedAt", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          status: "COMPLETED",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("count", 1);
-
-      // Verify task was updated in database
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("Original task content");
-      expect(task?.completedAt).not.toBeNull();
-      expect(task?.completedAt).toBeInstanceOf(Date);
-    });
-
-    test("should update both content and status", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
+  describe("200 OK", () => {
+    test.each<{
+      name: string;
+      getTaskId: () => string;
+      body: Record<string, unknown>;
+      expectedCount: number;
+      expectedContent?: string;
+      expectCompletedAt?: boolean;
+      setupUser?: () => void;
+    }>([
+      {
+        name: "updates content only",
+        getTaskId: () => testTaskId,
+        body: { content: "Updated task content", version: 0 },
+        expectedCount: 1,
+        expectedContent: "Updated task content",
+        expectCompletedAt: false,
+      },
+      {
+        name: "sets completedAt when status is COMPLETED",
+        getTaskId: () => testTaskId,
+        body: { status: "COMPLETED", version: 0 },
+        expectedCount: 1,
+        expectedContent: "Original task content",
+        expectCompletedAt: true,
+      },
+      {
+        name: "updates content and sets completedAt when status is COMPLETED",
+        getTaskId: () => testTaskId,
+        body: {
           content: "Updated and completed",
           status: "COMPLETED",
           version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("count", 1);
-
-      // Verify task was updated in database
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("Updated and completed");
-      expect(task?.completedAt).not.toBeNull();
-    });
-
-    test.each([
+        },
+        expectedCount: 1,
+        expectedContent: "Updated and completed",
+        expectCompletedAt: true,
+      },
       {
-        description: "status to IN_PROGRESS",
+        name: "clears completedAt when status is IN_PROGRESS",
+        getTaskId: () => testTaskId,
         body: { status: "IN_PROGRESS", version: 0 },
-        expectedCompletedAt: null,
+        expectedCount: 1,
+        expectCompletedAt: false,
       },
       {
-        description: "status to PENDING",
+        name: "clears completedAt when status is PENDING",
+        getTaskId: () => testTaskId,
         body: { status: "PENDING", version: 0 },
-        expectedCompletedAt: null,
+        expectedCount: 1,
+        expectCompletedAt: false,
       },
-    ])("should update $description and clear completedAt", async ({
+      {
+        name: "trims whitespace from content",
+        getTaskId: () => testTaskId,
+        body: { content: "  Content with spaces  ", version: 0 },
+        expectedCount: 1,
+        expectedContent: "Content with spaces",
+      },
+      {
+        name: "escapes special characters",
+        getTaskId: () => testTaskId,
+        body: { content: "Task: #1 - Update & Review!", version: 0 },
+        expectedCount: 1,
+        expectedContent: "Task: #1 - Update &amp; Review!",
+      },
+      {
+        name: "preserves Unicode characters",
+        getTaskId: () => testTaskId,
+        body: { content: "タスク更新 🚀 émojis", version: 0 },
+        expectedCount: 1,
+        expectedContent: "タスク更新 🚀 émojis",
+      },
+      {
+        name: "returns count 0 when task does not exist",
+        getTaskId: () => "123e4567-e89b-42d3-8456-426614174000",
+        body: { content: "Updated content", version: 0 },
+        expectedCount: 0,
+      },
+      {
+        name: "returns count 0 when task belongs to different user",
+        getTaskId: () => testTaskId,
+        body: { content: "Updated content", version: 0 },
+        expectedCount: 0,
+        setupUser: () =>
+          setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174001" }),
+      },
+    ])("$name", async ({
+      getTaskId,
       body,
-      expectedCompletedAt,
+      expectedCount,
+      expectedContent,
+      expectCompletedAt,
+      setupUser,
     }) => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
+      setupUser?.();
+
+      const req = new Request(`http://localhost/task/${getTaskId()}`, {
         method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify(body),
       });
 
@@ -176,255 +171,42 @@ describe("PUT /task/:id", () => {
 
       expect(res.status).toBe(200);
       const data = await res.json();
-      expect(data.count).toBe(1);
+      expect(data).toHaveProperty("count", expectedCount);
 
-      // Verify completedAt was cleared
+      // Verify database state only for successful updates
+      if (expectedCount > 0) {
+        const prisma = getPrisma();
+        const task = await prisma.tasks.findUnique({
+          where: { id: testTaskId },
+        });
+        if (expectedContent !== undefined) {
+          expect(task?.content).toBe(expectedContent);
+        }
+        if (expectCompletedAt !== undefined) {
+          if (expectCompletedAt) {
+            expect(task?.completedAt).not.toBeNull();
+          } else {
+            expect(task?.completedAt).toBeNull();
+          }
+        }
+      }
+    });
+
+    test("returns count 0 when version conflicts (optimistic locking)", async () => {
       const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.completedAt).toBe(expectedCompletedAt);
-    });
 
-    test("should return count 0 when task does not exist", async () => {
-      const req = new Request(
-        "http://localhost/task/123e4567-e89b-42d3-8456-426614174000",
-        {
-          method: "PUT",
-          headers: {
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            content: "Updated content",
-            version: 0,
-          }),
-        },
-      );
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("count", 0);
-    });
-
-    test("should return count 0 when task belongs to different user", async () => {
-      // Set a different user for this test
-      setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174001" });
-
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "Updated content",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("count", 0);
-    });
-  });
-
-  describe("Validation errors - param", () => {
-    test.each([
-      {
-        description: "invalid UUID format",
-        taskId: "invalid-uuid",
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-      {
-        description: "non-UUID string",
-        taskId: "not-a-uuid-at-all",
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
-      },
-    ])("should return 400 when taskId is $description", async ({
-      taskId,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
-      const req = new Request(`http://localhost/task/${taskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ content: "Valid content" }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(expectedStatus);
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
-      expect(jsonStr.toLowerCase()).toContain(
-        expectedMessageContains.toLowerCase(),
-      );
-    });
-  });
-
-  describe("Validation errors - body", () => {
-    test.each<{
-      description: string;
-      body: object;
-      expectedStatus: number;
-      expectedMessageContains: string;
-    }>([
-      {
-        description: "empty body (no fields)",
-        body: {},
-        expectedStatus: 400,
-        expectedMessageContains: "invalid_type",
-      },
-      {
-        description: "empty content string",
-        body: { content: "", version: 0 },
-        expectedStatus: 400,
-        expectedMessageContains: "Content cannot be empty",
-      },
-      {
-        description: "content exceeds max length (1001 chars)",
-        body: { content: "a".repeat(1001), version: 0 },
-        expectedStatus: 400,
-        expectedMessageContains: "must not exceed 1000 characters",
-      },
-      {
-        description: "content with script tag (XSS)",
-        body: { content: "<script>alert('xss')</script>", version: 0 },
-        expectedStatus: 400,
-        expectedMessageContains: "dangerous script patterns",
-      },
-      {
-        description: "invalid status value",
-        body: { status: "INVALID_STATUS", version: 0 },
-        expectedStatus: 400,
-        expectedMessageContains: "Status must be one of",
-      },
-      {
-        description: "content is not a string",
-        body: { content: 123, version: 0 },
-        expectedStatus: 400,
-        expectedMessageContains: "Expected string",
-      },
-    ])("should return 400 when $description", async ({
-      body,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(expectedStatus);
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
-      expect(jsonStr.toLowerCase()).toContain(
-        expectedMessageContains.toLowerCase(),
-      );
-    });
-  });
-
-  describe("Edge cases", () => {
-    test("should handle content with special characters", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "Task: #1 - Update & Review!",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("Task: #1 - Update &amp; Review!");
-    });
-
-    test("should handle Unicode characters in content", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "タスク更新 🚀 émojis",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("タスク更新 🚀 émojis");
-    });
-
-    test("should trim whitespace from content", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "  Content with spaces  ",
-          version: 0,
-        }),
-      });
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const prisma = getPrisma();
-      const task = await prisma.tasks.findUnique({
-        where: { id: testTaskId },
-      });
-      expect(task?.content).toBe("Content with spaces");
-    });
-  });
-
-  describe("Optimistic Locking", () => {
-    test("should return count 0 when version conflicts (optimistic locking)", async () => {
       // First update: version 0 -> 1
       const req1 = new Request(`http://localhost/task/${testTaskId}`, {
         method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          content: "First update",
-          version: 0,
-        }),
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ content: "First update", version: 0 }),
       });
 
       const res1 = await app.request(req1);
       expect(res1.status).toBe(200);
-      const data1 = await res1.json();
-      expect(data1.count).toBe(1);
+      expect((await res1.json()).count).toBe(1);
 
       // Verify version was incremented
-      const prisma = getPrisma();
       const task1 = await prisma.tasks.findUnique({
         where: { id: testTaskId },
       });
@@ -434,50 +216,116 @@ describe("PUT /task/:id", () => {
       // Second update with old version (0): should fail
       const req2 = new Request(`http://localhost/task/${testTaskId}`, {
         method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({
           content: "Second update with old version",
-          version: 0, // Old version, should conflict
+          version: 0,
         }),
       });
 
       const res2 = await app.request(req2);
       expect(res2.status).toBe(200);
-      const data2 = await res2.json();
-      expect(data2.count).toBe(0); // Update failed due to version mismatch
+      expect((await res2.json()).count).toBe(0);
 
       // Verify content was not updated
       const task2 = await prisma.tasks.findUnique({
         where: { id: testTaskId },
       });
-      expect(task2?.content).toBe("First update"); // Still the first update
-      expect(task2?.version).toBe(1); // Version unchanged
+      expect(task2?.content).toBe("First update");
+      expect(task2?.version).toBe(1);
 
       // Third update with correct version (1): should succeed
       const req3 = new Request(`http://localhost/task/${testTaskId}`, {
         method: "PUT",
-        headers: {
-          "content-type": "application/json",
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({
           content: "Third update with correct version",
-          version: 1, // Correct version
+          version: 1,
         }),
       });
 
       const res3 = await app.request(req3);
       expect(res3.status).toBe(200);
-      const data3 = await res3.json();
-      expect(data3.count).toBe(1); // Update succeeded
+      expect((await res3.json()).count).toBe(1);
 
       // Verify content was updated
       const task3 = await prisma.tasks.findUnique({
         where: { id: testTaskId },
       });
       expect(task3?.content).toBe("Third update with correct version");
-      expect(task3?.version).toBe(2); // Version incremented
+      expect(task3?.version).toBe(2);
+    });
+  });
+
+  describe("400 Bad Request", () => {
+    test.each<{
+      name: string;
+      taskId: string;
+      body: Record<string, unknown>;
+      expectedMessage: string;
+    }>([
+      {
+        name: "invalid UUID format in param",
+        taskId: "invalid-uuid",
+        body: { content: "Valid content", version: 0 },
+        expectedMessage: "invalid uuid",
+      },
+      {
+        name: "non-UUID string in param",
+        taskId: "not-a-uuid-at-all",
+        body: { content: "Valid content", version: 0 },
+        expectedMessage: "invalid uuid",
+      },
+      {
+        name: "empty body (no fields)",
+        taskId: "USE_TEST_TASK_ID",
+        body: {},
+        expectedMessage: "invalid_type",
+      },
+      {
+        name: "empty content string",
+        taskId: "USE_TEST_TASK_ID",
+        body: { content: "", version: 0 },
+        expectedMessage: "content cannot be empty",
+      },
+      {
+        name: "content exceeds max length (1001 chars)",
+        taskId: "USE_TEST_TASK_ID",
+        body: { content: "a".repeat(1001), version: 0 },
+        expectedMessage: "must not exceed 1000 characters",
+      },
+      {
+        name: "content with script tag (XSS)",
+        taskId: "USE_TEST_TASK_ID",
+        body: { content: "<script>alert('xss')</script>", version: 0 },
+        expectedMessage: "dangerous script patterns",
+      },
+      {
+        name: "invalid status value",
+        taskId: "USE_TEST_TASK_ID",
+        body: { status: "INVALID_STATUS", version: 0 },
+        expectedMessage: "status must be one of",
+      },
+      {
+        name: "content is not a string",
+        taskId: "USE_TEST_TASK_ID",
+        body: { content: 123, version: 0 },
+        expectedMessage: "expected string",
+      },
+    ])("$name", async ({ taskId, body, expectedMessage }) => {
+      const actualTaskId = taskId === "USE_TEST_TASK_ID" ? testTaskId : taskId;
+
+      const req = new Request(`http://localhost/task/${actualTaskId}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const res = await app.request(req);
+
+      expect(res.status).toBe(400);
+      const data = await res.json();
+      expect(JSON.stringify(data).toLowerCase()).toContain(expectedMessage);
     });
   });
 });

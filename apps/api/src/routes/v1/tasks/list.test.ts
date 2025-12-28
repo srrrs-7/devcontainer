@@ -88,193 +88,136 @@ describe("GET /tasks", () => {
     ]);
   });
 
-  describe("Success cases", () => {
-    test("should return 200 with tasks list when no pagination params", async () => {
-      const req = new Request("http://localhost/tasks");
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toHaveProperty("tasks");
-      expect(data).toHaveProperty("page", 1);
-      expect(data).toHaveProperty("limit", 20);
-      expect(Array.isArray(data.tasks)).toBe(true);
-      expect(data.tasks).toHaveLength(4);
-      // Check tasks are ordered by createdAt desc (newest first)
-      expect(data.tasks[0].content).toBe("Task 4");
-      expect(data.tasks[3].content).toBe("Task 1");
-    });
-
-    test.each([
+  describe("200 OK", () => {
+    test.each<{
+      name: string;
+      query: string;
+      expectedPage: number;
+      expectedLimit: number;
+      expectedCount: number;
+      expectedFirstContent: string | null;
+      setupUser?: () => void;
+    }>([
       {
-        description: "first page with limit 2",
-        page: 1,
-        limit: 2,
-        expectedCount: 2,
-        expectedFirstContent: "Task 4",
-      },
-      {
-        description: "second page with limit 2",
-        page: 2,
-        limit: 2,
-        expectedCount: 2,
-        expectedFirstContent: "Task 2",
-      },
-      {
-        description: "third page with limit 2 (partial)",
-        page: 3,
-        limit: 2,
-        expectedCount: 0,
-        expectedFirstContent: null,
-      },
-      {
-        description: "page 1 with limit 10 (all tasks)",
-        page: 1,
-        limit: 10,
+        name: "returns tasks with default pagination",
+        query: "",
+        expectedPage: 1,
+        expectedLimit: 20,
         expectedCount: 4,
         expectedFirstContent: "Task 4",
       },
       {
-        description: "page 1 with limit 1 (single task)",
-        page: 1,
-        limit: 1,
+        name: "returns first page with limit 2",
+        query: "?page=1&limit=2",
+        expectedPage: 1,
+        expectedLimit: 2,
+        expectedCount: 2,
+        expectedFirstContent: "Task 4",
+      },
+      {
+        name: "returns second page with limit 2",
+        query: "?page=2&limit=2",
+        expectedPage: 2,
+        expectedLimit: 2,
+        expectedCount: 2,
+        expectedFirstContent: "Task 2",
+      },
+      {
+        name: "returns empty array for page beyond data",
+        query: "?page=3&limit=2",
+        expectedPage: 3,
+        expectedLimit: 2,
+        expectedCount: 0,
+        expectedFirstContent: null,
+      },
+      {
+        name: "returns all tasks with large limit",
+        query: "?page=1&limit=10",
+        expectedPage: 1,
+        expectedLimit: 10,
+        expectedCount: 4,
+        expectedFirstContent: "Task 4",
+      },
+      {
+        name: "returns single task with limit 1",
+        query: "?page=1&limit=1",
+        expectedPage: 1,
+        expectedLimit: 1,
         expectedCount: 1,
         expectedFirstContent: "Task 4",
       },
-    ])("should return correct pagination for $description", async ({
-      page,
-      limit,
+      {
+        name: "uses default limit when only page provided",
+        query: "?page=2",
+        expectedPage: 2,
+        expectedLimit: 20,
+        expectedCount: 0,
+        expectedFirstContent: null,
+      },
+      {
+        name: "uses default page when only limit provided",
+        query: "?limit=5",
+        expectedPage: 1,
+        expectedLimit: 5,
+        expectedCount: 4,
+        expectedFirstContent: "Task 4",
+      },
+      {
+        name: "returns empty array for large page number",
+        query: "?page=999&limit=10",
+        expectedPage: 999,
+        expectedLimit: 10,
+        expectedCount: 0,
+        expectedFirstContent: null,
+      },
+      {
+        name: "returns empty array for user with no tasks",
+        query: "",
+        expectedPage: 1,
+        expectedLimit: 20,
+        expectedCount: 0,
+        expectedFirstContent: null,
+        setupUser: () =>
+          setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174999" }),
+      },
+    ])("$name", async ({
+      query,
+      expectedPage,
+      expectedLimit,
       expectedCount,
       expectedFirstContent,
+      setupUser,
     }) => {
-      const req = new Request(
-        `http://localhost/tasks?page=${page}&limit=${limit}`,
-      );
+      setupUser?.();
+
+      const req = new Request(`http://localhost/tasks${query}`);
 
       const res = await app.request(req);
 
       expect(res.status).toBe(200);
       const data = await res.json();
-      expect(data.page).toBe(page);
-      expect(data.limit).toBe(limit);
+      expect(data).toHaveProperty("page", expectedPage);
+      expect(data).toHaveProperty("limit", expectedLimit);
+      expect(data).toHaveProperty("tasks");
+      expect(Array.isArray(data.tasks)).toBe(true);
       expect(data.tasks).toHaveLength(expectedCount);
       if (expectedFirstContent) {
         expect(data.tasks[0].content).toBe(expectedFirstContent);
       }
     });
 
-    test("should return empty array when user has no tasks", async () => {
-      // Set a different user for this test
-      setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174999" });
-
+    test("returns tasks ordered by createdAt desc (newest first)", async () => {
       const req = new Request("http://localhost/tasks");
 
       const res = await app.request(req);
 
       expect(res.status).toBe(200);
       const data = await res.json();
-      expect(data.tasks).toHaveLength(0);
-      expect(data.page).toBe(1);
-      expect(data.limit).toBe(20);
+      expect(data.tasks[0].content).toBe("Task 4");
+      expect(data.tasks[3].content).toBe("Task 1");
     });
-  });
 
-  describe("Validation errors - query params", () => {
-    test.each<{
-      description: string;
-      page?: string;
-      limit?: string;
-      expectedStatus: number;
-      expectedMessageContains: string;
-    }>([
-      {
-        description: "page is 0",
-        page: "0",
-        expectedStatus: 400,
-        expectedMessageContains: "Page must be at least 1",
-      },
-      {
-        description: "page is negative",
-        page: "-1",
-        expectedStatus: 400,
-        expectedMessageContains: "Page must be at least 1",
-      },
-      {
-        description: "page exceeds max",
-        page: "10001",
-        expectedStatus: 400,
-        expectedMessageContains: "Page must not exceed 10000",
-      },
-      {
-        description: "page is not a number",
-        page: "invalid",
-        expectedStatus: 400,
-        expectedMessageContains: "Expected number",
-      },
-      {
-        description: "page is decimal",
-        page: "1.5",
-        expectedStatus: 400,
-        expectedMessageContains: "integer",
-      },
-      {
-        description: "limit is 0",
-        limit: "0",
-        expectedStatus: 400,
-        expectedMessageContains: "Limit must be at least 1",
-      },
-      {
-        description: "limit is negative",
-        limit: "-1",
-        expectedStatus: 400,
-        expectedMessageContains: "Limit must be at least 1",
-      },
-      {
-        description: "limit exceeds max",
-        limit: "101",
-        expectedStatus: 400,
-        expectedMessageContains: "Limit must not exceed 100",
-      },
-      {
-        description: "limit is not a number",
-        limit: "invalid",
-        expectedStatus: 400,
-        expectedMessageContains: "Expected number",
-      },
-      {
-        description: "limit is decimal",
-        limit: "20.5",
-        expectedStatus: 400,
-        expectedMessageContains: "integer",
-      },
-    ])("should return 400 when $description", async ({
-      page,
-      limit,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
-      const queryParams = new URLSearchParams();
-      if (page) queryParams.set("page", page);
-      if (limit) queryParams.set("limit", limit);
-
-      const req = new Request(
-        `http://localhost/tasks?${queryParams.toString()}`,
-      );
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(expectedStatus);
-      const data = await res.json();
-      const jsonStr = JSON.stringify(data);
-      expect(jsonStr.toLowerCase()).toContain(
-        expectedMessageContains.toLowerCase(),
-      );
-    });
-  });
-
-  describe("Edge cases", () => {
-    test("should return tasks with completed status", async () => {
+    test("includes completedAt for completed tasks", async () => {
       const req = new Request("http://localhost/tasks?limit=1");
 
       const res = await app.request(req);
@@ -285,51 +228,72 @@ describe("GET /tasks", () => {
       expect(data.tasks[0]).toHaveProperty("completedAt");
       expect(data.tasks[0].completedAt).not.toBeNull();
     });
+  });
 
-    test("should handle large page number with no results", async () => {
-      const req = new Request("http://localhost/tasks?page=999&limit=10");
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data.tasks).toHaveLength(0);
-      expect(data.page).toBe(999);
-      expect(data.limit).toBe(10);
-    });
-
-    test.each([
+  describe("400 Bad Request", () => {
+    test.each<{
+      name: string;
+      query: string;
+      expectedMessage: string;
+    }>([
       {
-        description: "page as string number",
-        query: "?page=2&limit=2",
-        expectedPage: 2,
-        expectedLimit: 2,
+        name: "page is 0",
+        query: "?page=0",
+        expectedMessage: "page must be at least 1",
       },
       {
-        description: "only page parameter",
-        query: "?page=2",
-        expectedPage: 2,
-        expectedLimit: 20, // default
+        name: "page is negative",
+        query: "?page=-1",
+        expectedMessage: "page must be at least 1",
       },
       {
-        description: "only limit parameter",
-        query: "?limit=5",
-        expectedPage: 1, // default
-        expectedLimit: 5,
+        name: "page exceeds max",
+        query: "?page=10001",
+        expectedMessage: "page must not exceed 10000",
       },
-    ])("should handle $description correctly", async ({
-      query,
-      expectedPage,
-      expectedLimit,
-    }) => {
+      {
+        name: "page is not a number",
+        query: "?page=invalid",
+        expectedMessage: "expected number",
+      },
+      {
+        name: "page is decimal",
+        query: "?page=1.5",
+        expectedMessage: "integer",
+      },
+      {
+        name: "limit is 0",
+        query: "?limit=0",
+        expectedMessage: "limit must be at least 1",
+      },
+      {
+        name: "limit is negative",
+        query: "?limit=-1",
+        expectedMessage: "limit must be at least 1",
+      },
+      {
+        name: "limit exceeds max",
+        query: "?limit=101",
+        expectedMessage: "limit must not exceed 100",
+      },
+      {
+        name: "limit is not a number",
+        query: "?limit=invalid",
+        expectedMessage: "expected number",
+      },
+      {
+        name: "limit is decimal",
+        query: "?limit=20.5",
+        expectedMessage: "integer",
+      },
+    ])("$name", async ({ query, expectedMessage }) => {
       const req = new Request(`http://localhost/tasks${query}`);
 
       const res = await app.request(req);
 
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(400);
       const data = await res.json();
-      expect(data.page).toBe(expectedPage);
-      expect(data.limit).toBe(expectedLimit);
+      expect(JSON.stringify(data).toLowerCase()).toContain(expectedMessage);
     });
   });
 });

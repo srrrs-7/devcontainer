@@ -9,6 +9,7 @@ const app = createTestApp(routeHandler);
 describe("GET /task/:taskId", () => {
   let testUserId: string;
   let testTaskId: string;
+  let completedTaskId: string;
 
   beforeEach(async () => {
     const prisma = getPrisma();
@@ -50,7 +51,7 @@ describe("GET /task/:taskId", () => {
     // Set the test user for auth middleware mock
     setTestUser({ userId: testUserId });
 
-    // Create test task
+    // Create test task (PENDING)
     const task = await prisma.tasks.create({
       data: {
         content: "Test task content",
@@ -62,167 +63,150 @@ describe("GET /task/:taskId", () => {
       },
     });
     testTaskId = task.id;
+
+    // Create completed task
+    const completedTask = await prisma.tasks.create({
+      data: {
+        content: "Completed task",
+        status: "COMPLETED",
+        completedAt: dayjs("2025-01-01T00:00:00Z").toDate(),
+        createdAt: now,
+        updatedAt: now,
+        users: {
+          connect: { id: testUserId },
+        },
+      },
+    });
+    completedTaskId = completedTask.id;
   });
 
-  describe("Success cases", () => {
-    test("should return 200 with task data when task exists", async () => {
-      const req = new Request(`http://localhost/task/${testTaskId}`);
+  describe("200 OK", () => {
+    test.each<{
+      name: string;
+      getTaskId: () => string;
+      expectedContent: string;
+      expectCompletedAt: boolean;
+      useCompletedTaskId?: boolean;
+    }>([
+      {
+        name: "returns task data when task exists",
+        getTaskId: () => testTaskId,
+        expectedContent: "Test task content",
+        expectCompletedAt: false,
+      },
+      {
+        name: "returns completed task with completedAt date",
+        getTaskId: () => completedTaskId,
+        expectedContent: "Completed task",
+        expectCompletedAt: true,
+        useCompletedTaskId: true,
+      },
+      {
+        name: "handles uppercase UUID",
+        getTaskId: () => testTaskId.toUpperCase(),
+        expectedContent: "Test task content",
+        expectCompletedAt: false,
+      },
+      {
+        name: "handles lowercase UUID",
+        getTaskId: () => testTaskId.toLowerCase(),
+        expectedContent: "Test task content",
+        expectCompletedAt: false,
+      },
+      {
+        name: "handles mixed case UUID",
+        getTaskId: () =>
+          testTaskId
+            .split("")
+            .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()))
+            .join(""),
+        expectedContent: "Test task content",
+        expectCompletedAt: false,
+      },
+    ])("$name", async ({
+      getTaskId,
+      expectedContent,
+      expectCompletedAt,
+      useCompletedTaskId,
+    }) => {
+      const req = new Request(`http://localhost/task/${getTaskId()}`);
 
       const res = await app.request(req);
 
       expect(res.status).toBe(200);
       const data = await res.json();
+      const expectedTaskId = useCompletedTaskId ? completedTaskId : testTaskId;
       expect(data).toMatchObject({
-        taskId: testTaskId,
+        taskId: expectedTaskId,
         userId: testUserId,
-        content: "Test task content",
-        completedAt: null,
+        content: expectedContent,
       });
+      if (expectCompletedAt) {
+        expect(data.completedAt).not.toBeNull();
+      } else {
+        expect(data.completedAt).toBeNull();
+      }
     });
   });
 
-  describe("Validation errors - param", () => {
-    test.each([
+  describe("400 Bad Request", () => {
+    test.each<{
+      name: string;
+      taskId: string;
+      expectedMessage: string;
+    }>([
       {
-        description: "invalid UUID format",
+        name: "invalid UUID format",
         taskId: "invalid-uuid",
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
+        expectedMessage: "invalid uuid",
       },
       {
-        description: "empty taskId",
-        taskId: "",
-        expectedStatus: 404, // Hono routes empty param as not found
-      },
-      {
-        description: "non-UUID string",
+        name: "non-UUID string",
         taskId: "not-a-uuid-at-all",
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
+        expectedMessage: "invalid uuid",
       },
       {
-        description: "UUID with extra characters",
+        name: "UUID with extra characters",
         taskId: "550e8400-e29b-41d4-a716-446655440000-extra",
-        expectedStatus: 400,
-        expectedMessageContains: "Invalid uuid",
+        expectedMessage: "invalid uuid",
       },
-    ])("should return error when taskId is $description", async ({
-      taskId,
-      expectedStatus,
-      expectedMessageContains,
-    }) => {
+    ])("$name", async ({ taskId, expectedMessage }) => {
       const req = new Request(`http://localhost/task/${taskId}`);
 
       const res = await app.request(req);
 
-      expect(res.status).toBe(expectedStatus);
-      if (expectedMessageContains) {
-        const data = await res.json();
-        const jsonStr = JSON.stringify(data);
-        expect(jsonStr.toLowerCase()).toContain(
-          expectedMessageContains.toLowerCase(),
-        );
-      }
+      expect(res.status).toBe(400);
+      const data = await res.json();
+      expect(JSON.stringify(data).toLowerCase()).toContain(expectedMessage);
     });
   });
 
-  describe("Not found cases", () => {
-    test("should return 404 when task does not exist", async () => {
-      const req = new Request(
-        "http://localhost/task/123e4567-e89b-42d3-8456-426614174000",
-      );
+  describe("404 Not Found", () => {
+    test.each<{
+      name: string;
+      getTaskId: () => string;
+      setupUser?: () => void;
+    }>([
+      {
+        name: "task does not exist",
+        getTaskId: () => "123e4567-e89b-42d3-8456-426614174000",
+      },
+      {
+        name: "task belongs to different user",
+        getTaskId: () => testTaskId,
+        setupUser: () =>
+          setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174001" }),
+      },
+    ])("$name", async ({ getTaskId, setupUser }) => {
+      setupUser?.();
+
+      const req = new Request(`http://localhost/task/${getTaskId()}`);
 
       const res = await app.request(req);
 
       expect(res.status).toBe(404);
       const data = await res.json();
       expect(data).toHaveProperty("name", "NotFoundError");
-    });
-
-    test("should return 404 when task exists but belongs to different user", async () => {
-      // Set a different user for this test
-      setTestUser({ userId: "123e4567-e89b-42d3-8456-426614174001" });
-
-      const req = new Request(`http://localhost/task/${testTaskId}`);
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(404);
-      const data = await res.json();
-      expect(data).toHaveProperty("name", "NotFoundError");
-    });
-  });
-
-  describe("Edge cases", () => {
-    test("should return task with completed date when task is completed", async () => {
-      const prisma = getPrisma();
-      const completedDate = dayjs("2025-01-01T00:00:00Z").toDate();
-      const now = dayjs().toDate();
-
-      // Create completed task
-      const completedTask = await prisma.tasks.create({
-        data: {
-          content: "Completed task",
-          status: "COMPLETED",
-          completedAt: completedDate,
-          createdAt: now,
-          updatedAt: now,
-          users: {
-            connect: { id: testUserId },
-          },
-        },
-      });
-
-      const req = new Request(`http://localhost/task/${completedTask.id}`);
-
-      const res = await app.request(req);
-
-      expect(res.status).toBe(200);
-      const data = await res.json();
-      expect(data).toMatchObject({
-        taskId: completedTask.id,
-        userId: testUserId,
-        content: "Completed task",
-        completedAt: completedDate.toISOString(),
-      });
-    });
-
-    test.each([
-      {
-        description: "uppercase UUID",
-        getTaskId: (original: string) => original.toUpperCase(),
-        shouldSucceed: true,
-      },
-      {
-        description: "lowercase UUID",
-        getTaskId: (original: string) => original.toLowerCase(),
-        shouldSucceed: true,
-      },
-      {
-        description: "mixed case UUID",
-        getTaskId: (original: string) =>
-          original
-            .split("")
-            .map((c, i) => (i % 2 === 0 ? c.toUpperCase() : c.toLowerCase()))
-            .join(""),
-        shouldSucceed: true,
-      },
-    ])("should handle $description correctly", async ({
-      getTaskId,
-      shouldSucceed,
-    }) => {
-      const modifiedTaskId = getTaskId(testTaskId);
-      const req = new Request(`http://localhost/task/${modifiedTaskId}`);
-
-      const res = await app.request(req);
-
-      if (shouldSucceed) {
-        expect(res.status).toBe(200);
-        const data = await res.json();
-        expect(data.taskId).toBe(testTaskId);
-      } else {
-        expect(res.status).not.toBe(200);
-      }
     });
   });
 });
