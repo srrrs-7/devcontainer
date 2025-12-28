@@ -360,12 +360,100 @@ HTTP Request → Route Handler → Repository → Prisma → Database
 - Run with: `docker compose up` or `docker compose up -d` for detached mode
 
 ## CI/CD
-- GitHub Actions workflow in `.github/workflows/ci.yml`
-- Runs on push to main and pull requests
-- Uses devcontainer for consistent build environment
-- **Setup step**: Copies `compose.override.yaml.sample` to `compose.override.yaml` before building devcontainer
-- CI pipeline runs: checks (lint, spell, type check), build all workspaces, and tests
-- Builds and caches devcontainer image to GitHub Container Registry
+
+GitHub Actions workflow in `.github/workflows/cicd.yml` handles both CI and CD:
+
+### Triggers
+| Trigger | Branches | Action |
+|---------|----------|--------|
+| push | main, develop | CI + auto deploy to dev |
+| pull_request | main, develop | CI only (no deploy) |
+| workflow_dispatch | main | Manual deploy to dev or prd |
+| workflow_dispatch | develop | Manual deploy to dev only |
+
+### Branch Restrictions
+- **workflow_dispatch**: Only allowed from `main` or `develop` branches
+- **prd deployment**: Only allowed from `main` branch
+
+### Pipeline Jobs
+
+```
+ci ─────────────────────────────────────────────────────┐
+  └─→ setup ─→ deploy-frontend ─────────────────────────┤
+              └─→ db-migrate ─→ deploy-backend ─────────┘
+```
+
+1. **ci**: Lint, type check, build, test (runs in devcontainer)
+2. **setup**: Determines environment and deployment flags
+3. **deploy-frontend**: Build and deploy to S3 + CloudFront invalidation
+4. **db-migrate**: Run Prisma migrations via ECS run-task
+5. **deploy-backend**: Build Docker image, push to ECR, update ECS service
+
+### Environment Configuration
+- Uses GitHub Environments (`dev`, `prd`) for secrets/variables
+- AWS authentication via OIDC (role assumption)
+- Environment-specific variables: `S3_BUCKET_NAME`, `CLOUDFRONT_DISTRIBUTION_ID`, `ECS_CLUSTER_NAME`, etc.
+
+## Infrastructure as Code (IaC)
+
+Terraform-based AWS infrastructure in `apps/iac/`:
+
+### Structure
+```
+apps/iac/
+├── environments/
+│   ├── dev/          # Development environment
+│   └── prd/          # Production environment
+└── modules/
+    ├── vpc/          # VPC, subnets, NAT Gateway, Flow Logs
+    ├── ecr/          # Container registry
+    ├── ecs/          # Fargate cluster, service, auto-scaling
+    ├── aurora/       # Aurora Serverless v2 PostgreSQL
+    ├── api_gateway/  # HTTP API with VPC Link
+    ├── s3_cloudfront/# Static hosting with CDN
+    ├── waf/          # Web Application Firewall
+    ├── acm/          # SSL certificates
+    └── route53/      # DNS records
+```
+
+### AWS Architecture
+```
+CloudFront ─→ S3 (static)
+     │
+     └─→ API Gateway ─→ VPC Link ─→ NLB ─→ ECS Fargate ─→ Aurora Serverless v2
+                                              │
+                                              └─→ Secrets Manager
+```
+
+### Environment Differences
+| Feature | Dev | Prd |
+|---------|-----|-----|
+| NAT Gateway | Single | Multi-AZ |
+| ECS Tasks | 1 (Spot) | 2+ (Standard) |
+| Aurora Capacity | 0.5-2 ACU | 0.5-16 ACU |
+| Auto-scaling | Disabled | Enabled |
+| Deletion Protection | No | Yes |
+| Log Retention | 7 days | 90 days |
+
+### Terraform Commands
+```bash
+cd apps/iac/environments/dev  # or prd
+
+# Initialize
+terraform init
+
+# Plan changes
+terraform plan -var-file="terraform.tfvars"
+
+# Apply changes
+terraform apply -var-file="terraform.tfvars"
+```
+
+### Required Variables
+- `domain_name`: Base domain (Route53 hosted zone)
+- `app_domain_name`: Application subdomain
+- `db_name`, `db_username`, `db_password`: Database credentials
+- `vpc_cidr`: VPC CIDR block
 
 ## Dependency Management
 
@@ -518,6 +606,7 @@ Specialized agents for specific domains. Launched via Task tool with `subagent_t
 - **`bun-runtime-specialist`**: Bun-specific configurations, features, troubleshooting
 - **`pjt-security-code-reviewer`**: Code quality, security vulnerabilities, best practices
 - **`github-spec-kit-architect`**: Design and review GitHub specification kits for agents
+- **`aws-log-investigator`**: AWS CLI-based log investigation for ECS, API Gateway, Aurora, WAF, CloudFront, and VPC Flow Logs
 
 ### Hooks and Permissions (`.claude/settings.local.json`)
 
