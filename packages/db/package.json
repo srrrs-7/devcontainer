@@ -26,7 +26,7 @@
     "prisma": "^7.1.0"
   },
   "devDependencies": {
-    "@quramy/prisma-fabbrica": "^2.3.1",
+    "@quramy/prisma-fabbrica": "^2.3.3",
     "@types/bun": "latest"
   }
 }

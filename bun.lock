@@ -1,5 +1,6 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "play-devcontainer",
@@ -60,7 +61,7 @@
         "prisma": "^7.1.0",
       },
       "devDependencies": {
-        "@quramy/prisma-fabbrica": "^2.3.1",
+        "@quramy/prisma-fabbrica": "^2.3.3",
         "@types/bun": "latest",
       },
     },
@@ -439,7 +440,7 @@
 
     "@prisma/studio-core": ["@prisma/studio-core@0.8.2", "", { "peerDependencies": { "@types/react": "^18.0.0 || ^19.0.0", "react": "^18.0.0 || ^19.0.0", "react-dom": "^18.0.0 || ^19.0.0" } }, "sha512-/iAEWEUpTja+7gVMu1LtR2pPlvDmveAwMHdTWbDeGlT7yiv0ZTCPpmeAGdq/Y9aJ9Zj1cEGBXGRbmmNPj022PQ=="],
 
-    "@quramy/prisma-fabbrica": ["@quramy/prisma-fabbrica@2.3.2", "", { "dependencies": { "@prisma/generator-helper": "^6.0.0", "@prisma/internals": "^6.0.0", "short-uuid": "5.2.0", "talt": "2.4.4" }, "peerDependencies": { "@prisma/client": "^5.0.0 || ^6.0.0", "typescript": "^3.0.0 || ^4.0.0 || ^5.0.0" }, "bin": { "prisma-fabbrica": "bin.js" } }, "sha512-9KOWQMn6OP8hwnrVAYSLXZnET/BCaWqr4tFjZrM30wQjgwZeyKD8cgMFU8X4h0054sC+vrNCyBqRrb0Q3MbMRQ=="],
+    "@quramy/prisma-fabbrica": ["@quramy/prisma-fabbrica@2.3.3", "", { "dependencies": { "@prisma/generator-helper": "^6.0.0", "@prisma/internals": "^6.0.0", "short-uuid": "5.2.0", "talt": "2.4.4" }, "peerDependencies": { "@prisma/client": "^5.0.0 || ^6.0.0", "typescript": "^3.0.0 || ^4.0.0 || ^5.0.0" }, "bin": { "prisma-fabbrica": "bin.js" } }, "sha512-McwNGqw+Xhsvjeb8ehKwVZwvFnd7lCgbIGLQifJT8OLcU313lvpyrYsJHcP+Ao97Kr7aHRjbpe2tW9bn1spXwQ=="],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.53.3", "", { "os": "android", "cpu": "arm" }, "sha512-mRSi+4cBjrRLoaal2PnqH82Wqyb+d3HsPUN/W+WslCXsZsyHa9ZeQQX/pQsZaVIWDkPcpV6jJ+3KLbTbgnwv8w=="],
 
