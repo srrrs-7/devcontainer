@@ -11,7 +11,7 @@
     "check:type": "tsgo --noEmit"
   },
   "dependencies": {
-    "@hono/node-server": "^1.19.6",
+    "@hono/node-server": "^1.19.7",
     "@hono/zod-validator": "^0.7.5",
     "@packages/db": "workspace:*",
     "@packages/logger": "workspace:*",
