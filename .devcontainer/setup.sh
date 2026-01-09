@@ -22,4 +22,14 @@ fi
 echo "🔧 Running personal setup..."
 bash .devcontainer/setup.personal.sh
 
+# Optional firewall setup (requires ENABLE_FIREWALL=true environment variable)
+if [ "${ENABLE_FIREWALL:-false}" = "true" ]; then
+  echo "🔥 Setting up firewall..."
+  if [ -f ".devcontainer/init-firewall.sh" ]; then
+    sudo bash .devcontainer/init-firewall.sh
+  else
+    echo "⚠️ Firewall script not found, skipping..."
+  fi
+fi
+
 echo "✨ Dev Container setup completed successfully!"

@@ -4,6 +4,12 @@
 cp:
 	cp /workspace/main/.devcontainer/compose.override.yaml.sample /workspace/main/.devcontainer/compose.override.yaml
 
+# Initialize firewall (restricts outbound to allowlisted domains)
+.PHONY: firewall
+
+firewall:
+	sudo bash /workspace/main/.devcontainer/init-firewall.sh
+
 # Git worktree management
 .PHONY: wt wt-d wt-l
 

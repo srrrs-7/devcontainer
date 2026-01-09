@@ -26,6 +26,7 @@ words:
   - DBNAME
   - Dockerfiles
   - dotenvx
+  - dport
   - elif
   - émojis
   - Entra
@@ -40,6 +41,7 @@ words:
   - ichiro
   - Ichiro
   - initialised
+  - ipsets
   - jiro
   - Jiro
   - kato
@@ -54,10 +56,12 @@ words:
   - netcat
   - neverthrow
   - nftables
+  - npmjs
   - pino
   - pipefail
   - PKCE
   - pkill
+  - POSTROUTING
   - pycache
   - quramy
   - qwen
@@ -69,6 +73,7 @@ words:
   - serverlessv
   - socketsecurity
   - sqli
+  - statsig
   - tablename
   - tanaka
   - Tanaka

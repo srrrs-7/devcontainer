@@ -6,6 +6,7 @@ services:
       DB_DBNAME: mydb
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
+      ENABLE_FIREWALL: "true"  # Set to "true" to enable network firewall (restricts outbound to allowlisted domains)
   db:
     environment:
       POSTGRES_DB: mydb
