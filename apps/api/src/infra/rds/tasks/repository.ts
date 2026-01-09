@@ -1,7 +1,7 @@
 import { getPrisma } from "@packages/db";
 import dayjs from "dayjs";
 import { ResultAsync } from "neverthrow";
-import { DatabaseError } from "../../../domain/error";
+import { DatabaseError } from "../../../domain/error/error";
 import type {
   CreateTaskInput,
   DeleteTaskInput,
@@ -9,7 +9,7 @@ import type {
   ListTasksInput,
   Task,
   UpdateTaskInput,
-} from "../../../domain/model/task";
+} from "../../../domain/task/task";
 
 export const createTask = (
   input: CreateTaskInput,

@@ -1,7 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { err, ok } from "neverthrow";
-import { NotFoundError } from "../../../domain/error";
+import { NotFoundError } from "../../../domain/error/error";
 import { deleteTask } from "../../../infra/rds/tasks/repository";
 import {
   databaseErrorResponse,

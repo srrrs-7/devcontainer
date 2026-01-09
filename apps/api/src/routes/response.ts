@@ -1,7 +1,7 @@
 import { logger } from "@packages/logger";
 import type { Context } from "hono";
 import type { z } from "zod";
-import type { DatabaseError, NotFoundError } from "../domain/error";
+import type { DatabaseError, NotFoundError } from "../domain/error/error";
 
 export const okResponse = <T>(c: Context, data: T) => {
   return c.json(data, 200);

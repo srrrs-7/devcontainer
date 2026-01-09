@@ -5,7 +5,7 @@ import {
   ConflictError,
   DatabaseError,
   NotFoundError,
-} from "../../../domain/error";
+} from "../../../domain/error/error";
 import type {
   CreateUserInput,
   DeleteUserInput,
@@ -15,7 +15,7 @@ import type {
   ListUsersInput,
   UpdateUserInput,
   User,
-} from "../../../domain/model/user";
+} from "../../../domain/user/user";
 
 /**
  * Create a new user (for Cognito-authenticated users)
