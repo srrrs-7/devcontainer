@@ -1,56 +1,34 @@
 /**
  * Task domain types for the frontend
- * Types are defined locally and match the API response structure
+ * Re-exports from API layer with minimal additional types
  */
 
-// Re-export types from tasks-api
+// Re-export core types from API
 export type { Task, UpdateTaskInput } from "./api/tasks-api";
 
-// Task status enum
+// Task status type
 export type TaskStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED";
 
-// Input types
+// Input type for creating tasks
 export type CreateTaskInput = {
   content: string;
 };
 
-// Response types (matching API responses)
-export type CreateTaskResponse = {
-  taskId: string;
-  userId: string;
-  content: string;
-  completedAt: string | null;
-  version: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
+// Response types - use Task type directly (these are aliases for backward compatibility)
+export type {
+  Task as CreateTaskResponse,
+  Task as GetTaskResponse,
+  Task as TaskListItem,
+} from "./api/tasks-api";
 
-export type GetTaskResponse = {
-  taskId: string;
-  userId: string;
-  content: string;
-  completedAt: string | null;
-  version: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
+// Update response type
 export type UpdateTaskResponse = {
   count: number;
 };
 
-export type TaskListItem = {
-  taskId: string;
-  userId: string;
-  content: string;
-  completedAt: string | null;
-  version: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
-
+// List response type
 export type ListTasksResponse = {
-  tasks: TaskListItem[];
+  tasks: import("./api/tasks-api").Task[];
   page: number;
   limit: number;
 };

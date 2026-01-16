@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useApiClient } from "../../../lib/api-client";
 import {
   ApiError,
   createTask as createTaskApi,
@@ -10,7 +11,6 @@ import {
   updateTask as updateTaskApi,
 } from "../api";
 import { taskKeys } from "./query-keys";
-import { useHonoClient } from "./use-hono-client";
 
 type CreateTaskInput = { content: string };
 
@@ -43,7 +43,7 @@ interface UseTasksResult {
 export function useTasks(options: UseTasksOptions = {}): UseTasksResult {
   const { page: initialPage = 1, limit = 20, enabled = true } = options;
 
-  const client = useHonoClient();
+  const client = useApiClient();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(initialPage);
 

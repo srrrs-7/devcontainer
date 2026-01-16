@@ -1,7 +1,8 @@
+// Re-export API functions
+
+// Re-export shared types from lib
+export { type ApiClient, ApiError } from "../../../lib/api-client";
 export {
-  type ApiClient,
-  ApiError,
-  createApiClient,
   createTask,
   deleteTask,
   getTask,
