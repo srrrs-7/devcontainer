@@ -28,5 +28,8 @@
   "devDependencies": {
     "@quramy/prisma-fabbrica": "^2.3.1",
     "@types/bun": "latest"
+  },
+  "prisma": {
+    "seed": "bun prisma/seeds/index.ts"
   }
 }

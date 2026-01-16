@@ -7,6 +7,7 @@ export default {
   schema: path.join(__dirname, "prisma", "schema.prisma"),
   migrations: {
     path: path.join(__dirname, "prisma", "migrations"),
+    seed: "bun prisma/seeds/index.ts",
   },
   datasource: {
     url: `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT ?? 5432}/${DB_DBNAME}?schema=public`,

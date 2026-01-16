@@ -1,58 +1,58 @@
-import { getPrisma } from "../../src";
-import { seedApplicationHistories } from "./application-histories";
-import { seedApplications } from "./applications";
-import { seedClients } from "./clients";
-import { seedOrganizations } from "./organizations";
-import { seedPermissions } from "./permissions";
-import { seedRolePermissions } from "./role-permissions";
-import { seedRoles } from "./roles";
-import { seedTasks } from "./tasks";
-import { seedUserClientRoles } from "./user-client-roles";
-import { seedUsers } from "./users";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../src/generated/prisma/client";
+import { clientData, organizationData, userData } from "./data/data";
+
+const { DB_USERNAME, DB_PASSWORD, DB_HOST, DB_DBNAME, DB_PORT } = process.env;
+const connectionString = `postgresql://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT ?? 5432}/${DB_DBNAME}?schema=public`;
+
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
+
+async function seedOrganization() {
+  const organization = await prisma.organization.upsert({
+    where: { id: organizationData.id },
+    update: {},
+    create: organizationData,
+  });
+  console.log("Created organization:", organization.name);
+  return organization;
+}
+
+async function seedClient() {
+  const client = await prisma.client.upsert({
+    where: { id: clientData.id },
+    update: {},
+    create: clientData,
+  });
+  console.log("Created client:", client.name);
+  return client;
+}
+
+async function seedUser() {
+  const user = await prisma.user.upsert({
+    where: { id: userData.id },
+    update: {},
+    create: userData,
+  });
+  console.log("Created user:", user.username);
+  return user;
+}
 
 async function main() {
-  const prisma = getPrisma();
+  console.log("Seeding database...");
 
-  console.log("🌱 Starting database seeding...");
+  await seedOrganization();
+  await seedClient();
+  await seedUser();
 
-  try {
-    // 依存関係の順序でシードデータを投入
-    // 1. 組織とロール・権限（独立したマスタデータ）
-    await seedOrganizations();
-    await seedRoles();
-    await seedPermissions();
-
-    // 2. ロールと権限の関連付け
-    await seedRolePermissions();
-
-    // 3. クライアントとユーザー（組織に依存）
-    await seedClients();
-    await seedUsers();
-
-    // 4. ユーザー・クライアント・ロールの関連付け
-    await seedUserClientRoles();
-
-    // 5. 申請データと履歴（ユーザーに依存）
-    await seedApplications();
-    await seedApplicationHistories();
-
-    // 6. Tasksテーブル（既存データ）
-    await seedTasks();
-
-    console.log("✅ Database seeding completed successfully!");
-  } catch (error) {
-    console.error("❌ Error during seeding:", error);
-    throw error;
-  } finally {
-    await prisma.$disconnect();
-  }
+  console.log("Seeding completed!");
 }
 
 main()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error(error);
+  .catch((e) => {
+    console.error(e);
     process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
   });
