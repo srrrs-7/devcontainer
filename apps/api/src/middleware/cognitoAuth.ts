@@ -74,6 +74,21 @@ export const clearJWKSCache = (): void => {
  */
 export const cognitoAuthMiddleware = (): MiddlewareHandler => {
   return async (c, next) => {
+    // Skip authentication in development mode when SKIP_AUTH is set
+    if (process.env.SKIP_AUTH === "true") {
+      const devUser: AuthUser = {
+        userId: process.env.DEV_USER_ID || "dev-user-id",
+        email: "dev@example.com",
+        username: "dev-user",
+        groups: [],
+      };
+      c.set("user", devUser);
+      c.set("token", "dev-token");
+      logger.debug("Authentication skipped in development mode");
+      await next();
+      return;
+    }
+
     const authHeader = c.req.header("authorization");
 
     if (!authHeader) {
