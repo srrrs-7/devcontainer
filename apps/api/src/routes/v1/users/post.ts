@@ -43,12 +43,12 @@ export default new Hono().post(
     })
       .map(
         (user): Response => ({
-          userId: user.userId,
-          clientId: user.clientId,
-          username: user.username,
-          email: user.email,
-          name: user.name,
-          picture: user.picture,
+          userId: user.getUserId(),
+          clientId: user.getClientId(),
+          username: user.getUsername(),
+          email: user.getEmail(),
+          name: user.getName(),
+          picture: user.getPicture(),
         }),
       )
       .match(

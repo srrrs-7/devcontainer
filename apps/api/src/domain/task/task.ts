@@ -1,38 +1,47 @@
-export type Task = {
-  userId: string;
-  taskId: string;
-  content: string;
-  completedAt: Date | null;
-  version: number;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export class Task {
+  constructor(
+    private userId: string,
+    private taskId: string,
+    private content: string,
+    private completedAt: Date | null,
+    private version: number,
+    private createdAt: Date,
+    private updatedAt: Date,
+  ) {
+    this.userId = userId;
+    this.taskId = taskId;
+    this.content = content;
+    this.completedAt = completedAt;
+    this.version = version;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-export type CreateTaskInput = {
-  userId: string;
-  content: string;
-};
+  public getUserId(): string {
+    return this.userId;
+  }
 
-export type UpdateTaskInput = {
-  userId: string;
-  taskId: string;
-  content?: string;
-  completedAt?: Date | null;
-  version: number;
-};
+  getTaskId(): string {
+    return this.taskId;
+  }
 
-export type DeleteTaskInput = {
-  userId: string;
-  taskId: string;
-};
+  getContent(): string {
+    return this.content;
+  }
 
-export type GetTaskInput = {
-  userId: string;
-  taskId: string;
-};
+  getCompletedAt(): Date | null {
+    return this.completedAt;
+  }
 
-export type ListTasksInput = {
-  userId: string;
-  page: number;
-  limit: number;
-};
+  getVersion(): number {
+    return this.version;
+  }
+
+  getCreatedAt(): Date {
+    return this.createdAt;
+  }
+
+  getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
+}

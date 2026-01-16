@@ -14,8 +14,8 @@ import type {
   GetUserInput,
   ListUsersInput,
   UpdateUserInput,
-  User,
-} from "../../../domain/user/user";
+} from "../../../domain/user/input";
+import { User } from "../../../domain/user/user";
 
 /**
  * Create a new user (for Cognito-authenticated users)
@@ -41,16 +41,17 @@ export const createUser = (
     }),
     (error) => new DatabaseError(error),
   ).map(
-    (user): User => ({
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }),
+    (user): User =>
+      new User(
+        user.id,
+        user.clientId,
+        user.username,
+        user.email,
+        user.name,
+        user.picture,
+        user.createdAt,
+        user.updatedAt,
+      ),
   );
 };
 
@@ -117,16 +118,17 @@ export const updateUser = (
       return new DatabaseError(error);
     },
   ).map(
-    (user): User => ({
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }),
+    (user): User =>
+      new User(
+        user.id,
+        user.clientId,
+        user.username,
+        user.email,
+        user.name,
+        user.picture,
+        user.createdAt,
+        user.updatedAt,
+      ),
   );
 };
 
@@ -189,16 +191,16 @@ export const getUser = (
     (error) => new DatabaseError(error),
   ).map((user): User | null => {
     if (!user) return null;
-    return {
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return new User(
+      user.id,
+      user.clientId,
+      user.username,
+      user.email,
+      user.name,
+      user.picture,
+      user.createdAt,
+      user.updatedAt,
+    );
   });
 };
 
@@ -219,16 +221,16 @@ export const getUserByEmail = (
     (error) => new DatabaseError(error),
   ).map((user): User | null => {
     if (!user) return null;
-    return {
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return new User(
+      user.id,
+      user.clientId,
+      user.username,
+      user.email,
+      user.name,
+      user.picture,
+      user.createdAt,
+      user.updatedAt,
+    );
   });
 };
 
@@ -249,16 +251,16 @@ export const getUserByUsername = (
     (error) => new DatabaseError(error),
   ).map((user): User | null => {
     if (!user) return null;
-    return {
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    };
+    return new User(
+      user.id,
+      user.clientId,
+      user.username,
+      user.email,
+      user.name,
+      user.picture,
+      user.createdAt,
+      user.updatedAt,
+    );
   });
 };
 
@@ -287,15 +289,18 @@ export const listUsers = (
     }),
     (error) => new DatabaseError(error),
   ).map((users): User[] =>
-    users.map((user) => ({
-      userId: user.id,
-      clientId: user.clientId,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      picture: user.picture,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    })),
+    users.map(
+      (user) =>
+        new User(
+          user.id,
+          user.clientId,
+          user.username,
+          user.email,
+          user.name,
+          user.picture,
+          user.createdAt,
+          user.updatedAt,
+        ),
+    ),
   );
 };

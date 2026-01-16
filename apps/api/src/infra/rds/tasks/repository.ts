@@ -7,9 +7,9 @@ import type {
   DeleteTaskInput,
   GetTaskInput,
   ListTasksInput,
-  Task,
   UpdateTaskInput,
-} from "../../../domain/task/task";
+} from "../../../domain/task/input";
+import { Task } from "../../../domain/task/task";
 
 export const createTask = (
   input: CreateTaskInput,
@@ -29,15 +29,16 @@ export const createTask = (
     }),
     (error) => new DatabaseError(error),
   ).map(
-    (task): Task => ({
-      userId: input.userId,
-      taskId: task.id,
-      content: task.content,
-      completedAt: task.completedAt,
-      version: task.version,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    }),
+    (task): Task =>
+      new Task(
+        input.userId,
+        task.id,
+        task.content,
+        task.completedAt,
+        task.version,
+        task.createdAt,
+        task.updatedAt,
+      ),
   );
 };
 
@@ -119,15 +120,15 @@ export const getTask = (
     (error) => new DatabaseError(error),
   ).map((task): Task | null => {
     if (!task) return null;
-    return {
-      userId: input.userId,
-      taskId: task.id,
-      content: task.content,
-      completedAt: task.completedAt,
-      version: task.version,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    };
+    return new Task(
+      input.userId,
+      task.id,
+      task.content,
+      task.completedAt,
+      task.version,
+      task.createdAt,
+      task.updatedAt,
+    );
   });
 };
 
@@ -153,14 +154,17 @@ export const listTasks = (
     }),
     (error) => new DatabaseError(error),
   ).map((tasks): Task[] =>
-    tasks.map((task) => ({
-      userId: input.userId,
-      taskId: task.id,
-      content: task.content,
-      completedAt: task.completedAt,
-      version: task.version,
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    })),
+    tasks.map(
+      (task) =>
+        new Task(
+          input.userId,
+          task.id,
+          task.content,
+          task.completedAt,
+          task.version,
+          task.createdAt,
+          task.updatedAt,
+        ),
+    ),
   );
 };

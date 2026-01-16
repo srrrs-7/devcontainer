@@ -16,8 +16,10 @@ type Response = {
   taskId: string;
   userId: string;
   content: string;
-  completedAt: Date | null;
+  completedAt: string | null;
   version: number;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export default new Hono().get(
@@ -39,11 +41,13 @@ export default new Hono().get(
       })
       .map(
         (task): Response => ({
-          taskId: task.taskId,
-          userId: task.userId,
-          content: task.content,
-          completedAt: task.completedAt,
-          version: task.version,
+          taskId: task.getTaskId(),
+          userId: task.getUserId(),
+          content: task.getContent(),
+          completedAt: task.getCompletedAt()?.toISOString() ?? null,
+          version: task.getVersion(),
+          createdAt: task.getCreatedAt().toISOString(),
+          updatedAt: task.getUpdatedAt().toISOString(),
         }),
       );
 

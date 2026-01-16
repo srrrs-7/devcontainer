@@ -40,10 +40,10 @@ export default new Hono().get(
       .map((users): Response => {
         return {
           users: users.map((user) => ({
-            userId: user.userId,
-            clientId: user.clientId,
-            username: user.username,
-            email: user.email,
+            userId: user.getUserId(),
+            clientId: user.getClientId(),
+            username: user.getUsername(),
+            email: user.getEmail(),
           })),
           page: page ?? 1,
           limit: limit ?? 20,

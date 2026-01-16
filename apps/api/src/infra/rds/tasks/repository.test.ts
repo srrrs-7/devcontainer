@@ -34,11 +34,11 @@ test("createTask: タスクを作成できる", async () => {
 
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
-    expect(result.value.userId).toBe(TEST_USER_ID);
-    expect(result.value.content).toBe("テストタスク");
-    expect(result.value.taskId).toBeDefined();
-    expect(result.value.createdAt).toBeInstanceOf(Date);
-    expect(result.value.updatedAt).toBeInstanceOf(Date);
+    expect(result.value.getUserId()).toBe(TEST_USER_ID);
+    expect(result.value.getContent()).toBe("テストタスク");
+    expect(result.value.getTaskId()).toBeDefined();
+    expect(result.value.getCreatedAt()).toBeInstanceOf(Date);
+    expect(result.value.getUpdatedAt()).toBeInstanceOf(Date);
   }
 });
 
@@ -51,7 +51,7 @@ test("getTask: 作成したタスクを取得できる", async () => {
   expect(createResult.isOk()).toBe(true);
 
   if (createResult.isOk()) {
-    const taskId = createResult.value.taskId;
+    const taskId = createResult.value.getTaskId();
 
     // 実行: 作成したタスクを取得
     const getResult = await getTask({
@@ -63,9 +63,9 @@ test("getTask: 作成したタスクを取得できる", async () => {
     expect(getResult.isOk()).toBe(true);
     if (getResult.isOk()) {
       expect(getResult.value).not.toBeNull();
-      expect(getResult.value?.userId).toBe(TEST_USER_ID);
-      expect(getResult.value?.taskId).toBe(taskId);
-      expect(getResult.value?.content).toBe("取得テスト用タスク");
+      expect(getResult.value?.getUserId()).toBe(TEST_USER_ID);
+      expect(getResult.value?.getTaskId()).toBe(taskId);
+      expect(getResult.value?.getContent()).toBe("取得テスト用タスク");
     }
   }
 });
@@ -91,7 +91,7 @@ test("deleteTask: タスクを削除できる", async () => {
   expect(createResult.isOk()).toBe(true);
 
   if (createResult.isOk()) {
-    const taskId = createResult.value.taskId;
+    const taskId = createResult.value.getTaskId();
 
     // 実行: タスクを削除
     const deleteResult = await deleteTask({

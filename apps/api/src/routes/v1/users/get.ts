@@ -37,10 +37,10 @@ export default new Hono().get(
       })
       .map((user): Response => {
         return {
-          userId: user.userId,
-          clientId: user.clientId,
-          username: user.username,
-          email: user.email,
+          userId: user.getUserId(),
+          clientId: user.getClientId(),
+          username: user.getUsername(),
+          email: user.getEmail(),
         };
       })
       .match(

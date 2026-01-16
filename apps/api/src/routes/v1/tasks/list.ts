@@ -15,6 +15,8 @@ type TaskItem = {
   content: string;
   completedAt: Date | null;
   version: number;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 type Response = {
@@ -38,11 +40,13 @@ export default new Hono().get(
       (tasks): Response => {
         return {
           tasks: tasks.map((task) => ({
-            taskId: task.taskId,
-            userId: task.userId,
-            content: task.content,
-            completedAt: task.completedAt,
-            version: task.version,
+            taskId: task.getTaskId(),
+            userId: task.getUserId(),
+            content: task.getContent(),
+            completedAt: task.getCompletedAt(),
+            version: task.getVersion(),
+            createdAt: task.getCreatedAt()?.toISOString(),
+            updatedAt: task.getUpdatedAt()?.toISOString(),
           })),
           page,
           limit,

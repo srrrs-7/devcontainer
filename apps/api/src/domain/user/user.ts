@@ -1,49 +1,53 @@
-export type User = {
-  userId: string; // Cognito sub
-  clientId: string;
-  username: string;
-  email: string;
-  name: string | null;
-  picture: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export class User {
+  constructor(
+    private readonly userId: string,
+    private readonly clientId: string,
+    private readonly username: string,
+    private readonly email: string,
+    private readonly name: string | null,
+    private readonly picture: string | null,
+    private readonly createdAt: Date,
+    private readonly updatedAt: Date,
+  ) {
+    this.userId = userId;
+    this.clientId = clientId;
+    this.username = username;
+    this.email = email;
+    this.name = name;
+    this.picture = picture;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+  }
 
-export type CreateUserInput = {
-  userId: string; // Required: Cognito sub
-  clientId: string;
-  username: string;
-  email: string;
-  name?: string;
-  picture?: string;
-};
+  public getUserId(): string {
+    return this.userId;
+  }
 
-export type UpdateUserInput = {
-  userId: string;
-  username?: string;
-  email?: string;
-  name?: string;
-  picture?: string;
-};
+  public getClientId(): string {
+    return this.clientId;
+  }
 
-export type DeleteUserInput = {
-  userId: string;
-};
+  public getUsername(): string {
+    return this.username;
+  }
 
-export type GetUserInput = {
-  userId: string;
-};
+  public getEmail(): string {
+    return this.email;
+  }
 
-export type GetUserByEmailInput = {
-  email: string;
-};
+  public getName(): string | null {
+    return this.name;
+  }
 
-export type GetUserByUsernameInput = {
-  username: string;
-};
+  public getPicture(): string | null {
+    return this.picture;
+  }
 
-export type ListUsersInput = {
-  clientId: string;
-  page?: number;
-  limit?: number;
-};
+  public getCreatedAt(): Date {
+    return this.createdAt;
+  }
+
+  public getUpdatedAt(): Date {
+    return this.updatedAt;
+  }
+}

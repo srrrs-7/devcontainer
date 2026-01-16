@@ -44,14 +44,14 @@ test("createUser: ユーザーを作成できる", async () => {
 
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
-    expect(result.value.userId).toBe(userId);
-    expect(result.value.clientId).toBe(TEST_CLIENT_ID);
-    expect(result.value.username).toBe(username);
-    expect(result.value.email).toBe(email);
-    expect(result.value.name).toBe("Test User");
-    expect(result.value.picture).toBe("https://example.com/avatar.jpg");
-    expect(result.value.createdAt).toBeInstanceOf(Date);
-    expect(result.value.updatedAt).toBeInstanceOf(Date);
+    expect(result.value.getUserId()).toBe(userId);
+    expect(result.value.getClientId()).toBe(TEST_CLIENT_ID);
+    expect(result.value.getUsername()).toBe(username);
+    expect(result.value.getEmail()).toBe(email);
+    expect(result.value.getName()).toBe("Test User");
+    expect(result.value.getPicture()).toBe("https://example.com/avatar.jpg");
+    expect(result.value.getCreatedAt()).toBeInstanceOf(Date);
+    expect(result.value.getUpdatedAt()).toBeInstanceOf(Date);
   }
 });
 
@@ -69,9 +69,9 @@ test("createUser: 名前と画像なしでユーザーを作成できる", async
 
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
-    expect(result.value.userId).toBe(userId);
-    expect(result.value.name).toBeNull();
-    expect(result.value.picture).toBeNull();
+    expect(result.value.getUserId()).toBe(userId);
+    expect(result.value.getName()).toBeNull();
+    expect(result.value.getPicture()).toBeNull();
   }
 });
 
@@ -95,9 +95,9 @@ test("getUser: 作成したユーザーを取得できる", async () => {
   expect(getResult.isOk()).toBe(true);
   if (getResult.isOk()) {
     expect(getResult.value).not.toBeNull();
-    expect(getResult.value?.userId).toBe(userId);
-    expect(getResult.value?.username).toBe("getuser_test");
-    expect(getResult.value?.email).toBe("getuser@example.com");
+    expect(getResult.value?.getUserId()).toBe(userId);
+    expect(getResult.value?.getUsername()).toBe("getuser_test");
+    expect(getResult.value?.getEmail()).toBe("getuser@example.com");
   }
 });
 
@@ -132,8 +132,8 @@ test("getUserByEmail: メールアドレスでユーザーを取得できる", a
   expect(getResult.isOk()).toBe(true);
   if (getResult.isOk()) {
     expect(getResult.value).not.toBeNull();
-    expect(getResult.value?.email).toBe("unique_email@example.com");
-    expect(getResult.value?.username).toBe("emailuser");
+    expect(getResult.value?.getEmail()).toBe("unique_email@example.com");
+    expect(getResult.value?.getUsername()).toBe("emailuser");
   }
 });
 
@@ -168,8 +168,8 @@ test("getUserByUsername: ユーザー名でユーザーを取得できる", asyn
   expect(getResult.isOk()).toBe(true);
   if (getResult.isOk()) {
     expect(getResult.value).not.toBeNull();
-    expect(getResult.value?.username).toBe("uniqueusername");
-    expect(getResult.value?.email).toBe("username_test@example.com");
+    expect(getResult.value?.getUsername()).toBe("uniqueusername");
+    expect(getResult.value?.getEmail()).toBe("username_test@example.com");
   }
 });
 
@@ -209,10 +209,10 @@ test("updateUser: ユーザー情報を更新できる", async () => {
   expect(updateResult.isOk()).toBe(true);
   if (updateResult.isOk()) {
     expect(updateResult.value).not.toBeNull();
-    expect(updateResult.value?.username).toBe("updated_username");
-    expect(updateResult.value?.email).toBe("updated@example.com");
-    expect(updateResult.value?.name).toBe("New Name");
-    expect(updateResult.value?.picture).toBe(
+    expect(updateResult.value?.getUsername()).toBe("updated_username");
+    expect(updateResult.value?.getEmail()).toBe("updated@example.com");
+    expect(updateResult.value?.getName()).toBe("New Name");
+    expect(updateResult.value?.getPicture()).toBe(
       "https://example.com/new-avatar.jpg",
     );
   }
@@ -230,7 +230,7 @@ test("updateUser: 部分的な更新ができる（usernameのみ）", async () 
   expect(createResult.isOk()).toBe(true);
 
   if (createResult.isOk()) {
-    const originalEmail = createResult.value.email;
+    const originalEmail = createResult.value.getEmail();
 
     // 実行: usernameのみ更新
     const updateResult = await updateUser({
@@ -241,8 +241,8 @@ test("updateUser: 部分的な更新ができる（usernameのみ）", async () 
     // 検証
     expect(updateResult.isOk()).toBe(true);
     if (updateResult.isOk()) {
-      expect(updateResult.value?.username).toBe("new_username");
-      expect(updateResult.value?.email).toBe(originalEmail); // メールは変更されていない
+      expect(updateResult.value?.getUsername()).toBe("new_username");
+      expect(updateResult.value?.getEmail()).toBe(originalEmail); // メールは変更されていない
     }
   }
 });
@@ -320,9 +320,9 @@ test("listUsers: クライアントIDでユーザー一覧を取得できる", a
   expect(result.isOk()).toBe(true);
   if (result.isOk()) {
     expect(result.value.length).toBeGreaterThanOrEqual(3);
-    expect(result.value.every((user) => user.clientId === TEST_CLIENT_ID)).toBe(
-      true,
-    );
+    expect(
+      result.value.every((user) => user.getClientId() === TEST_CLIENT_ID),
+    ).toBe(true);
   }
 });
 
@@ -359,8 +359,8 @@ test("listUsers: ページネーションが機能する", async () => {
     expect(page1Result.value.length).toBeLessThanOrEqual(2);
     expect(page2Result.value.length).toBeLessThanOrEqual(2);
     // Different users on different pages
-    const page1Ids = page1Result.value.map((u) => u.userId);
-    const page2Ids = page2Result.value.map((u) => u.userId);
+    const page1Ids = page1Result.value.map((u) => u.getUserId());
+    const page2Ids = page2Result.value.map((u) => u.getUserId());
     expect(page1Ids.some((id) => page2Ids.includes(id))).toBe(false);
   }
 });
