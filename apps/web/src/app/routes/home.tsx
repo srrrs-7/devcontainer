@@ -2,6 +2,7 @@ import bunLogo from "../../assets/logo.svg";
 import reactLogo from "../../assets/react.svg";
 import { AuthStatus } from "../../features/auth";
 import { APITester } from "../../features/misc";
+import { TaskList } from "../../features/tasks";
 
 /**
  * Home page route component.
@@ -16,10 +17,15 @@ export function Home() {
 
       <h1>Bun + React</h1>
       <AuthStatus />
-      <p>
-        Edit <code>src/App.tsx</code> and save to test HMR
-      </p>
-      <APITester />
+
+      <TaskList />
+
+      <details style={{ marginTop: "20px" }}>
+        <summary style={{ cursor: "pointer" }}>
+          API Tester (Development)
+        </summary>
+        <APITester />
+      </details>
     </div>
   );
 }

@@ -33,7 +33,9 @@
     "check:biome": "biome check --write",
     "check:spell": "cspell lint . --gitignore --report=simple --dot",
     "prepare": "husky",
-    "version:check": "bun update -ir --latest --check"
+    "version:check": "bun update -ir --latest --check",
+    "storybook": "cd packages/storybook && bun run dev",
+    "storybook:build": "cd packages/storybook && bun run build"
   },
   "dependencies": {
     "@biomejs/biome": "^2.3.10",
@@ -43,7 +45,11 @@
   "devDependencies": {
     "@bun-security-scanner/osv": "^1.0.0",
     "@prisma/client": "^7.2.0",
-    "@typescript/native-preview": "^7.0.0-dev.20251219.1",
+    "@typescript/native-preview": "^7.0.0-dev.20251226.1",
     "prisma": "^7.2.0"
+  },
+  "overrides": {
+    "hono": "4.11.4",
+    "@smithy/config-resolver": "^4.4.0"
   }
 }

@@ -27,6 +27,9 @@ const v1 = new Hono()
 // Main app with health check and v1 routes
 const app = new Hono().get("/health", (c) => c.text("OK")).route("/v1", v1);
 
+// Export app type for Hono client type inference
+export type AppType = typeof app;
+
 serve({ fetch: app.fetch, port: 8080 }, (info) => {
   logger.info({
     message: `Server is running on http://localhost:${info.port}`,

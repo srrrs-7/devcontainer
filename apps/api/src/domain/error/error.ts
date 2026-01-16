@@ -1,5 +1,5 @@
 abstract class AppError extends Error {
-  public abstract readonly name: string;
+  public abstract override readonly name: string;
   constructor(message: string) {
     super(message);
     Object.setPrototypeOf(this, new.target.prototype);

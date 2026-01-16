@@ -43,9 +43,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Check if Cognito is configured
   useEffect(() => {
-    const userPoolId = import.meta.env.BUN_PUBLIC_COGNITO_USER_POOL_ID;
-    const userPoolClientId = import.meta.env.BUN_PUBLIC_COGNITO_CLIENT_ID;
-    const cognitoDomain = import.meta.env.BUN_PUBLIC_COGNITO_DOMAIN;
+    const userPoolId = import.meta.env?.BUN_PUBLIC_COGNITO_USER_POOL_ID;
+    const userPoolClientId = import.meta.env?.BUN_PUBLIC_COGNITO_CLIENT_ID;
+    const cognitoDomain = import.meta.env?.BUN_PUBLIC_COGNITO_DOMAIN;
 
     setIsConfigured(Boolean(userPoolId && userPoolClientId && cognitoDomain));
   }, []);

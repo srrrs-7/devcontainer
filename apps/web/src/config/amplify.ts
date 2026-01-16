@@ -5,10 +5,10 @@ import { Amplify } from "aws-amplify";
  * This function should be called once at app startup.
  */
 export function configureAmplify() {
-  const userPoolId = import.meta.env.BUN_PUBLIC_COGNITO_USER_POOL_ID;
-  const userPoolClientId = import.meta.env.BUN_PUBLIC_COGNITO_CLIENT_ID;
-  const cognitoDomain = import.meta.env.BUN_PUBLIC_COGNITO_DOMAIN;
-  const awsRegion = import.meta.env.BUN_PUBLIC_AWS_REGION || "ap-northeast-1";
+  const userPoolId = import.meta.env?.BUN_PUBLIC_COGNITO_USER_POOL_ID;
+  const userPoolClientId = import.meta.env?.BUN_PUBLIC_COGNITO_CLIENT_ID;
+  const cognitoDomain = import.meta.env?.BUN_PUBLIC_COGNITO_DOMAIN;
+  const awsRegion = import.meta.env?.BUN_PUBLIC_AWS_REGION || "ap-northeast-1";
 
   // Skip configuration if Cognito is not configured (development without auth)
   if (!userPoolId || !userPoolClientId || !cognitoDomain) {

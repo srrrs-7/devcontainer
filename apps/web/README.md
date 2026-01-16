@@ -6,6 +6,9 @@ React 19 フロントエンドアプリケーション。Bun ネイティブサ�
 
 - **React 19** - UIライブラリ
 - **Bun** - ランタイム・バンドラー・開発サーバー
+- **TanStack Query** - データフェッチング・キャッシュ管理
+- **shadcn/ui** - UIコンポーネントライブラリ (Radix UI + Tailwind CSS)
+- **Tailwind CSS v4** - ユーティリティファーストCSS
 - **AWS Amplify** - Cognito認証 (PKCE flow)
 - **TypeScript** - 型安全性
 
@@ -31,7 +34,7 @@ bun check:type
 src/
 ├── app/                    # アプリケーション層
 │   ├── index.ts            # エクスポート
-│   ├── provider.tsx        # グローバルプロバイダー
+│   ├── provider.tsx        # グローバルプロバイダー (QueryClient, Auth)
 │   ├── router.tsx          # ルーティング
 │   └── routes/             # ルートコンポーネント
 │       ├── index.ts
@@ -43,6 +46,14 @@ src/
 │   └── react.svg
 │
 ├── components/             # 共有UIコンポーネント
+│   ├── ui/                 # shadcn/ui コンポーネント
+│   │   ├── index.ts        # UIコンポーネントエクスポート
+│   │   ├── button.tsx      # Button (variants: default, destructive, outline, etc.)
+│   │   ├── card.tsx        # Card, CardHeader, CardTitle, CardContent, etc.
+│   │   ├── input.tsx       # Input
+│   │   ├── select.tsx      # Select (Radix UI)
+│   │   ├── badge.tsx       # Badge
+│   │   └── alert-dialog.tsx # AlertDialog (確認ダイアログ)
 │   ├── layouts/            # レイアウトコンポーネント
 │   └── errors/             # エラー表示コンポーネント
 │
@@ -62,13 +73,24 @@ src/
 │   │   ├── index.ts
 │   │   └── api-tester.tsx
 │   └── tasks/              # タスク管理機能
-│       ├── api/
-│       └── components/
+│       ├── api/            # API関数
+│       │   └── tasks-api.ts
+│       ├── components/     # UIコンポーネント
+│       │   ├── task-form.tsx
+│       │   ├── task-item.tsx
+│       │   └── task-list.tsx
+│       ├── hooks/          # カスタムフック
+│       │   ├── query-keys.ts # TanStack Query キー
+│       │   └── use-tasks.ts  # タスクCRUDフック
+│       └── types.ts        # 型定義 (re-export)
+│
+├── lib/                    # ユーティリティ
+│   └── utils.ts            # cn() - Tailwindクラスマージ
 │
 ├── frontend.tsx            # Reactエントリポイント
 ├── index.tsx               # サーバーエントリ (Bun.serve)
 ├── index.html              # HTMLテンプレート
-└── index.css               # グローバルスタイル
+└── index.css               # グローバルスタイル (Tailwind + shadcn/ui変数)
 ```
 
 ## アーキテクチャ原則
@@ -83,15 +105,20 @@ src/
 
 ```
 features/
-└── auth/                   # 認証機能
+└── tasks/                  # タスク管理機能
     ├── index.ts            # パブリックAPI (外部公開)
+    ├── api/                # API呼び出し
+    │   └── tasks-api.ts
     ├── components/         # 機能固有コンポーネント
     │   ├── index.ts
-    │   └── auth-status.tsx
-    ├── hooks/              # 機能固有フック (必要時)
-    ├── api/                # API呼び出し (必要時)
-    ├── types/              # 型定義 (必要時)
-    └── *.tsx               # ルートレベルの実装
+    │   ├── task-form.tsx
+    │   ├── task-item.tsx
+    │   └── task-list.tsx
+    ├── hooks/              # カスタムフック
+    │   ├── index.ts
+    │   ├── query-keys.ts
+    │   └── use-tasks.ts
+    └── types.ts            # 型定義
 ```
 
 #### 2. 単方向インポート (Unidirectional Imports)
@@ -100,6 +127,8 @@ features/
 app/ → features/ → components/
          ↓
        config/
+         ↓
+        lib/
 ```
 
 **禁止パターン:**
@@ -113,11 +142,10 @@ app/ → features/ → components/
 #### 3. エクスポート規則
 
 ```typescript
-// features/auth/index.ts - パブリックAPI
-export { AuthProvider, useAuth } from "./AuthContext";
-export { AuthStatus } from "./components/auth-status";
-export { ProtectedRoute } from "./ProtectedRoute";
-export { useApiClient } from "./useApiClient";
+// features/tasks/index.ts - パブリックAPI
+export { TaskForm, TaskItem, TaskList } from "./components";
+export { taskKeys, useTasks } from "./hooks";
+export type { Task, TaskListItem, CreateTaskInput } from "./types";
 ```
 
 - 機能の `index.ts` のみが外部公開
@@ -135,9 +163,218 @@ features/tasks/
 │   ├── task-list.test.tsx    # テスト
 │   └── task-list.css         # スタイル (必要時)
 ├── api/
-│   └── get-tasks.ts
-└── types/
-    └── task.ts
+│   └── tasks-api.ts
+└── types.ts
+```
+
+## UIコンポーネント (shadcn/ui)
+
+[shadcn/ui](https://ui.shadcn.com/) ベースのUIコンポーネント。Radix UIプリミティブ + Tailwind CSSで構築。
+
+### 使用可能なコンポーネント
+
+```typescript
+import {
+  Button,
+  Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter,
+  Input,
+  Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
+  Badge,
+  AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogAction, AlertDialogCancel,
+} from "../components/ui";
+```
+
+### Button
+
+```tsx
+<Button>Default</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline">Cancel</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="link">Link</Button>
+<Button size="sm">Small</Button>
+<Button size="lg">Large</Button>
+<Button disabled>Disabled</Button>
+```
+
+### Card
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>タイトル</CardTitle>
+    <CardDescription>説明文</CardDescription>
+  </CardHeader>
+  <CardContent>
+    コンテンツ
+  </CardContent>
+  <CardFooter>
+    <Button>アクション</Button>
+  </CardFooter>
+</Card>
+```
+
+### Select
+
+```tsx
+<Select value={value} onValueChange={setValue}>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="選択してください" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="option1">オプション1</SelectItem>
+    <SelectItem value="option2">オプション2</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+### AlertDialog
+
+```tsx
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="destructive">削除</Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>本当に削除しますか？</AlertDialogTitle>
+      <AlertDialogDescription>
+        この操作は取り消せません。
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>キャンセル</AlertDialogCancel>
+      <AlertDialogAction onClick={handleDelete}>削除</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+### ユーティリティ関数
+
+```typescript
+import { cn } from "../lib/utils";
+
+// Tailwindクラスの条件付きマージ
+<div className={cn(
+  "base-class",
+  isActive && "active-class",
+  variant === "primary" ? "primary-class" : "secondary-class"
+)}>
+```
+
+## データフェッチング (TanStack Query)
+
+[TanStack Query](https://tanstack.com/query) を使用したデータフェッチングとキャッシュ管理。
+
+### キャッシュ戦略
+
+```typescript
+// provider.tsx
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,    // 5分間はfresh
+      gcTime: 1000 * 60 * 30,      // 30分後にガベージコレクション
+      retry: 3,                     // 3回リトライ
+      retryDelay: (attemptIndex) =>
+        Math.min(1000 * 2 ** attemptIndex, 30000), // 指数バックオフ
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+    mutations: {
+      retry: 3,
+      retryDelay: (attemptIndex) =>
+        Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+});
+```
+
+### Query Keyパターン
+
+```typescript
+// features/tasks/hooks/query-keys.ts
+export const taskKeys = {
+  all: ["tasks"] as const,
+  lists: () => [...taskKeys.all, "list"] as const,
+  list: (page: number, limit: number) =>
+    [...taskKeys.lists(), { page, limit }] as const,
+  details: () => [...taskKeys.all, "detail"] as const,
+  detail: (taskId: string) => [...taskKeys.details(), taskId] as const,
+};
+```
+
+### カスタムフック例
+
+```typescript
+// features/tasks/hooks/use-tasks.ts
+export function useTasks(options: UseTasksOptions = {}): UseTasksResult {
+  const api = useApiClient();
+  const queryClient = useQueryClient();
+
+  // クエリ
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: taskKeys.list(page, limit),
+    queryFn: () => listTasksApi(api, page, limit),
+  });
+
+  // ミューテーション
+  const createMutation = useMutation({
+    mutationFn: (input: CreateTaskInput) => createTaskApi(api, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: taskKeys.lists() });
+    },
+  });
+
+  return {
+    tasks: data?.tasks ?? [],
+    isLoading,
+    isFetching,
+    createTask: (input) => createMutation.mutateAsync(input),
+    // ...
+  };
+}
+```
+
+### 使用方法
+
+```typescript
+import { useTasks } from "../features/tasks";
+
+function TaskPage() {
+  const {
+    tasks,
+    isLoading,
+    isFetching,
+    error,
+    createTask,
+    updateTask,
+    deleteTask,
+    isCreating,
+    isUpdating,
+    isDeleting,
+  } = useTasks({ page: 1, limit: 20 });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  return (
+    <div>
+      {tasks.map(task => (
+        <TaskItem
+          key={task.taskId}
+          task={task}
+          onUpdate={updateTask}
+          onDelete={deleteTask}
+        />
+      ))}
+    </div>
+  );
+}
 ```
 
 ## 新機能追加ガイド
@@ -145,20 +382,34 @@ features/tasks/
 ### 1. 新しいFeatureを作成
 
 ```bash
-mkdir -p src/features/[feature-name]/{components,api,hooks,types}
+mkdir -p src/features/[feature-name]/{components,api,hooks}
 touch src/features/[feature-name]/index.ts
+touch src/features/[feature-name]/types.ts
 ```
 
 ### 2. 構造テンプレート
 
 ```typescript
 // src/features/[feature-name]/index.ts
-export { FeatureComponent } from "./components/feature-component";
-export { useFeature } from "./hooks/use-feature";
-export type { FeatureType } from "./types/feature";
+export { FeatureComponent } from "./components";
+export { useFeature } from "./hooks";
+export type { FeatureType } from "./types";
 ```
 
-### 3. ルートに追加
+### 3. Query Keysを定義
+
+```typescript
+// src/features/[feature-name]/hooks/query-keys.ts
+export const featureKeys = {
+  all: ["feature"] as const,
+  lists: () => [...featureKeys.all, "list"] as const,
+  list: (filters: Filters) => [...featureKeys.lists(), filters] as const,
+  details: () => [...featureKeys.all, "detail"] as const,
+  detail: (id: string) => [...featureKeys.details(), id] as const,
+};
+```
+
+### 4. ルートに追加
 
 ```typescript
 // src/app/router.tsx
@@ -217,6 +468,40 @@ function DataComponent() {
 <ProtectedRoute>
   <ProtectedContent />
 </ProtectedRoute>
+```
+
+## スタイリング
+
+### Tailwind CSS v4
+
+CSS-firstな設定。`index.css` でカスタマイズ:
+
+```css
+@import "tailwindcss";
+
+@theme {
+  /* カスタムカラー等はここに定義 */
+}
+```
+
+### shadcn/ui CSS変数
+
+`index.css` でテーマ変数を定義:
+
+```css
+:root {
+  --background: 0 0% 100%;
+  --foreground: 240 10% 3.9%;
+  --primary: 240 5.9% 10%;
+  --primary-foreground: 0 0% 98%;
+  /* ... */
+}
+
+.dark {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  /* ... */
+}
 ```
 
 ## 開発サーバー

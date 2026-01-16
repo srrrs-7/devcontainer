@@ -12,7 +12,7 @@ interface RequestOptions extends Omit<RequestInit, "headers"> {
 export function useApiClient() {
   const { getAccessToken, isConfigured } = useAuth();
 
-  const apiUrl = import.meta.env.BUN_PUBLIC_API_URL || "";
+  const apiUrl = import.meta.env?.BUN_PUBLIC_API_URL || "";
 
   const request = useCallback(
     async <T>(path: string, options?: RequestOptions): Promise<T> => {

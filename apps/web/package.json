@@ -11,9 +11,22 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "aws-amplify": "^6.15.8",
+    "@packages/api-types": "workspace:*",
+    "api": "workspace:*",
+    "hono": "4.11.4",
+    "@radix-ui/react-alert-dialog": "^1.1.15",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.4",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/react-query": "^5.90.12",
+    "aws-amplify": "^6.15.9",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.562.0",
     "react": "^19",
-    "react-dom": "^19"
+    "react-dom": "^19",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
     "@types/bun": "latest",
