@@ -1,5 +1,10 @@
 import { Minus, Plus } from "lucide-react";
-import { forwardRef, type InputHTMLAttributes, useCallback } from "react";
+import {
+  forwardRef,
+  type InputHTMLAttributes,
+  useCallback,
+  useId,
+} from "react";
 import { cn } from "../../lib/utils";
 import { Button } from "./button";
 import { Input } from "./input";
@@ -34,6 +39,8 @@ const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
     },
     ref,
   ) => {
+    const inputId = useId();
+
     const handleDecrement = useCallback(() => {
       const newValue = Math.max(min, value - step);
       onValueChange(newValue);
@@ -73,7 +80,11 @@ const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
 
     return (
       <div className={cn("space-y-2", className)}>
-        {label && <label className="text-sm font-medium">{label}</label>}
+        {label && (
+          <label htmlFor={inputId} className="text-sm font-medium">
+            {label}
+          </label>
+        )}
         <div className="flex items-center">
           <Button
             type="button"
@@ -88,6 +99,7 @@ const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
           </Button>
           <Input
             ref={ref}
+            id={inputId}
             type="number"
             value={value}
             onChange={handleChange}

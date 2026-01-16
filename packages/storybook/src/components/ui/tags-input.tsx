@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useId, useState } from "react";
 import { cn } from "../../lib/utils";
 import { Badge } from "./badge";
 import { Input } from "./input";
@@ -31,6 +31,7 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
     },
     ref,
   ) => {
+    const inputId = useId();
     const [inputValue, setInputValue] = useState("");
 
     const addTag = useCallback(() => {
@@ -69,7 +70,11 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
 
     return (
       <div className={cn("space-y-2", className)}>
-        {label && <label className="text-sm font-medium">{label}</label>}
+        {label && (
+          <label htmlFor={inputId} className="text-sm font-medium">
+            {label}
+          </label>
+        )}
         <div
           className={cn(
             "flex flex-wrap gap-2 rounded-md border p-2",
@@ -93,6 +98,7 @@ const TagsInput = forwardRef<HTMLInputElement, TagsInputProps>(
           ))}
           <Input
             ref={ref}
+            id={inputId}
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}

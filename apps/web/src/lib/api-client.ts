@@ -8,8 +8,8 @@ import { hc, type InferResponseType } from "hono/client";
 import { useMemo } from "react";
 import { useAuth } from "../features/auth/AuthContext";
 
-// API base URL from environment
-const API_URL = import.meta.env?.BUN_PUBLIC_API_URL || "";
+// API base URL from environment (defaults to localhost:8080 for development)
+const API_URL = import.meta.env?.BUN_PUBLIC_API_URL || "http://localhost:8080";
 
 /**
  * Create a type-safe Hono client with authentication

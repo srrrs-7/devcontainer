@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useRef } from "react";
+import { forwardRef, useCallback, useMemo, useRef } from "react";
 import { cn } from "../../lib/utils";
 import { Input } from "./input";
 
@@ -26,10 +26,13 @@ const OTPInput = forwardRef<HTMLDivElement, OTPInputProps>(
     const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
     // Ensure value array has correct length
-    const normalizedValue = [...value];
-    while (normalizedValue.length < length) {
-      normalizedValue.push("");
-    }
+    const normalizedValue = useMemo(() => {
+      const result = [...value];
+      while (result.length < length) {
+        result.push("");
+      }
+      return result;
+    }, [value, length]);
 
     const handleChange = useCallback(
       (index: number, inputValue: string) => {
@@ -92,7 +95,7 @@ const OTPInput = forwardRef<HTMLDivElement, OTPInputProps>(
       <div ref={ref} className={cn("flex justify-center gap-2", className)}>
         {Array.from({ length }, (_, index) => (
           <Input
-            key={index}
+            key={`otp-digit-${index}`}
             ref={(el) => {
               inputRefs.current[index] = el;
             }}

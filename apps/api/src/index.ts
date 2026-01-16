@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { logger } from "@packages/logger";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import {
   cognitoAuthMiddleware,
   requestIdMiddleware,
@@ -25,7 +26,17 @@ const v1 = new Hono()
   .route("/", deleteTask);
 
 // Main app with health check and v1 routes
-const app = new Hono().get("/health", (c) => c.text("OK")).route("/v1", v1);
+const app = new Hono()
+  .use(
+    "/*",
+    cors({
+      origin: ["http://localhost:3000"],
+      allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowHeaders: ["Content-Type", "Authorization"],
+    }),
+  )
+  .get("/health", (c) => c.text("OK"))
+  .route("/v1", v1);
 
 // Export app type for Hono client type inference
 export type AppType = typeof app;

@@ -42,6 +42,17 @@
           }
         }
       }
+    },
+    {
+      // OTP input uses array index as key because positions are fixed and stable
+      "includes": ["**/otp-input.tsx"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noArrayIndexKey": "off"
+          }
+        }
+      }
     }
   ],
   "assist": {

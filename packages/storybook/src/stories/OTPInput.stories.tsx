@@ -207,9 +207,9 @@ export const TwoFactorAuth: Story = {
           <Button className="w-full">Verify</Button>
           <p className="text-center text-xs text-muted-foreground">
             Can't access your authenticator?{" "}
-            <a href="#" className="text-primary hover:underline">
+            <button type="button" className="text-primary hover:underline">
               Use backup code
-            </a>
+            </button>
           </p>
         </div>
       </div>
