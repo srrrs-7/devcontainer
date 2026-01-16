@@ -12,7 +12,7 @@ export { TaskForm, TaskItem, TaskList } from "./components";
 // Hooks
 export { taskKeys, useTasks } from "./hooks";
 
-// Types (re-exported from @packages/api-types via ./types)
+// Types
 export type {
   CreateTaskInput,
   CreateTaskResponse,

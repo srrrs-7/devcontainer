@@ -7,27 +7,24 @@ import {
   ChevronDown,
   CreditCard,
   DollarSign,
-  Eye,
-  EyeOff,
   Globe,
-  Hash,
   Link,
   Loader2,
   Lock,
   Mail,
   MapPin,
-  Minus,
   Phone,
-  Plus,
   Search,
-  Send,
   User,
-  X,
 } from "lucide-react";
 import { useState } from "react";
-import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
+import { NumberStepper } from "../components/ui/number-stepper";
+import { OTPInput } from "../components/ui/otp-input";
+import { PasswordInput } from "../components/ui/password-input";
+import { SearchInput } from "../components/ui/search-input";
+import { TagsInput } from "../components/ui/tags-input";
 
 const meta: Meta<typeof Input> = {
   title: "UI/Input",
@@ -55,9 +52,7 @@ export const Default: Story = {
 
 export const WithValue: Story = {
   name: "With Value",
-  render: () => (
-    <Input defaultValue="Hello World" className="w-72" />
-  ),
+  render: () => <Input defaultValue="Hello World" className="w-72" />,
 };
 
 export const Disabled: Story = {
@@ -94,7 +89,7 @@ export const InputTypes: Story = {
       </div>
       <div className="space-y-1">
         <label className="text-xs text-muted-foreground">Password</label>
-        <Input type="password" placeholder="••••••••" />
+        <Input type="password" placeholder="********" />
       </div>
       <div className="space-y-1">
         <label className="text-xs text-muted-foreground">Number</label>
@@ -189,197 +184,85 @@ export const WithIconBoth: Story = {
 };
 
 // =============================================================================
-// Password Input
+// Specialized Input Components
 // =============================================================================
 
-export const PasswordToggle: Story = {
-  name: "Password with Toggle",
-  render: function PasswordExample() {
-    const [showPassword, setShowPassword] = useState(false);
-
-    return (
-      <div className="w-72 space-y-3">
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
-            className="px-9"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          >
-            {showPassword ? (
-              <EyeOff className="h-4 w-4" />
-            ) : (
-              <Eye className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Click the eye icon to {showPassword ? "hide" : "show"} password
-        </p>
-      </div>
-    );
-  },
-};
-
-// =============================================================================
-// Search Input
-// =============================================================================
-
-export const SearchInput: Story = {
-  name: "Search Input",
-  render: function SearchExample() {
-    const [value, setValue] = useState("");
-
-    return (
-      <div className="w-72">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search..."
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            className="pl-9 pr-9"
-          />
-          {value && (
-            <button
-              type="button"
-              onClick={() => setValue("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  },
-};
-
-export const SearchWithButton: Story = {
-  name: "Search with Button",
+export const PasswordInputExample: Story = {
+  name: "Password Input",
   render: () => (
-    <div className="flex w-80">
-      <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Search..."
-          className="rounded-r-none pl-9"
-        />
-      </div>
-      <Button className="rounded-l-none">Search</Button>
+    <div className="w-72 space-y-4">
+      <p className="text-sm text-muted-foreground">
+        See PasswordInput component for more examples
+      </p>
+      <PasswordInput placeholder="Enter password" />
     </div>
   ),
 };
 
-// =============================================================================
-// Clearable Input
-// =============================================================================
-
-export const ClearableInput: Story = {
-  name: "Clearable Input",
-  render: function ClearableExample() {
-    const [value, setValue] = useState("Some text to clear");
-
+export const SearchInputExample: Story = {
+  name: "Search Input",
+  render: function SearchExample() {
+    const [value, setValue] = useState("");
     return (
-      <div className="w-72">
-        <div className="relative">
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            className="pr-9"
-          />
-          {value && (
-            <button
-              type="button"
-              onClick={() => setValue("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          )}
-        </div>
+      <div className="w-72 space-y-4">
+        <p className="text-sm text-muted-foreground">
+          See SearchInput component for more examples
+        </p>
+        <SearchInput
+          value={value}
+          onValueChange={setValue}
+          placeholder="Search..."
+        />
       </div>
     );
   },
 };
 
-// =============================================================================
-// Number Input with Stepper
-// =============================================================================
-
-export const NumberStepper: Story = {
-  name: "Number with Stepper",
+export const NumberStepperExample: Story = {
+  name: "Number Stepper",
   render: function NumberExample() {
     const [value, setValue] = useState(1);
-
     return (
-      <div className="flex w-32">
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-r-none"
-          onClick={() => setValue(Math.max(0, value - 1))}
-        >
-          <Minus className="h-4 w-4" />
-        </Button>
-        <Input
-          type="number"
-          value={value}
-          onChange={(e) => setValue(Number(e.target.value))}
-          className="rounded-none text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-        />
-        <Button
-          variant="outline"
-          size="icon"
-          className="rounded-l-none"
-          onClick={() => setValue(value + 1)}
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          See NumberStepper component for more examples
+        </p>
+        <NumberStepper value={value} onValueChange={setValue} min={0} />
       </div>
     );
   },
 };
 
-export const QuantitySelector: Story = {
-  name: "Quantity Selector",
-  render: function QuantityExample() {
-    const [quantity, setQuantity] = useState(1);
-
+export const TagsInputExample: Story = {
+  name: "Tags Input",
+  render: function TagsExample() {
+    const [tags, setTags] = useState(["React", "TypeScript"]);
     return (
-      <div className="w-72 space-y-2">
-        <label className="text-sm font-medium">Quantity</label>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            disabled={quantity <= 1}
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-          <Input
-            type="number"
-            value={quantity}
-            onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-            className="h-8 w-16 text-center [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-            min={1}
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => setQuantity(quantity + 1)}
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
-        </div>
+      <div className="w-80 space-y-4">
+        <p className="text-sm text-muted-foreground">
+          See TagsInput component for more examples
+        </p>
+        <TagsInput
+          value={tags}
+          onValueChange={setTags}
+          label="Tags"
+          description="Press Enter to add a tag"
+        />
+      </div>
+    );
+  },
+};
+
+export const OTPInputExample: Story = {
+  name: "OTP Input",
+  render: function OTPExample() {
+    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+    return (
+      <div className="space-y-4 text-center">
+        <p className="text-sm text-muted-foreground">
+          See OTPInput component for more examples
+        </p>
+        <OTPInput value={otp} onValueChange={setOtp} />
       </div>
     );
   },
@@ -570,16 +453,6 @@ export const InputWithButton: Story = {
           Apply
         </Button>
       </div>
-
-      <div className="flex">
-        <div className="relative flex-1">
-          <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Email" className="rounded-r-none pl-9" />
-        </div>
-        <Button className="rounded-l-none">
-          <Send className="h-4 w-4" />
-        </Button>
-      </div>
     </div>
   ),
 };
@@ -642,7 +515,11 @@ export const LoadingState: Story = {
   render: () => (
     <div className="w-72 space-y-3">
       <div className="relative">
-        <Input placeholder="Checking availability..." disabled className="pr-9" />
+        <Input
+          placeholder="Checking availability..."
+          disabled
+          className="pr-9"
+        />
         <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground" />
       </div>
 
@@ -725,15 +602,7 @@ export const LoginForm: Story = {
           <label htmlFor="login-password" className="text-sm font-medium">
             Password
           </label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              id="login-password"
-              type="password"
-              placeholder="••••••••"
-              className="pl-9"
-            />
-          </div>
+          <PasswordInput id="login-password" placeholder="Enter password" />
         </div>
 
         <Button className="w-full">Sign In</Button>
@@ -862,7 +731,8 @@ export const AddressForm: Story = {
 
       <div className="space-y-2">
         <label htmlFor="apt" className="text-sm font-medium">
-          Apt, Suite, etc. <span className="text-muted-foreground">(optional)</span>
+          Apt, Suite, etc.{" "}
+          <span className="text-muted-foreground">(optional)</span>
         </label>
         <Input id="apt" placeholder="Apt 4B" />
       </div>
@@ -898,112 +768,4 @@ export const AddressForm: Story = {
       </div>
     </form>
   ),
-};
-
-// =============================================================================
-// Tags Input
-// =============================================================================
-
-export const TagsInput: Story = {
-  name: "Tags Input",
-  render: function TagsExample() {
-    const [tags, setTags] = useState(["React", "TypeScript"]);
-    const [inputValue, setInputValue] = useState("");
-
-    const addTag = () => {
-      if (inputValue.trim() && !tags.includes(inputValue.trim())) {
-        setTags([...tags, inputValue.trim()]);
-        setInputValue("");
-      }
-    };
-
-    const removeTag = (tagToRemove: string) => {
-      setTags(tags.filter((tag) => tag !== tagToRemove));
-    };
-
-    return (
-      <div className="w-80 space-y-2">
-        <label className="text-sm font-medium">Tags</label>
-        <div className="flex flex-wrap gap-2 rounded-md border p-2">
-          {tags.map((tag) => (
-            <Badge key={tag} variant="secondary" className="gap-1">
-              {tag}
-              <button
-                type="button"
-                onClick={() => removeTag(tag)}
-                className="ml-1 rounded-full hover:bg-muted"
-              >
-                <X className="h-3 w-3" />
-              </button>
-            </Badge>
-          ))}
-          <Input
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addTag();
-              }
-            }}
-            placeholder="Add tag..."
-            className="h-6 min-w-[100px] flex-1 border-0 p-0 text-sm focus-visible:ring-0"
-          />
-        </div>
-        <p className="text-xs text-muted-foreground">
-          Press Enter to add a tag
-        </p>
-      </div>
-    );
-  },
-};
-
-// =============================================================================
-// OTP Input
-// =============================================================================
-
-export const OTPInput: Story = {
-  name: "OTP Input",
-  render: function OTPExample() {
-    const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-
-    const handleChange = (index: number, value: string) => {
-      if (value.length > 1) return;
-      const newOtp = [...otp];
-      newOtp[index] = value;
-      setOtp(newOtp);
-
-      // Auto-focus next input
-      if (value && index < 5) {
-        const nextInput = document.getElementById(`otp-${index + 1}`);
-        nextInput?.focus();
-      }
-    };
-
-    return (
-      <div className="space-y-4">
-        <div className="space-y-2 text-center">
-          <h3 className="font-semibold">Enter verification code</h3>
-          <p className="text-sm text-muted-foreground">
-            We sent a code to your email
-          </p>
-        </div>
-        <div className="flex justify-center gap-2">
-          {otp.map((digit, index) => (
-            <Input
-              key={index}
-              id={`otp-${index}`}
-              type="text"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleChange(index, e.target.value)}
-              className="h-12 w-12 text-center text-lg font-semibold"
-            />
-          ))}
-        </div>
-        <Button className="w-full">Verify</Button>
-      </div>
-    );
-  },
 };
