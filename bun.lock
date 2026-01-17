@@ -41,7 +41,6 @@
       "name": "web",
       "version": "0.1.0",
       "dependencies": {
-        "@packages/api-types": "workspace:*",
         "@radix-ui/react-alert-dialog": "^1.1.15",
         "@radix-ui/react-select": "^2.2.6",
         "@radix-ui/react-slot": "^1.2.4",
@@ -63,10 +62,6 @@
         "@types/react": "^19",
         "@types/react-dom": "^19",
       },
-    },
-    "packages/api-types": {
-      "name": "@packages/api-types",
-      "version": "0.1.0",
     },
     "packages/db": {
       "name": "@packages/db",
@@ -514,8 +509,6 @@
     "@mdx-js/react": ["@mdx-js/react@3.1.1", "", { "dependencies": { "@types/mdx": "^2.0.0" }, "peerDependencies": { "@types/react": ">=16", "react": ">=16" } }, "sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw=="],
 
     "@mrleebo/prisma-ast": ["@mrleebo/prisma-ast@0.12.1", "", { "dependencies": { "chevrotain": "^10.5.0", "lilconfig": "^2.1.0" } }, "sha512-JwqeCQ1U3fvccttHZq7Tk0m/TMC6WcFAQZdukypW3AzlJYKYTGNVd1ANU2GuhKnv4UQuOFj3oAl0LLG/gxFN1w=="],
-
-    "@packages/api-types": ["@packages/api-types@workspace:packages/api-types"],
 
     "@packages/db": ["@packages/db@workspace:packages/db"],
 
