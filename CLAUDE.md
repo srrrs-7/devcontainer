@@ -744,3 +744,165 @@ These hooks automatically trigger the notification script (`.claude/skills/notic
 ```
 
 **Customization**: Modify `.claude/settings.local.json` to adjust hook behavior, permissions, or add matcher patterns for specific tools
+
+### Timezone Handling
+
+**Principle**: Always store datetime in UTC in the database and backend, convert to JST (or user's timezone) only in the frontend.
+
+
+### Timezone Handling
+
+**Principle**: Always store datetime in UTC in the database and backend, convert to JST (or user's timezone) only in the frontend.
+
+**Database Layer** (`packages/db`):
+- All `DateTime` fields in Prisma schema should store UTC timestamps
+- Use `@db.Timestamptz` for PostgreSQL (timezone-aware timestamps)
+- Example:
+```prisma
+  model Task {
+    id        String   @id @default(uuid()) @db.Uuid
+    createdAt DateTime @default(now()) @db.Timestamptz
+    updatedAt DateTime @updatedAt @db.Timestamptz
+  }
+```
+
+**API Layer** (`apps/api`):
+- Return ISO 8601 format with UTC timezone indicator (Z suffix)
+- Example: `"2024-01-23T10:30:00Z"`
+- Never convert to local timezone in API responses
+- JavaScript Date objects are internally UTC - use `.toISOString()` for serialization
+
+**Frontend Layer** (`apps/web`):
+- Convert UTC timestamps to JST (or user's timezone) for display only
+- Use `date-fns-tz` or `Intl.DateTimeFormat` for timezone conversion
+- Example with date-fns-tz:
+```typescript
+  import { formatInTimeZone } from 'date-fns-tz';
+  
+  const utcDate = "2024-01-23T10:30:00Z";
+  const jstFormatted = formatInTimeZone(
+    new Date(utcDate),
+    'Asia/Tokyo',
+    'yyyy-MM-dd HH:mm:ss'
+  );
+  // "2024-01-23 19:30:00"
+```
+- Example with Intl.DateTimeFormat:
+```typescript
+  const date = new Date("2024-01-23T10:30:00Z");
+  const jstFormatted = new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  }).format(date);
+```
+
+**Date Range Search Pattern** (Frontend → Backend):
+
+When searching by date ranges, **always convert user's local date to UTC ISO 8601 format** before sending to API.
+
+**Recommended Pattern**: Convert to UTC in frontend
+```typescript
+// Frontend (apps/web)
+import { zonedTimeToUtc } from 'date-fns-tz';
+
+// User selects "2024-01-23" in JST
+const userSelectedDate = '2024-01-23';
+
+// Convert JST day boundaries to UTC
+const startOfDay = zonedTimeToUtc(
+  `${userSelectedDate}T00:00:00`,
+  'Asia/Tokyo'
+);
+const endOfDay = zonedTimeToUtc(
+  `${userSelectedDate}T23:59:59.999`,
+  'Asia/Tokyo'
+);
+
+const params = new URLSearchParams({
+  createdFrom: startOfDay.toISOString(),  // "2024-01-22T15:00:00.000Z"
+  createdTo: endOfDay.toISOString(),      // "2024-01-23T14:59:59.999Z"
+});
+
+fetch(`/api/v1/tasks?${params}`);
+```
+```typescript
+// Backend (apps/api)
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
+
+// Validation schema
+const taskSearchSchema = z.object({
+  createdFrom: z.string().datetime().optional(),
+  createdTo: z.string().datetime().optional(),
+});
+
+// Route handler
+app.get('/tasks', zValidator('query', taskSearchSchema), async (c) => {
+  const { createdFrom, createdTo } = c.req.valid('query');
+  
+  // Query with UTC timestamps (no conversion needed)
+  const tasks = await prisma.task.findMany({
+    where: {
+      createdAt: {
+        gte: createdFrom ? new Date(createdFrom) : undefined,
+        lte: createdTo ? new Date(createdTo) : undefined,
+      },
+    },
+  });
+  
+  return c.json(tasks);
+});
+```
+
+**Alternative Pattern**: Pass date string + timezone (convert in backend)
+```typescript
+// Frontend
+const params = new URLSearchParams({
+  date: '2024-01-23',
+  timezone: 'Asia/Tokyo', // or Intl.DateTimeFormat().resolvedOptions().timeZone
+});
+```
+```typescript
+// Backend
+import { zonedTimeToUtc } from 'date-fns-tz';
+
+app.get('/tasks', async (c) => {
+  const date = c.req.query('date');
+  const timezone = c.req.query('timezone') || 'UTC';
+  
+  const startOfDay = zonedTimeToUtc(`${date}T00:00:00`, timezone);
+  const endOfDay = zonedTimeToUtc(`${date}T23:59:59.999`, timezone);
+  
+  // Query with converted UTC timestamps
+  const tasks = await prisma.task.findMany({
+    where: {
+      createdAt: { gte: startOfDay, lte: endOfDay },
+    },
+  });
+  
+  return c.json(tasks);
+});
+```
+
+**Avoid These Patterns**:
+- ❌ Passing local time without timezone info: `"2024-01-23T00:00:00"` (ambiguous)
+- ❌ Using Unix timestamps in milliseconds: `"1706025600000"` (not human-readable)
+- ❌ Using `new Date().toString()`: Returns local timezone string
+
+**Benefits of this approach**:
+- Consistent data storage regardless of server location
+- Easy support for multiple timezones (future international expansion)
+- Avoids daylight saving time issues
+- Clear separation of concerns (storage vs presentation)
+- API responses remain timezone-agnostic
+
+**Common Pitfalls to Avoid**:
+- Never store local time without timezone information in database
+- Be careful with JavaScript Date methods like `getHours()` - they use local timezone
+- Always validate that API responses contain UTC timestamps (Z suffix or +00:00)
+- When using date picker components, explicitly convert selected date to UTC before API call
