@@ -16,7 +16,7 @@
     "@packages/db": "workspace:*",
     "@packages/logger": "workspace:*",
     "bcrypt": "^6.0.0",
-    "dayjs": "^1.11.19",
+    "dayjs": "^1.11.20",
     "hono": "4.11.4",
     "jose": "^6.1.3",
     "neverthrow": "^8.0.1",
